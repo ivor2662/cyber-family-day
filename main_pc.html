@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 經采家庭日｜賽事即時看板</title>
+<style>
+  /* ===== 主題變數（預設＝深色計分板） ===== */
+  body {
+    --navy:#3d6ea5; --red:#e85d4b; --gold:#f2b93b; --paper:#132235; --ink:#e9f0f7; --line:#2e415c; --muted:#7d90a6; --field:#0d1b2c;
+    --bg:linear-gradient(160deg,#0a1522 0%,#10233c 55%,#0a1522 100%);
+    --rad:10px; --radS:6px; --shadow:0 6px 14px rgba(0,0,0,.4);
+    --headbg:#1b3049; --headfg:#a9bdd2; --starhbg:rgba(232,93,75,.18); --starhfg:#ffb3a6;
+    --time:#7fc0ff; --timechg:#ff8a75; --winbg:rgba(242,185,59,.14); --wfg:var(--gold);
+    --resfg:var(--gold); --silverbg:rgba(255,255,255,.05); --silverfg:#b9c8d8;
+    --clockbg:var(--gold); --clockfg:#0a1522; --hdline:var(--gold);
+    --progbg:var(--gold); --progfg:#0a1522;
+    --rtbg:rgba(61,110,165,.28); --rtfg:var(--gold); --rtbd:var(--navy); --rtls:3px;
+    --tabbg:transparent; --hoverbg:rgba(61,110,165,.25); --glow:0 0 12px rgba(61,110,165,.6);
+    --alert:#a5342a; --overlay:rgba(4,10,18,.72); --tboxbd:var(--gold); --ok:#7ddc8a; --sepc:#4a617c;
+    --h3bg:linear-gradient(90deg,#3d6ea5,#274b72); --rkc:#ff8a75; --ptsc:var(--gold); --h1icon:"\1F3DF  ";
+    --nextfg:#0a1522;
+  }
+  body[data-theme="light"] {
+    --navy:#2e6db4; --red:#e0523f; --gold:#e8a71c; --paper:#ffffff; --ink:#16324f; --line:#c9d6e4; --muted:#6d829a; --field:#f4f8fc;
+    --bg:linear-gradient(160deg,#eef3f9 0%,#dde7f2 55%,#eef3f9 100%);
+    --rad:10px; --radS:6px; --shadow:0 6px 14px rgba(22,50,79,.15);
+    --headbg:#e8eff7; --headfg:#4a6076; --starhbg:rgba(224,82,63,.12); --starhfg:#c0392b;
+    --time:#1b6fd0; --timechg:#d64530; --winbg:rgba(232,167,28,.18); --wfg:#8a5a00;
+    --resfg:#8a5a00; --silverbg:#f1f4f7; --silverfg:#5a6b78;
+    --clockbg:#e8a71c; --clockfg:#16324f; --hdline:#e8a71c;
+    --progbg:#e8a71c; --progfg:#16324f;
+    --rtbg:rgba(46,109,180,.12); --rtfg:#2e6db4; --rtbd:#2e6db4; --rtls:3px;
+    --tabbg:transparent; --hoverbg:rgba(46,109,180,.14); --glow:0 0 12px rgba(46,109,180,.35);
+    --alert:#c0392b; --overlay:rgba(22,50,79,.4); --tboxbd:#e8a71c; --ok:#1e8e3e; --sepc:#9fb2c6;
+    --h3bg:linear-gradient(90deg,#2e6db4,#1e4d85); --rkc:#d64530; --ptsc:#8a5a00; --h1icon:"\1F3DF  ";
+    --nextfg:#16324f;
+  }
+  body[data-theme="paper"] {
+    --navy:#12304a; --red:#c74738; --gold:#efb94b; --paper:#fffdf6; --ink:#193147; --line:#d8d0c2; --muted:#8a97a3; --field:#ffffff;
+    --bg:repeating-linear-gradient(0deg,#f3eee2 0,#f3eee2 2px,#f8f5ed 2px,#f8f5ed 7px);
+    --rad:0; --radS:0; --shadow:4px 4px 0 rgba(18,48,74,.14);
+    --headbg:#eef2f5; --headfg:#50687b; --starhbg:#fbe9e6; --starhfg:#c74738;
+    --time:#12304a; --timechg:#c74738; --winbg:#fdf4dd; --wfg:#b8860b;
+    --resfg:#8a5a00; --silverbg:#f4f4f2; --silverfg:#5a6b78;
+    --clockbg:#12304a; --clockfg:#fff; --hdline:#12304a;
+    --progbg:#12304a; --progfg:#fff;
+    --rtbg:#12304a; --rtfg:#fff; --rtbd:#12304a; --rtls:0;
+    --tabbg:#fffdf6; --hoverbg:#eef2f5; --glow:none;
+    --alert:#c74738; --overlay:rgba(18,48,74,.45); --tboxbd:#12304a; --ok:#2e7d32; --sepc:#9da8ae;
+    --h3bg:#12304a; --rkc:#c74738; --ptsc:#8a5a00; --h1icon:"";
+    --nextfg:#5a4500;
+  }
+  body[data-theme="festival"] {
+    --navy:#7952b3; --red:#e4572e; --gold:#f2a007; --paper:#ffffff; --ink:#33404f; --line:#e6ddd2; --muted:#94a0ad; --field:#faf7f1;
+    --bg:linear-gradient(160deg,#fff6ec 0%,#f2f8ff 55%,#fdf1f5 100%);
+    --rad:16px; --radS:10px; --shadow:0 8px 18px rgba(90,70,40,.14);
+    --headbg:#f6f1ea; --headfg:#7a8794; --starhbg:rgba(228,87,46,.12); --starhfg:#cf4a22;
+    --time:#7952b3; --timechg:#e4572e; --winbg:rgba(242,160,7,.16); --wfg:#b07400;
+    --resfg:#9a6b00; --silverbg:#f4f4f2; --silverfg:#5a6b78;
+    --clockbg:#f2a007; --clockfg:#4a3200; --hdline:#f2a007;
+    --progbg:#f2a007; --progfg:#4a3200;
+    --rtbg:rgba(121,82,179,.12); --rtfg:var(--navy); --rtbd:var(--navy); --rtls:2px;
+    --tabbg:#ffffff; --hoverbg:#f6f1ea; --glow:0 4px 10px rgba(0,0,0,.12);
+    --alert:#d9480f; --overlay:rgba(60,50,40,.45); --tboxbd:#f2a007; --ok:#2b8a3e; --sepc:#cbb9a6;
+    --h3bg:linear-gradient(90deg,#7952b3,#5f3dc4); --rkc:#e4572e; --ptsc:#9a6b00; --h1icon:"\1F389  ";
+    --nextfg:#4a3200;
+  }
+  /* 慶典風：依球種變色（頁面內容） */
+  body[data-theme="festival"] #stage[data-sport="tt"]  { --navy:#f76707; --time:#e8590c; --rtbg:rgba(247,103,7,.12); }
+  body[data-theme="festival"] #stage[data-sport="bad"] { --navy:#2f9e44; --time:#2b8a3e; --rtbg:rgba(47,158,68,.12); }
+  body[data-theme="festival"] #stage[data-sport="bb"]  { --navy:#c2402a; --time:#b03421; --rtbg:rgba(194,64,42,.12); }
+  /* 慶典風：頁籤依球種變色 */
+  body[data-theme="festival"] .tab[data-tab="tm"], body[data-theme="festival"] .tab[data-tab="tw"], body[data-theme="festival"] .tab[data-tab="ttall"] { border-color:#f76707; }
+  body[data-theme="festival"] .tab.active[data-tab="tm"], body[data-theme="festival"] .tab.active[data-tab="tw"], body[data-theme="festival"] .tab.active[data-tab="ttall"] { background:#f76707; }
+  body[data-theme="festival"] .tab[data-tab="bm"], body[data-theme="festival"] .tab[data-tab="bw"], body[data-theme="festival"] .tab[data-tab="bx"], body[data-theme="festival"] .tab[data-tab="badall"] { border-color:#2f9e44; }
+  body[data-theme="festival"] .tab.active[data-tab="bm"], body[data-theme="festival"] .tab.active[data-tab="bw"], body[data-theme="festival"] .tab.active[data-tab="bx"], body[data-theme="festival"] .tab.active[data-tab="badall"] { background:#2f9e44; }
+  body[data-theme="festival"] .tab[data-tab="bb"], body[data-theme="festival"] .tab[data-tab="bball"] { border-color:#c2402a; }
+  body[data-theme="festival"] .tab.active[data-tab="bb"], body[data-theme="festival"] .tab.active[data-tab="bball"] { background:#c2402a; }
+  body[data-theme="broadcast"] {
+    --navy:#1370c9; --red:#ff4d6d; --gold:#2ee6c9; --paper:#0b1c33; --ink:#eaf6ff; --line:#1e3a5c; --muted:#7fa0bd; --field:#081426;
+    --bg:linear-gradient(180deg,#04101f 0%,#0a2038 60%,#04101f 100%);
+    --rad:4px; --radS:3px; --shadow:0 6px 16px rgba(0,0,0,.5);
+    --headbg:#0e2a4d; --headfg:#9cc3e8; --starhbg:rgba(255,77,109,.18); --starhfg:#ff9eb1;
+    --time:#2ee6c9; --timechg:#ff8fa3; --winbg:rgba(46,230,201,.12); --wfg:#2ee6c9;
+    --resfg:#2ee6c9; --silverbg:rgba(255,255,255,.05); --silverfg:#b9c8d8;
+    --clockbg:#1370c9; --clockfg:#fff; --hdline:#2ee6c9;
+    --progbg:#2ee6c9; --progfg:#04101f;
+    --rtbg:linear-gradient(90deg,#1370c9,#0b2d55); --rtfg:#fff; --rtbd:transparent; --rtls:3px;
+    --tabbg:transparent; --hoverbg:rgba(19,112,201,.25); --glow:0 0 14px rgba(46,230,201,.45);
+    --alert:#d90429; --overlay:rgba(2,8,16,.78); --tboxbd:#2ee6c9; --ok:#5df2c8; --sepc:#274a70;
+    --h3bg:linear-gradient(90deg,#1370c9,#0b2d55); --rkc:#ff8fa3; --ptsc:#2ee6c9; --h1icon:"\1F4FA  ";
+    --nextfg:#04101f;
+  }
+  body[data-theme="broadcast"] .gtitle, body[data-theme="broadcast"] .rtitle, body[data-theme="broadcast"] #clock { font-style:italic; }
+  body[data-theme="broadcast"] .score { font-size:18px; }
+  /* ===== 基底樣式（全部吃變數） ===== */
+  * { box-sizing:border-box; }
+  html,body { margin:0; }
+  body { background:var(--bg) fixed; color:var(--ink); font-family:"Microsoft JhengHei","PingFang TC",sans-serif; min-height:100vh; display:flex; flex-direction:column; }
+  header { display:flex; align-items:center; gap:16px; padding:14px 24px 10px; border-bottom:3px solid var(--hdline); flex-wrap:wrap; }
+  h1 { margin:0; font-size:26px; letter-spacing:1px; }
+  h1::before { content:var(--h1icon); }
+  .subtitle { color:var(--muted); font-size:14px; margin-top:2px; }
+  #clock { margin-left:auto; background:var(--clockbg); color:var(--clockfg); padding:8px 18px; font-weight:bold; font-size:22px; letter-spacing:2px; border-radius:var(--radS); font-variant-numeric:tabular-nums; }
+  .toolbar { display:flex; gap:8px; align-items:center; padding:10px 24px; flex-wrap:wrap; }
+  #tabs { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:thin; padding-bottom:6px; }
+  #tabs::-webkit-scrollbar { height:6px; }
+  #tabs::-webkit-scrollbar-thumb { background:var(--line); border-radius:3px; }
+  #tabs .tab, #tabs .tabsep { flex:none; white-space:nowrap; }
+  .tab { min-height:42px; font:inherit; font-size:16px; font-weight:bold; border:2px solid var(--navy); background:var(--tabbg); color:var(--ink); padding:0 14px; cursor:pointer; border-radius:var(--radS); }
+  .tab:hover { background:var(--hoverbg); }
+  .tab.active { background:var(--navy); color:#fff; box-shadow:var(--glow); }
+  .tab .champ { color:var(--gold); }
+  .btn { min-height:42px; font:inherit; font-size:16px; font-weight:bold; border:2px solid var(--red); background:var(--red); color:#fff; padding:0 14px; cursor:pointer; border-radius:var(--radS); }
+  .btn.secondary { background:var(--tabbg); color:var(--ink); border-color:var(--navy); }
+  .btn.secondary:hover { background:var(--hoverbg); }
+  .btn.on { background:var(--navy); border-color:var(--navy); color:#fff; box-shadow:var(--glow); }
+  .btn.secondary.on:hover { background:var(--navy); color:#fff; }
+  .btn:disabled { opacity:.4; cursor:not-allowed; }
+  #themeSel { min-height:42px; font:inherit; font-size:15px; font-weight:bold; border:2px solid var(--navy); background:var(--tabbg); color:var(--ink); padding:0 8px; border-radius:var(--radS); cursor:pointer; }
+  select option { background:var(--paper); color:var(--ink); }
+  .spacer { flex:1; }
+  #stage { padding:6px 24px 40px; overflow-x:auto; flex:1 0 auto; }
+  #stage.nooverflow { overflow:visible; }
+  .gtitle { font-size:22px; font-weight:bold; margin:8px 0 2px; }
+  .gtitle .star { color:var(--red); }
+  .gsub { color:var(--muted); font-size:14px; margin-bottom:10px; }
+  .prog { margin-left:12px; font-size:14px; color:var(--progfg); background:var(--progbg); padding:2px 10px; vertical-align:middle; border-radius:10px; }
+  .bracket { position:relative; width:max-content; padding:6px 4px 10px; }
+  .wires { position:absolute; inset:0; pointer-events:none; overflow:visible; }
+  .cols { display:flex; gap:56px; align-items:stretch; }
+  .colwrap { display:flex; flex-direction:column; }
+  .col { flex:1; display:flex; flex-direction:column; justify-content:space-around; gap:14px; min-width:var(--cardw); }
+  .rtitle { text-align:center; font-weight:bold; color:var(--rtfg); background:var(--rtbg); border:1px solid var(--rtbd); padding:4px 0; margin-bottom:4px; font-size:15px; border-radius:var(--radS); letter-spacing:var(--rtls); }
+  .match { background:var(--paper); border:2px solid var(--navy); border-radius:var(--rad); box-shadow:var(--shadow); width:var(--cardw); position:relative; overflow:hidden; }
+  .match.star { border-color:var(--red); }
+  .mhead { display:flex; gap:8px; align-items:center; background:var(--headbg); border-bottom:1px solid var(--line); padding:3px 8px; font-size:13px; color:var(--headfg); }
+  .match.star .mhead { background:var(--starhbg); color:var(--starhfg); font-weight:bold; }
+  .mtime { font-weight:bold; color:var(--time); }
+  .mtime[data-edit] { cursor:pointer; border-bottom:1px dashed currentColor; }
+  .mtime.changed { color:var(--timechg); }
+  .mtime.changed::after { content:"（改）"; font-size:11px; }
+  .match.star .mtime { color:var(--timechg); }
+  .mlabel { margin-left:auto; }
+  .side { display:flex; align-items:center; gap:6px; padding:5px 8px; min-height:34px; }
+  .side + .side { border-top:1px dashed var(--line); }
+  .pname { flex:1; font-size:15px; font-weight:bold; line-height:1.25; word-break:break-all; }
+  .pname.tbd { color:var(--muted); font-weight:normal; }
+  .side.winner { background:var(--winbg); }
+  .side.winner .pname::after { content:" \2713"; color:var(--wfg); }
+  .score { width:52px; min-height:30px; font:inherit; font-size:16px; font-weight:bold; text-align:center; border:1.5px solid var(--line); background:var(--field); color:var(--ink); border-radius:var(--radS); }
+  .score:focus { border-color:var(--gold); outline:none; }
+  .mref { display:flex; align-items:center; gap:6px; border-top:1px solid var(--line); padding:3px 8px 5px; font-size:13px; color:var(--muted); }
+  .mref select { flex:1; font:inherit; font-size:13px; min-height:26px; border:1px solid var(--line); background:var(--field); color:var(--ink); border-radius:var(--radS); }
+  .byetag { color:var(--muted); font-size:14px; }
+  .result { border-top:2px solid var(--gold); background:var(--winbg); padding:4px 8px; font-size:15px; font-weight:bold; color:var(--resfg); }
+  .result.silver { border-top:1px dashed var(--line); background:var(--silverbg); color:var(--silverfg); }
+  .ovwrap { display:flex; gap:20px; flex-wrap:wrap; margin:10px 0 18px; }
+  .ovcard { background:var(--paper); border:2px solid var(--navy); border-radius:var(--rad); box-shadow:var(--shadow); min-width:300px; flex:1; max-width:420px; overflow:hidden; }
+  .ovcard h3 { margin:0; background:var(--h3bg); color:#fff; font-size:16px; padding:7px 12px; letter-spacing:1px; }
+  .ovbody { padding:8px 12px; font-size:15px; }
+  .ovchamp { font-weight:bold; font-size:16px; margin-bottom:6px; color:var(--resfg); }
+  .ovrow { display:flex; justify-content:space-between; padding:3px 0; border-top:1px dashed var(--line); }
+  .ovrow .d { font-weight:bold; color:var(--time); }
+  .ovtotal { display:flex; justify-content:space-between; padding:6px 0 2px; border-top:2px solid var(--gold); margin-top:4px; font-weight:bold; font-size:17px; color:var(--resfg); }
+  .ovpend { color:var(--muted); padding:10px 0; }
+  .fhead, .frow { display:flex; align-items:center; gap:10px; padding:5px 4px; }
+  .fhead { font-size:13px; color:var(--muted); border-bottom:1px solid var(--line); font-weight:bold; }
+  .frow { border-bottom:1px dashed var(--line); min-height:40px; }
+  .frow.winner { background:var(--winbg); border-radius:var(--radS); }
+  .frow.out .pname, .frow.out .rk, .frow.out .c3 { opacity:.5; }
+  .fhead .c1, .frow .c1 { width:74px; flex:none; }
+  .fhead .c2, .frow .c2 { flex:1; }
+  .fhead .c3, .frow .c3 { width:88px; flex:none; text-align:center; color:var(--muted); font-weight:bold; }
+  .fhead .c4, .frow .c4 { width:132px; flex:none; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+  .frow .c3 small, .frow .c4 small { font-size:11px; font-weight:normal; color:var(--muted); }
+  .frow .rk { font-weight:bold; color:var(--rkc); font-size:14px; }
+  .frow .pname { font-size:16px; font-weight:bold; }
+  .shoottable { border-collapse:collapse; font-size:15px; background:var(--paper); border:2px solid var(--navy); border-radius:var(--rad); overflow:hidden; box-shadow:var(--shadow); }
+  .shoottable th { background:var(--navy); color:#fff; font-size:14px; padding:6px 12px; white-space:nowrap; }
+  .shoottable td { padding:4px 12px; border-bottom:1px dashed var(--line); text-align:center; white-space:nowrap; }
+  .shoottable td.nmcell { text-align:left; font-weight:bold; }
+  .shoottable tr.qual { background:var(--winbg); }
+  .qualtag { background:var(--gold); color:var(--nextfg); font-size:12px; font-weight:bold; padding:1px 8px; border-radius:8px; }
+  .mealtable { border-collapse:collapse; font-size:14px; background:var(--paper); border:2px solid var(--navy); border-radius:var(--rad); overflow:hidden; box-shadow:var(--shadow); margin-bottom:6px; }
+  .mealtable th { background:var(--navy); color:#fff; font-size:13px; padding:5px 10px; white-space:nowrap; }
+  /* 餐點頁：各區塊表頭捲動時吸附（依餐點發放／依紅白分隊／統計總覽） */
+  /* sticky 表頭：border-collapse:collapse 在部分瀏覽器會讓 sticky 失效 → 改 separate */
+  #stage.nooverflow .mealtable,
+  #stage.nooverflow .regtable { border-collapse:separate; border-spacing:0; overflow:visible; }
+  #stage.nooverflow .mealtable th,
+  #stage.nooverflow .regtable th { position:sticky; top:0; z-index:20; }
+  #stage.nooverflow .regtable td { border-width:0 1px 1px 0; }
+  #stage.nooverflow .regtable td:first-child { border-left-width:1px; }
+  #stage.nooverflow .regtable th { border-width:0 1px 1px 0; }
+  #stage.nooverflow .regtable th:first-child { border-left-width:1px; }
+  .mealtable td { padding:3px 10px; border-bottom:1px dashed var(--line); text-align:center; white-space:nowrap; }
+  .mealtable td.nmcell { text-align:left; font-weight:bold; }
+  .mealtable td.dk { font-weight:normal; }
+  .mealtable td.rolecell { font-size:12px; }
+  .mealtable td.ofcell { font-size:12px; color:var(--muted); }
+  .mealtable td.engcell { color:var(--muted); font-size:13px; }
+  .mealtable td.tot { font-weight:bold; color:var(--resfg); }
+  .mealtable tr.sumrow td { background:var(--winbg); font-weight:bold; }
+  .mealtable tr.taken { opacity:.45; text-decoration:line-through; }
+  .mealtable tr.removing { transition:opacity .4s ease; opacity:0; }
+  .mealtable input[type=checkbox] { width:18px; height:18px; accent-color:var(--gold); }
+  .vtag { background:#2b8a3e; color:#fff; font-size:11px; padding:0 5px; border-radius:6px; }
+  .regwrap { display:flex; gap:14px; align-items:flex-start; width:100%; }
+  .regwrap.tb { display:block; }
+  /* 上下模式：欄寬依內容自動，不強制撐滿；表頭捲動時吸附 */
+  .regwrap.tb .regtable { width:auto; min-width:0; }
+  .regwrap.tb .regtable td.lft.meal, .regwrap.tb .regtable td.lft.drink { width:auto; }
+  .regtable { flex:1; min-width:0; border-collapse:collapse; font-size:14px; background:var(--paper); border:1px solid var(--navy); box-shadow:var(--shadow); }
+  .regtable th { background:var(--navy); color:#fff; font-size:13px; padding:5px 6px; border:1px solid var(--navy); white-space:nowrap; }
+  .regtable td { padding:3px 6px; border:1px solid var(--line); text-align:center; white-space:nowrap; }
+  .regtable td.lft { text-align:left; }
+  .regtable td.nm { font-weight:bold; }
+  .regtable td.role { font-size:12px; }
+  .regtable td.meal { background:var(--winbg); }
+  .regtable tbody tr:nth-child(even) td { background:rgba(128,128,128,.07); }
+  .regtable tbody tr:nth-child(even) td.meal { background:var(--winbg); }
+  .regtable tr.taken { opacity:.5; }
+  .stickychk { display:inline-flex; align-items:center; gap:6px; font-size:15px; margin-left:6px; cursor:pointer; white-space:nowrap; }
+  .stickychk input { width:18px; height:18px; accent-color:var(--gold); }
+  .schtable { border-collapse:collapse; font-size:13px; background:var(--paper); border:2px solid var(--navy); box-shadow:var(--shadow); }
+  .schtable th { background:var(--navy); color:#fff; font-size:14px; padding:6px 10px; white-space:nowrap; }
+  .schtable td { border:1px solid var(--line); vertical-align:top; padding:4px 8px; }
+  .schtable td.slot { font-weight:bold; color:var(--time); white-space:nowrap; text-align:center; background:var(--headbg); }
+  .schtable td.slot.nowslot { background:var(--gold); color:var(--nextfg); }
+  .schtable td.empty { background:rgba(128,128,128,.06); }
+  .schtable td.cell { cursor:pointer; min-width:180px; }
+  .schtable td.cell:hover { background:var(--hoverbg); }
+  .schtable td.cell.clive { border:2px solid var(--gold); }
+  .schtable td.cell.cdone { opacity:.6; }
+  .schtable .c1 { font-size:12px; color:var(--muted); }
+  .schtable .c2 { font-weight:bold; line-height:1.3; }
+  .schtable .c2 .vs { color:var(--muted); font-weight:normal; }
+  .schtable .c3 { font-size:11px; color:var(--muted); }
+  .schtable .c4 { font-size:12px; color:var(--resfg); font-weight:bold; }
+  .mealsec { margin:14px 0; }
+  .mealhd { font-weight:bold; font-size:16px; margin-bottom:4px; }
+  .mealsec.team-red .mealhd { color:#d94a3d; }
+  .mealsec.team-white .mealhd { color:var(--muted); }
+  .mealprog { font-size:13px; color:var(--muted); font-weight:normal; }
+  .rosterrow { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-bottom:16px; }
+  .rosterrow.center { justify-content:center; }
+  .rosterrow.teams { justify-content:center; }
+  .rosterrow.teams > .rosterbox { flex:0 0 auto; }
+  .rosterrow.teams .rtable { width:100%; }
+  .rcap { display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:var(--winbg); border-bottom:1px solid var(--line); padding:5px 12px; }
+  .rcap .capttl { font-size:12px; font-weight:bold; color:var(--resfg); }
+  .rcap .capname { font-size:15px; font-weight:bold; }
+  .rtable tr.caprow td { background:var(--winbg); }
+  .captag { background:var(--gold); color:var(--nextfg); font-size:11px; font-weight:bold; padding:0 6px; border-radius:6px; }
+  .rosterbox { background:var(--paper); border:2px solid var(--navy); border-radius:var(--rad); box-shadow:var(--shadow); }
+  .rosterbox .rhead { display:flex; align-items:center; gap:8px; background:var(--navy); color:#fff; font-weight:bold; font-size:16px; padding:6px 12px; }
+  .rosterbox .rcnt { margin-left:auto; font-size:12px; font-weight:normal; opacity:.9; }
+  .rosterbox.red .rhead { background:#c2402a; }
+  .rosterbox.white .rhead { background:#5a6b78; }
+  .rtable { border-collapse:collapse; font-size:14px; }
+  .rtable th { background:var(--headbg); color:var(--headfg); font-size:12px; padding:4px 10px; white-space:nowrap; }
+  .rtable td { padding:3px 10px; border-bottom:1px dashed var(--line); text-align:center; white-space:nowrap; }
+  .rtable td.nmcell { text-align:left; font-weight:bold; }
+  .rtable td.engcell { color:var(--muted); font-size:13px; }
+  .rtable td.rolecell { font-size:12px; }
+  .rtable td.ofcell { font-size:12px; color:var(--muted); }
+  .funtotal { display:flex; align-items:stretch; gap:0; margin:14px auto 22px; max-width:720px; justify-content:center; }
+  .funcenter { text-align:center; }
+  .funcenter .gtitle, .funcenter .gsub { text-align:left; }
+  #stage .funwrap { justify-content:center; }
+  .funteam { flex:1; max-width:280px; color:#fff; border-radius:var(--rad); box-shadow:var(--shadow); padding:14px 16px 12px; text-align:center; position:relative; }
+  .funteam.red { background:linear-gradient(160deg,#d9534a,#a83226); }
+  .funteam.white { background:linear-gradient(160deg,#8a97a6,#5a6b78); }
+  .funteam .tname { font-size:18px; font-weight:bold; letter-spacing:6px; opacity:.95; }
+  .funteam .tbig { font-size:52px; font-weight:bold; line-height:1.1; text-shadow:0 2px 6px rgba(0,0,0,.25); }
+  .funteam .tbig small { font-size:18px; font-weight:bold; margin-left:4px; }
+  .funteam .tcap { font-size:13px; font-weight:bold; opacity:.9; margin-top:4px; letter-spacing:.5px; white-space:nowrap; }
+  .funteam.champ { outline:4px solid var(--gold); outline-offset:2px; animation:champGlow 1.6s ease-in-out infinite; }
+  @keyframes champGlow {
+    0%, 100% { outline-color:var(--gold); box-shadow:0 0 6px 2px rgba(242,185,59,.35); }
+    50%      { outline-color:#ffe08a;     box-shadow:0 0 24px 8px rgba(242,185,59,.8); }
+  }
+  .funteam.champ::after { content:"👑"; position:absolute; top:-22px; right:-16px; font-size:42px; line-height:1; transform:rotate(18deg); }
+  .funmid { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:0 18px; }
+  .vsball { width:52px; height:52px; border-radius:50%; background:var(--navy); color:#fff; font-weight:bold; font-size:19px; font-style:italic;
+            display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,.3); }
+  .vsstat { font-size:14px; font-weight:bold; color:var(--rkc); white-space:nowrap; }
+  .funcard { min-width:300px; max-width:340px; flex:0 0 auto; text-align:left; }
+  .funcard .side .pname { font-size:16px; }
+  .ovwrap.medals .ovcard { max-width:none; flex:0 1 auto; min-width:620px; }
+  /* 排名頁（桌球/籃球）：兩張卡左右平均 */
+  .ovwrap.medals.pair { flex-wrap:nowrap; justify-content:center; }
+  /* 頒獎頁：卡片整體置中 */
+  .ovwrap.medals.awardswrap { justify-content:center; }
+  .ovwrap.medals.awardswrap .ovcard { flex:0 1 500px; min-width:0; }
+  /* 一列兩張：男單、女單／籃球3對3、投籃大賽／羽球總排名 */
+  .awardswrap .aw-tm { order:1; } .awardswrap .aw-tw { order:2; } .awardswrap .aw-bb { order:3; }
+  .awardswrap .aw-shoot { order:4; } .awardswrap .aw-bad { order:5; }
+  /* 一列三張（由 JS 依實際寬度加上 .three）：男單、女單、羽球總排名、籃球3對3、投籃大賽 */
+  .awardswrap.three .aw-bad { order:3; } .awardswrap.three .aw-bb { order:4; } .awardswrap.three .aw-shoot { order:5; }
+  /* 出場動畫延遲＝顯示順序（兩張版） */
+  /* 分段揭曉：第1段 桌球、第2段 籃球+投籃、第3段 羽球總排名 */
+  .awardswrap[data-stage="1"] .aw-bb, .awardswrap[data-stage="1"] .aw-shoot, .awardswrap[data-stage="1"] .aw-bad { display:none; }
+  .awardswrap[data-stage="2"] .aw-bad { display:none; }
+  /* 段內依序出場 */
+  .ovwrap.medals.awardswrap .ovcard.aw-tm { animation-delay:0s; }
+  .ovwrap.medals.awardswrap .ovcard.aw-tw { animation-delay:.25s; }
+  .ovwrap.medals.awardswrap .ovcard.aw-bb { animation-delay:0s; }
+  .ovwrap.medals.awardswrap .ovcard.aw-shoot { animation-delay:.25s; }
+  .ovwrap.medals.awardswrap .ovcard.aw-bad { animation-delay:0s; }
+  .ovwrap.medals.pair .ovcard { flex:0 1 620px; min-width:0; }
+  .ovwrap.medals .ovbody { padding:10px 18px; }
+  .ranklist { max-width:880px; }
+  .rankrow.rankanim { animation:fadeUp .55s both; }
+  .rankrow.rankanim.rk0 { animation-delay:0s; }
+  .rankrow.rankanim.rk1 { animation-delay:.3s; }
+  .rankrow.rankanim.rk2 { animation-delay:.6s; }
+  .rankrow { display:flex; align-items:center; gap:12px; background:var(--paper); border:2px solid var(--navy); border-radius:var(--rad); box-shadow:var(--shadow); padding:8px 14px; margin:8px 0; font-size:18px; font-weight:bold; }
+  .rankrow.r1 { border-color:var(--gold); background:var(--winbg); }
+  .rankrow .medal { font-size:24px; }
+  .rankrow .rk { color:var(--rkc); min-width:110px; }
+  .rankrow .grp { background:var(--navy); color:#fff; font-size:13px; padding:2px 8px; border-radius:var(--radS); }
+  .rankrow .pts { margin-left:auto; color:var(--ptsc); }
+  .rulebox { color:var(--muted); font-size:13px; max-width:880px; line-height:1.6; margin-top:14px; border-top:1px solid var(--line); padding-top:8px; }
+  .ttrow { display:flex; align-items:center; gap:12px; padding:8px 0; border-top:1px dashed var(--line); font-size:18px; font-weight:bold; white-space:nowrap; }
+  .ttrow:first-child { border-top:0; }
+  .ttrow .medal { font-size:24px; }
+  .ttrow .rk { color:var(--rkc); min-width:56px; }
+  .ttrow .tbd2 { color:var(--muted); font-weight:normal; }
+  .match.live { border-color:var(--red); }
+  .match.live .mhead::before { content:"\25CF 進行中"; color:#fff; background:var(--red); font-size:11px; font-weight:bold; padding:1px 6px; border-radius:4px; }
+  .match.live .mhead::before { content:"\25CF 進行中" attr(data-over); }
+  .match.next { border-color:var(--gold); }
+  .match.next .mhead::before { content:"\25B2 下一場"; color:var(--nextfg); background:var(--gold); font-size:11px; font-weight:bold; padding:1px 6px; border-radius:4px; }
+  #conflictBar { display:none; background:var(--alert); color:#fff; padding:8px 24px; font-weight:bold; font-size:15px; line-height:1.7; }
+  body.locked .score { pointer-events:none; border-color:transparent; background:transparent; }
+  body.locked .mref select { pointer-events:none; border-color:transparent; background:transparent; -webkit-appearance:none; appearance:none; }
+  body.locked .mtime[data-edit] { pointer-events:none; border-bottom:none; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+  .ovwrap.medals .ovcard { animation:fadeUp .55s both; }
+  @keyframes confallA { from { transform:translateY(-8vh) rotate(0); } to { transform:translateY(108vh) rotate(340deg); } }
+  .confetti { position:fixed; inset:0; pointer-events:none; z-index:200; overflow:hidden; }
+  .confetti span { position:absolute; top:-8vh; font-size:26px; animation:confallA linear both; }
+  #panel { display:none; margin:0 24px 16px; border:2px solid var(--navy); border-radius:var(--rad); background:var(--paper); padding:16px 24px; box-shadow:var(--shadow); }
+  #panel.open { display:block; }
+  #panel h2 { margin:0 0 10px; font-size:19px; border-bottom:2px solid var(--gold); padding-bottom:6px; }
+  .pgrid { display:flex; gap:36px; flex-wrap:wrap; align-items:flex-start; }
+  .pleft { flex:3; min-width:620px; }
+  .pright { flex:2; min-width:440px; max-width:640px; }
+  .refgrid { display:flex; gap:16px; }
+  .refgrid > div { flex:1; min-width:0; }
+  #panel h3 { margin:8px 0 6px; font-size:16px; color:var(--headfg); }
+  #panel textarea { width:100%; height:170px; font:inherit; font-size:14px; border:2px solid var(--line); padding:6px; background:var(--field); color:var(--ink); border-radius:var(--radS); resize:vertical; }
+  .hint { color:var(--muted); font-size:13px; margin:4px 0 10px; }
+  .ckrow { display:flex; align-items:center; gap:8px; font-size:15px; margin:5px 0; white-space:nowrap; }
+  .ckrow input[type=checkbox] { width:18px; height:18px; accent-color:var(--gold); }
+  .cksecs { width:64px; font:inherit; font-size:14px; min-height:28px; text-align:center; border:2px solid var(--line); background:var(--field); color:var(--ink); border-radius:var(--radS); }
+  #scrollspd { background:var(--field); color:var(--ink); border-radius:var(--radS); }
+  .cktable { border-collapse:collapse; width:100%; font-size:15px; }
+  .cktable th { background:var(--navy); color:#fff; font-size:14px; padding:6px 8px; }
+  .cktable td { padding:5px 8px; border-bottom:1px dashed var(--line); text-align:center; white-space:nowrap; }
+  .cktable td.nmcell { text-align:left; font-weight:bold; }
+  .cktable input[type=checkbox] { width:18px; height:18px; vertical-align:middle; accent-color:var(--gold); }
+  .tabsep { color:var(--sepc); font-weight:bold; font-size:20px; align-self:center; padding:0 2px; user-select:none; }
+  .prow { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:12px; }
+  #savemsg {
+    position:fixed; top:207px; left:50%; transform:translate(-50%,-16px);
+    background:var(--ok); color:#fff; font-weight:bold; font-size:16px;
+    padding:10px 26px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.3);
+    z-index:300; opacity:0; transition:transform .28s ease, opacity .28s ease; pointer-events:none; white-space:nowrap;
+  }
+  #savemsg.show { transform:translate(-50%,0); opacity:1; }
+  .searchwrap { position:relative; }
+  .searchwrap.floatTop {
+    position:fixed; top:16px; right:24px; left:auto; transform:none; z-index:190;
+  }
+  .searchwrap.floatTop #searchResults { left:auto; right:0; transform:none; }
+  .searchwrap.floatTop #searchBox {
+    width:210px; font-size:17px; min-height:46px;
+    border-color:var(--gold); background:var(--paper);
+    box-shadow:0 8px 22px rgba(0,0,0,.35);
+  }
+  .searchwrap.floatTop #searchResults { min-width:520px; box-shadow:0 14px 32px rgba(0,0,0,.4); }
+  #searchBox { min-height:42px; width:165px; font:inherit; font-size:15px; border:2px solid var(--navy); background:var(--field); color:var(--ink); padding:0 12px; border-radius:var(--radS); }
+  #searchBox.hasval { padding-right:30px; }
+  #searchBox:focus { border-color:var(--gold); outline:none; }
+  #searchClear { display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--muted); font-size:14px; font-weight:bold; padding:4px; line-height:1; user-select:none; }
+  #searchClear:hover { color:var(--red); }
+  #searchResults { display:none; position:absolute; top:calc(100% + 4px); left:0; min-width:380px; max-width:520px; max-height:60vh; overflow:auto; background:var(--paper); border:2px solid var(--navy); border-radius:var(--radS); box-shadow:0 12px 28px rgba(0,0,0,.35); z-index:150; }
+  .sresult { padding:7px 12px; cursor:pointer; border-bottom:1px dashed var(--line); }
+  .sresult:last-child { border-bottom:0; }
+  .sresult:hover { background:var(--hoverbg); }
+  .sresult .sr1 { font-weight:bold; font-size:14px; }
+  .sresult .sr2 { color:var(--muted); font-size:12px; }
+  .snone { padding:10px 12px; color:var(--muted); font-size:14px; }
+  .found { outline:4px solid var(--gold); outline-offset:2px; transition:outline-color .8s ease; }
+  .found.fadeout { outline-color:transparent; }
+  /* 表格列（tr）用 outline 在部分瀏覽器只畫上下框 → 改用 inset 陰影補左右 */
+  tr.found { outline:none; }
+  tr.found > td { box-shadow:inset 0 3px 0 var(--gold), inset 0 -3px 0 var(--gold), inset 0 0 0 999px rgba(242,185,59,.18); transition:box-shadow .8s ease; }
+  tr.found > td:first-child { box-shadow:inset 0 3px 0 var(--gold), inset 0 -3px 0 var(--gold), inset 3px 0 0 var(--gold), inset 0 0 0 999px rgba(242,185,59,.18); }
+  tr.found > td:last-child { box-shadow:inset 0 3px 0 var(--gold), inset 0 -3px 0 var(--gold), inset -3px 0 0 var(--gold), inset 0 0 0 999px rgba(242,185,59,.18); }
+  /* 淡出（需放在 first/last-child 之後才不會被蓋掉） */
+  tr.found.fadeout > td,
+  tr.found.fadeout > td:first-child,
+  tr.found.fadeout > td:last-child { box-shadow:none; }
+  #conflictBar .clink { text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+  #conflictBar .clink:hover { color:var(--gold); }
+  #topBtn {
+    display:none; position:fixed; right:24px; bottom:24px; z-index:180;
+    width:48px; height:48px; border-radius:50%; cursor:pointer;
+    border:1px solid var(--navy); background:transparent; color:var(--ink); opacity:.55;
+    font:inherit; font-size:14px; font-weight:bold; line-height:1.1; box-shadow:0 4px 10px rgba(0,0,0,.2);
+    transition:opacity .2s ease;
+  }
+  #topBtn span { display:block; font-size:10px; letter-spacing:1px; }
+  #topBtn:hover { opacity:1; background:var(--navy); color:#fff; }
+  #topBtn.show { display:block; }
+  #foot { flex:none; margin-top:auto; text-align:center; color:var(--muted); opacity:.6; font-size:12px; padding:6px 24px 22px; letter-spacing:.5px; }
+  .tmodal { display:none; position:fixed; inset:0; background:var(--overlay); z-index:100; align-items:center; justify-content:center; }
+  .tbox { background:var(--paper); border:2px solid var(--tboxbd); border-radius:var(--rad); box-shadow:0 14px 34px rgba(0,0,0,.5); padding:18px 22px; min-width:380px; display:flex; flex-direction:column; gap:12px; }
+  .tbox input { font:inherit; font-size:20px; font-weight:bold; text-align:center; min-height:44px; border:2px solid var(--navy); background:var(--field); color:var(--ink); border-radius:var(--radS); }
+  .tbox input:focus { border-color:var(--gold); outline:none; }
+  .tbox select { background:var(--field); color:var(--ink); border-radius:var(--radS); }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>2026 經貿 x 經采 運動家庭日｜賽程即時看板</h1>
+    <div class="subtitle">2026/9/12（六）內湖國中中山堂　※比分送出後自動晉級</div>
+  </div>
+  <div id="clock">--:--:--</div>
+</header>
+
+<div class="toolbar" id="tabs"></div>
+<div class="toolbar">
+  <button class="btn" id="playBtn">▶ 開始輪播</button>
+  <button class="btn secondary" id="fsBtn">⛶ 全螢幕</button>
+  <button class="btn secondary" id="lockBtn">🔓 鎖定編輯</button>
+  <button class="btn secondary" id="zoomOut">A−</button>
+  <button class="btn secondary" id="zoomIn">A＋</button>
+  <button class="btn secondary" id="confBtn">⚠ 撞場提示</button>
+  <select id="themeSel" title="切換風格">
+    <option value="paper">📜 復古紙張</option>
+    <option value="broadcast">📺 賽事直播</option>
+    <option value="dark">🌙 深色計分板</option>
+    <option value="light">☀ 淺色計分板</option>
+    <option value="festival">🎪 慶典活力</option>
+  </select>
+  <div class="searchwrap">
+    <input id="searchBox" placeholder="🔍 搜尋選手／裁判" autocomplete="off">
+    <span id="searchClear" title="清除">✕</span>
+    <div id="searchResults"></div>
+  </div>
+  <span class="spacer"></span>
+  <button class="btn secondary" id="gearBtn">⚙ 設定</button>
+</div>
+
+<div id="savemsg"></div>
+<button id="topBtn" title="回到頂端">▲<span>TOP</span></button>
+
+<div id="conflictBar"></div>
+
+<div id="panel">
+  <h2>設定</h2>
+  <div class="pgrid">
+    <div class="pleft">
+      <div class="refgrid">
+        <div>
+          <h3>桌球裁判名單</h3>
+          <textarea id="ref-tt" placeholder="一行一位裁判"></textarea>
+        </div>
+        <div>
+          <h3>羽球裁判名單</h3>
+          <textarea id="ref-bad" placeholder="一行一位裁判"></textarea>
+        </div>
+        <div>
+          <h3>籃球裁判名單</h3>
+          <textarea id="ref-bb" placeholder="一行一位裁判"></textarea>
+        </div>
+      </div>
+      <h3>資料</h3>
+      <div class="prow" style="margin-top:4px">
+        <button class="btn secondary" id="expBtn">匯出備份</button>
+        <button class="btn secondary" id="impBtn">匯入備份</button>
+        <input type="file" id="impFile" accept=".json" style="display:none">
+      </div>
+      <h3 style="margin-top:22px">測試</h3>
+      <div class="prow" style="margin-top:4px;flex-wrap:nowrap">
+        <button class="btn secondary" id="dangerLock" title="解鎖後才能操作">🔒</button>
+        <button class="btn" id="clrBtn">清除全部比分</button>
+        <button class="btn secondary" id="testBtn">🎲 測試（隨機比分）</button>
+        <span class="tabsep">｜</span>
+        <button class="btn" id="resetAllBtn">恢復預設</button>
+      </div>
+    </div>
+    <div class="pright">
+      <h3>輪播組別（輪播勾選／顯示按鈕／停留秒數）</h3>
+      <div id="cklist"></div>
+      <div class="ckrow">畫面上下滾動速度 <input type="number" id="scrollspd" min="10" max="500" step="10" value="70" style="width:70px;font:inherit;min-height:28px;text-align:center;border:2px solid var(--line)"> px/秒（越大越快）</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="stage"></div>
+
+<footer id="foot">主辦單位：經貿 X 經采 EWC｜© 2026 Derek · v3.26.5</footer>
+
+<div id="timeModal" class="tmodal">
+  <div class="tbox">
+    <div id="tmTitle" style="font-weight:bold"></div>
+    <input id="tmInput" placeholder="11:00-11:10">
+    <div id="tmHistWrap" style="display:none;gap:8px;align-items:center">
+      <span style="font-size:14px;color:#50687b;white-space:nowrap">復原至</span>
+      <select id="tmHist" style="flex:1;font:inherit;font-size:15px;min-height:38px;border:2px solid var(--line);background:#fff"></select>
+      <button class="btn secondary" id="tmReset">復原</button>
+    </div>
+    <div class="prow" style="margin-top:4px">
+      <button class="btn" id="tmOk">確定</button>
+      <button class="btn secondary" id="tmNow" title="以現在時刻帶入 10 分鐘區間">🕐 當前時間</button>
+      <span class="spacer"></span>
+      <button class="btn secondary" id="tmCancel">取消</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" crossorigin="anonymous"></script>
+<script>
+/* ===== Firebase 即時同步（主控版：負責寫入） ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBiQSxUfnV2r0mtCECMDsvGpD8W07uekF4",
+  authDomain: "cyber-family-day-2026.firebaseapp.com",
+  databaseURL: "https://cyber-family-day-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cyber-family-day-2026",
+  storageBucket: "cyber-family-day-2026.firebasestorage.app",
+  messagingSenderId: "873803879189",
+  appId: "1:873803879189:web:d533e63468ea31f1eb0f1c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const fbDb = firebase.database();
+const fbAuth = firebase.auth();
+
+let fbSignedIn = false;
+const fbQueue = [];
+function fbFlushQueue() { while (fbQueue.length) { const fn = fbQueue.shift(); fn(); } }
+fbAuth.onAuthStateChanged(user => {
+  fbSignedIn = !!user;
+  if (fbSignedIn) fbFlushQueue();
+});
+fbAuth.signInAnonymously().catch(err => console.warn("Firebase 匿名登入失敗，比分暫不會同步到手機版：", err));
+
+function fbWrite(path, value) {
+  const run = () => fbDb.ref(path).set(value || {}).catch(err => console.warn("Firebase 寫入失敗：", err));
+  if (fbSignedIn) run(); else fbQueue.push(run);
+}
+/* 讓外層一般 script 可以呼叫這兩個函式 */
+window.fbPushScores = scores => fbWrite("event2026/scores", scores);
+window.fbPushTimes  = times  => fbWrite("event2026/times", times);
+</script>
+<script>
+"use strict";
+/* ===== 賽程資料（2026-08-26 修正版：籃球季軍賽 14:20、冠軍賽 14:30） ===== */
+const W = id => ({win:id});
+const L = id => ({lose:id});
+const P = name => ({name:name});
+const BYE = {bye:true};
+
+const GROUPS = [
+{ id:"tm", name:"桌球男單", sport:"tt", sub:"14 人｜16強單淘汰｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"16強", ms:[
+     {id:"tm1", t:"—", v:"", lb:"16強-1", a:P("張逸鴻(Ethan)"), b:BYE},
+     {id:"tm2", t:"10:30-10:40", v:"桌1", lb:"16強-2", a:P("吳治寰(Benson)"), b:P("范書維(Derek)")},
+     {id:"tm3", t:"10:30-10:40", v:"桌2", lb:"16強-3", a:P("黃禎宗(Zong)"), b:P("黃柏盛(Benson)")},
+     {id:"tm4", t:"10:30-10:40", v:"桌3", lb:"16強-4", a:P("陳立學(Lucas)"), b:P("林彥成(Nick)")},
+     {id:"tm5", t:"—", v:"", lb:"16強-5", a:P("侯志霖(Oliver)"), b:BYE},
+     {id:"tm6", t:"10:40-10:50", v:"桌1", lb:"16強-6", a:P("王聖翔(Shuan)"), b:P("党夢熊(陳麗芳Vivian)")},
+     {id:"tm7", t:"10:40-10:50", v:"桌2", lb:"16強-7", a:P("党子欣(陳麗芳Vivian)"), b:P("吳宇宸(Leo)")},
+     {id:"tm8", t:"10:40-10:50", v:"桌3", lb:"16強-8", a:P("蘇進家(Josh)"), b:P("黃祥焜(Yellow)")} ]},
+   { title:"8強", ms:[
+     {id:"tmq1", t:"10:50-11:00", v:"桌1", lb:"8強-1", a:W("tm1"), b:W("tm2")},
+     {id:"tmq2", t:"10:50-11:00", v:"桌2", lb:"8強-2", a:W("tm3"), b:W("tm4")},
+     {id:"tmq3", t:"11:00-11:10", v:"桌1", lb:"8強-3", a:W("tm5"), b:W("tm6")},
+     {id:"tmq4", t:"11:00-11:10", v:"桌2", lb:"8強-4", a:W("tm7"), b:W("tm8")} ]},
+   { title:"4強", ms:[
+     {id:"tms1", t:"11:10-11:20", v:"桌1", lb:"4強-1", a:W("tmq1"), b:W("tmq2")},
+     {id:"tms2", t:"11:10-11:20", v:"桌2", lb:"4強-2", a:W("tmq3"), b:W("tmq4")} ]},
+   { title:"決賽", ms:[
+     {id:"tmf", t:"11:20-11:30", v:"桌1", lb:"冠軍賽", a:W("tms1"), b:W("tms2"), crown:"冠軍"},
+     {id:"tmb", t:"11:20-11:30", v:"桌2", lb:"季軍賽", a:L("tms1"), b:L("tms2"), crown:"季軍"} ]} ]},
+{ id:"tw", name:"桌球女單", sport:"tt", sub:"5 人｜資格賽＋4強｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"資格賽", ms:[
+     {id:"twp1", t:"10:50-11:00", v:"桌3", lb:"資格賽-1", a:P("廖昱甄(Nova)"), b:P("林苡暄(林苡勤Betty)")} ]},
+   { title:"4強", ms:[
+     {id:"tws1", t:"11:00-11:10", v:"桌3", lb:"4強-1", a:P("林苡勤(Betty)"), b:W("twp1")},
+     {id:"tws2", t:"11:10-11:20", v:"桌3", lb:"4強-2", a:P("楊欣瑜(Tina)"), b:P("張瑋恬(Amy)")} ]},
+   { title:"決賽", ms:[
+     {id:"twf", t:"11:30-11:40", v:"桌2", lb:"冠軍賽", a:W("tws1"), b:W("tws2"), crown:"冠軍"},
+     {id:"twb", t:"11:30-11:40", v:"桌3", lb:"季軍賽", a:L("tws1"), b:L("tws2"), crown:"季軍"} ]} ]},
+{ id:"bm", name:"羽球男雙", sport:"bad", sub:"5 組｜資格賽＋4強｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"資格賽", ms:[
+     {id:"bmp1", t:"10:50-11:00", v:"A面", lb:"資格賽-1", a:P("張翔(Cliff)/孫秉家(Jack)"), b:P("林建志(Kenny)/林少睿")} ]},
+   { title:"4強", ms:[
+     {id:"bms1", t:"11:10-11:20", v:"B面", lb:"4強-1", a:P("黃祥焜(Yellow)/林彥成(Nick)"), b:W("bmp1")},
+     {id:"bms2", t:"11:30-11:40", v:"A面", lb:"4強-2", a:P("楊權(Chorld)/鄧起宇(Richard)"), b:P("陳志明(Raven)/謝東恩(Bryan)")} ]},
+   { title:"冠軍賽", ms:[
+     {id:"bmf", t:"14:40-14:50", v:"A面", lb:"冠軍賽", star:true, a:W("bms1"), b:W("bms2"), crown:"冠軍"} ]} ]},
+{ id:"bw", name:"羽球女雙", sport:"bad", sub:"4 組｜4強單淘汰｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"4強", ms:[
+     {id:"bws1", t:"11:20-11:30", v:"B面", lb:"4強-1", a:P("林苡勤(Betty)/林苡暄"), b:P("朱瑋婷(Weiting)/朱翊寧")},
+     {id:"bws2", t:"11:30-11:40", v:"B面", lb:"4強-2", a:P("陳孟君(Jun)/麥如君(Amy)"), b:P("許依慧(Wendy)/楊欣瑜(Tina)")} ]},
+   { title:"冠軍賽", ms:[
+     {id:"bwf", t:"14:40-14:50", v:"B面", lb:"冠軍賽", star:true, a:W("bws1"), b:W("bws2"), crown:"冠軍"} ]} ]},
+{ id:"bx", name:"羽球混雙", sport:"bad", sub:"8 組｜8強單淘汰｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"8強", ms:[
+     {id:"bxq1", t:"11:00-11:10", v:"A面", lb:"8強-1", a:P("簡任余(Jerry)/范曉君"), b:P("陳麗芳(Vivian)/党子欣")},
+     {id:"bxq2", t:"11:10-11:20", v:"A面", lb:"8強-2", a:P("蔡季澄(Joseph)/林宛樺(Lena)"), b:P("楊妤婷(Tina)/林秉賢(Adam)")},
+     {id:"bxq3", t:"11:00-11:10", v:"B面", lb:"8強-3", a:P("陳立學(Lucas)/謝安倪(Annie)"), b:P("范書維(Derek)/李雯萱(Flora)")},
+     {id:"bxq4", t:"11:20-11:30", v:"A面", lb:"8強-4", a:P("許至昊(Gershwin)/李秋賦"), b:P("洪義凱(Wilkai)/謝妤婕")} ]},
+   { title:"4強", ms:[
+     {id:"bxs1", t:"11:40-11:50", v:"A面", lb:"4強-1", a:W("bxq1"), b:W("bxq2")},
+     {id:"bxs2", t:"11:40-11:50", v:"B面", lb:"4強-2", a:W("bxq3"), b:W("bxq4")} ]},
+   { title:"冠軍賽", ms:[
+     {id:"bxf", t:"14:50-15:00", v:"A面", lb:"冠軍賽", star:true, a:W("bxs1"), b:W("bxs2"), crown:"冠軍"} ]} ]},
+{ id:"bb", name:"籃球3對3", sport:"bb", sub:"5 組｜資格賽＋4強｜抽籤代碼 A4C662BB76FF5B50",
+  cols:[
+   { title:"資格賽", ms:[
+     {id:"bbp1", t:"11:00-11:10", v:"籃球場", lb:"資格賽-1", a:P("陳志明(Raven)/洪義凱(Wilkai)/鄧起宇(Richard)"), b:P("王漢雍(Mario)/林千翔(Coco)/吳彥輝(Nick)")} ]},
+   { title:"4強", ms:[
+     {id:"bbs1", t:"11:20-11:30", v:"籃球場", lb:"4強-1", a:P("封智翔(Vito)/蘇威諺(Ziv)/林彥成(Nick)"), b:P("許世展(Ian)/康晉豪(Brian)/范書維(Derek)")},
+     {id:"bbs2", t:"11:10-11:20", v:"籃球場", lb:"4強-2", a:P("陳立學(Lucas)/王聖翔(Shuan)/吳宇宸(Leo)"), b:W("bbp1")} ]},
+   { title:"決賽", ms:[
+     {id:"bbf", t:"14:30-14:40", v:"籃球場", lb:"冠軍賽", star:true, a:W("bbs1"), b:W("bbs2"), crown:"冠軍"},
+     {id:"bbb", t:"14:20-14:30", v:"籃球場", lb:"季軍賽", a:L("bbs1"), b:L("bbs2"), crown:"季軍"} ]} ]}
+];
+
+const MATCHES = {};
+GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => { m.group = g.id; m.sport = g.sport; MATCHES[m.id] = m; })));
+
+/* 佔位名稱（未晉級前顯示） */
+const PH = { win:{}, lose:{} };
+GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => {
+  const base = m.lb.replace("-", "勝者");
+  PH.win[m.id] = (m.lb.indexOf("冠軍賽")>=0) ? "冠軍" : m.lb.replace(/-(\d+)$/, "勝者$1");
+  PH.lose[m.id] = m.lb.replace(/-(\d+)$/, "敗者$1");
+})));
+
+/* ===== 狀態與儲存 ===== */
+const KEY = "jc_fd2026_board_v1";
+let state = {
+  scores:{},
+  refs:{
+    tm2:"張逸鴻(Ethan)", tm3:"洪祥盛 (Joshua Hong)", tm4:"王聖翔(Shuan)", tm6:"張瑋恬(Amy)", tm7:"林彥成(Nick)", tm8:"吳治寰(Benson)",
+    tmq1:"洪祥盛 (Joshua Hong)", tmq2:"黃祥焜(Yellow)", tmq3:"張瑋恬(Amy)", tmq4:"林彥成(Nick)",
+    tms1:"吳治寰(Benson)", tms2:"張逸鴻(Ethan)", tmb:"張瑋恬(Amy)", tmf:"王聖翔(Shuan)",
+    twp1:"林彥成(Nick)", tws1:"王聖翔(Shuan)", tws2:"洪祥盛 (Joshua Hong)", twf:"張逸鴻(Ethan)", twb:"黃祥焜(Yellow)",
+    bbp1:"游凱鈞(Matrix)", bbs1:"游凱鈞(Matrix)", bbs2:"游凱鈞(Matrix)", bbf:"游凱鈞(Matrix)", bbb:"游凱鈞(Matrix)",
+    bmp1:"陳孟君(Jun)", bms1:"鄧起宇(Richard)", bms2:"林苡勤(Betty)", bmf:"林苡勤(Betty)",
+    bws1:"楊權(Chorld)", bws2:"陳立學(Lucas)", bwf:"楊權(Chorld)",
+    bxq1:"謝東恩(Bryan)", bxq2:"謝東恩(Bryan)", bxq3:"陳孟君(Jun)", bxq4:"鄧起宇(Richard)",
+    bxs1:"陳立學(Lucas)", bxs2:"陳孟君(Jun)", bxf:"林苡勤(Betty)"
+  },
+  refLists:{
+    tt:["張逸鴻(Ethan)","洪祥盛 (Joshua Hong)","張瑋恬(Amy)","吳治寰(Benson)","王聖翔(Shuan)","林彥成(Nick)","黃祥焜(Yellow)"],
+    bad:["謝東恩(Bryan)","林苡勤(Betty)","楊權(Chorld)","鄧起宇(Richard)","陳立學(Lucas)","陳孟君(Jun)"],
+    bb:["游凱鈞(Matrix)"]
+  },
+  carousel:{
+    sel:["tm","tw","bm","bw","bx","bb","shoot"],
+    secs:7,
+    secsBy:{ all:4, roster:5, tm:7, tw:4, ttall:4, bm:4, bw:4, bx:4, badall:4, bb:4, shoot:9, bball:4, fun:5, meal:10, awards:5 },
+    scrollSpeed:150
+  },
+  tab:"tm",
+  fun:{},
+  shoot:{ p:{}, f:{} },
+  mealMode:"all",
+  mealSticky:false,
+  mealLayout:"lr",
+  mealTaken:{},
+  times:{},
+  timeHist:{},
+  zoom:1.1,
+  zooms:{ tm:1.2, tw:1.1, bb:1.5, bw:1.2, bx:1.2, badall:1.1, bball:1, awards:1.1 },
+  hidden:{ all:true, meal:true, roster:true }
+};
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) { const s = JSON.parse(raw); state = Object.assign(state, s); }
+} catch(e) {}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+  if (window.fbPushScores) window.fbPushScores(state.scores);
+  if (window.fbPushTimes)  window.fbPushTimes(state.times);
+}
+
+/* ===== 晉級運算 ===== */
+function scoreOf(id) {
+  const s = state.scores[id];
+  if (!s) return null;
+  if (s.a === "" || s.b === "" || s.a == null || s.b == null) return null;
+  return { a:Number(s.a), b:Number(s.b) };
+}
+function resolveEntrant(e) {
+  if (!e) return { name:"", ok:false };
+  if (e.bye) return { name:"輪空", ok:false, bye:true };
+  if (e.name) return { name:e.name, ok:true };
+  if (e.win)  { const w = winnerOf(MATCHES[e.win]);  return w ? {name:w, ok:true} : {name:PH.win[e.win], ok:false}; }
+  if (e.lose) { const l = loserOf(MATCHES[e.lose]);  return l ? {name:l, ok:true} : {name:PH.lose[e.lose], ok:false}; }
+  return { name:"", ok:false };
+}
+function winnerOf(m) {
+  if (!m) return null;
+  const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+  if (m.b && m.b.bye) return A.ok ? A.name : null;
+  const s = scoreOf(m.id);
+  if (!s || s.a === s.b) return null;
+  const side = s.a > s.b ? A : B;
+  return side.ok ? side.name : null;
+}
+function loserOf(m) {
+  if (!m) return null;
+  if (m.b && m.b.bye) return null;
+  const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+  const s = scoreOf(m.id);
+  if (!s || s.a === s.b) return null;
+  const side = s.a > s.b ? B : A;
+  return side.ok ? side.name : null;
+}
+
+/* ===== 羽球總排名（三組冠軍累計勝分差） ===== */
+const BAD_DEFS = [
+  { label:"男雙", f:"bmf", sfs:["bms1","bms2"] },
+  { label:"女雙", f:"bwf", sfs:["bws1","bws2"] },
+  { label:"混雙", f:"bxf", sfs:["bxs1","bxs2"] }
+];
+function fmtD(n) { return (n >= 0 ? "+" : "") + n; }
+function badOverall() {
+  return BAD_DEFS.map(d => {
+    const fm = MATCHES[d.f];
+    const champ = winnerOf(fm);
+    if (!champ) return { label:d.label, pending:true };
+    const sf = d.sfs.map(id => MATCHES[id]).find(m => winnerOf(m) === champ);
+    const info = m => {
+      const s = scoreOf(m.id);
+      if (!s) return null;
+      const isA = resolveEntrant(m.a).name === champ;
+      return { own:isA ? s.a : s.b, opp:isA ? s.b : s.a, d:(isA ? s.a - s.b : s.b - s.a) };
+    };
+    const sfi = sf ? info(sf) : null, fi = info(fm);
+    return { label:d.label, champ, sf:sfi, fin:fi,
+             total:(sfi ? sfi.d : 0) + (fi ? fi.d : 0),
+             incomplete: !sfi || !fi };
+  });
+}
+function badRanking(rows) {
+  if (rows.some(r => r.pending || r.incomplete)) return null;
+  const sorted = rows.slice().sort((a, b) => b.total - a.total);
+  const names = ["總冠軍", "總亞軍", "總季軍"];
+  return sorted.map((r, i) => {
+    const rank = sorted.findIndex(x => x.total === r.total);
+    const tied = sorted.filter(x => x.total === r.total).length > 1;
+    return Object.assign({}, r, { rank:rank, title:(tied ? "並列" : "") + names[rank] });
+  });
+}
+const OVERALL_TAB = { id:"badall", name:"羽球總排名" };
+function badAllDone() { return badRanking(badOverall()) !== null; }
+function renderOverall() {
+  const rows = badOverall();
+  const ranked = badRanking(rows);
+  let html = '<div class="gtitle">羽球雙打-總排名 <span class="star">★三組冠軍累計勝分差</span></div>';
+  html += '<div class="gsub">男雙／女雙／混雙各組冠軍，依該組最後兩場（四強賽＋冠軍賽）累計勝分差排名，決定羽球雙打總冠軍、亞軍、季軍</div>';
+  html += '<div class="ovwrap">';
+  rows.forEach(r => {
+    html += '<div class="ovcard"><h3>' + esc(r.label) + '組冠軍</h3><div class="ovbody">';
+    if (r.pending) {
+      html += '<div class="ovpend">尚未產生組冠軍（待冠軍賽結果）</div>';
+    } else {
+      html += '<div class="ovchamp">' + esc(r.champ) + "</div>";
+      html += '<div class="ovrow"><span>四強賽 ' + (r.sf ? esc(r.sf.own + ":" + r.sf.opp) : "—") + '</span><span class="d">' + (r.sf ? "勝分 " + fmtD(r.sf.d) : "待比分") + "</span></div>";
+      html += '<div class="ovrow"><span>冠軍賽 ' + (r.fin ? esc(r.fin.own + ":" + r.fin.opp) : "—") + '</span><span class="d">' + (r.fin ? "勝分 " + fmtD(r.fin.d) : "待比分") + "</span></div>";
+      html += '<div class="ovtotal"><span>累計勝分差</span><span>' + (r.incomplete ? "—" : fmtD(r.total)) + "</span></div>";
+    }
+    html += "</div></div>";
+  });
+  html += "</div>";
+  const medals = ["🏆", "🥈", "🥉"];
+  html += '<div class="ranklist">';
+  if (ranked) {
+    ranked.forEach((r, k) => {
+      html += '<div class="rankrow rankanim rk' + k + (r.rank === 0 ? " r1" : "") + '">' +
+        '<span class="medal">' + medals[r.rank] + '</span>' +
+        '<span class="rk">' + esc(r.title) + '</span>' +
+        '<span class="grp">' + esc(r.label) + '</span>' +
+        '<span>' + esc(r.champ) + '</span>' +
+        '<span class="pts">累計 ' + fmtD(r.total) + "</span></div>";
+    });
+  } else {
+    ["總冠軍", "總亞軍", "總季軍"].forEach((t, i) => {
+      html += '<div class="rankrow' + (i === 0 ? " r1" : "") + '">' +
+        '<span class="medal">' + medals[i] + '</span>' +
+        '<span class="rk">' + t + '</span>' +
+        '<span class="tbd2" style="color:var(--muted);font-weight:normal">待定</span></div>';
+    });
+  }
+  html += "</div>";
+  html += '<div class="rulebox">規則：勝分差＝該場己方得分－對方得分。例：四強賽 15:10（+5）、冠軍賽 15:12（+3），累計 +8。' +
+          '累計勝分差相同則並列同名次，其後名次依序遞延（二組並列總冠軍則不設亞軍，餘一組為季軍；三組均相同則並列總冠軍，不設亞、季軍）。</div>';
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+
+/* ===== 畫面 ===== */
+const stage = document.getElementById("stage");
+const tabsEl = document.getElementById("tabs");
+
+/* 某人在某時段的行程（出賽／任裁判），排除指定場次；只看未完賽場次 */
+function overlapR(r1, r2) { return r1.a < r2.b && r2.a < r1.b; }
+function engagementsOf(name, exceptId) {
+  const list = [];
+  Object.keys(MATCHES).forEach(k => {
+    const m = MATCHES[k];
+    if (m.id === exceptId) return;
+    if (m.b && m.b.bye) return;
+    if (winnerOf(m)) return;
+    const r = parseRange(getTime(m));
+    if (!r) return;
+    let plays = false;
+    ["a","b"].forEach(kk => {
+      const e = resolveEntrant(kk === "a" ? m.a : m.b);
+      if (e.ok && e.name.split("/").some(n => n.trim() === name)) plays = true;
+    });
+    if (plays) list.push({ m:m, r:r, role:"出賽" });
+    if (state.refs[m.id] === name) list.push({ m:m, r:r, role:"任裁判" });
+  });
+  return list;
+}
+function isPlayerIn(name, m) {
+  let yes = false;
+  ["a","b"].forEach(kk => {
+    const e = resolveEntrant(kk === "a" ? m.a : m.b);
+    if (e.ok && e.name.split("/").some(n => n.trim() === name)) yes = true;
+  });
+  return yes;
+}
+function refConflictsFor(name, matchId) {
+  const m = MATCHES[matchId];
+  const r = parseRange(getTime(m));
+  if (!r || !name) return [];
+  const out = [];
+  if (isPlayerIn(name, m)) out.push({ m:m, r:r, role:"出賽", self:true });
+  return out.concat(engagementsOf(name, matchId).filter(e => overlapR(e.r, r)));
+}
+function groupNameOf(id) { const g = GROUPS.find(x => x.id === id); return g ? g.name : id; }
+function refOptions(m, current) {
+  const list = (state.refLists[m.sport] || []).slice();
+  if (current && list.indexOf(current) < 0) list.push(current);
+  let html = '<option value="">— 裁判 —</option>';
+  list.forEach(n => {
+    const cs = refConflictsFor(n, m.id);
+    const tag = !cs.length ? "" : (cs.some(c => c.self) ? "　⚠ 本場選手" : (cs.some(c => c.role === "出賽") ? "　⚠ 有比賽" : "　⚠ 已排裁判"));
+    let cnt = 0;
+    Object.keys(state.refs).forEach(k => { if (state.refs[k] === n) cnt++; });
+    html += '<option value="' + esc(n) + '"' + (n === current ? " selected" : "") + '>' + esc(n) + "(" + cnt + ")" + tag + "</option>";
+  });
+  return html;
+}
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function sideHTML(m, key) {
+  const e = key === "a" ? m.a : m.b;
+  const r = resolveEntrant(e);
+  const s = scoreOf(m.id);
+  const w = winnerOf(m);
+  const isWin = w && r.ok && w === r.name && !(m.b && m.b.bye);
+  const val = state.scores[m.id] && state.scores[m.id][key] != null ? state.scores[m.id][key] : "";
+  if (e && e.bye) return '<div class="side"><span class="byetag">輪空（直接晉級）</span></div>';
+  const noScore = m.b && m.b.bye;
+  return '<div class="side' + (isWin ? " winner" : "") + '">' +
+    '<span class="pname' + (r.ok ? "" : " tbd") + '">' + esc(r.name) + "</span>" +
+    (noScore ? "" : '<input class="score" type="number" min="0" inputmode="numeric" data-m="' + m.id + '" data-k="' + key + '" value="' + esc(val) + '">') +
+    "</div>";
+}
+/* ===== 比賽時間修改（同場地順延） ===== */
+function getTime(m) { return (state.times && state.times[m.id]) || m.t; }
+function parseHM(s) {
+  const x = String(s).match(/^(\d{1,2}):(\d{2})$/);
+  if (!x) return null;
+  const h = +x[1], mm = +x[2];
+  if (h > 23 || mm > 59) return null;
+  return h * 60 + mm;
+}
+function parseRange(t) {
+  const x = String(t).trim().match(/^(\d{1,2}:\d{2})\s*[-～~]\s*(\d{1,2}:\d{2})$/);
+  if (!x) return null;
+  const a = parseHM(x[1]), b = parseHM(x[2]);
+  return (a == null || b == null) ? null : { a:a, b:b };
+}
+function fmtHM(x) { x = ((x % 1440) + 1440) % 1440; return Math.floor(x / 60) + ":" + String(x % 60).padStart(2, "0"); }
+function applyTimeChange(id, inp) {
+  const m = MATCHES[id];
+  const cur = getTime(m);
+  const nr = parseRange(inp);
+  if (!nr) { alert("格式錯誤，請輸入如 11:00-11:10"); return false; }
+  if (nr.b - nr.a !== 10) { alert("時間間距須為 10 分鐘（例 11:00-11:10），目前為 " + (nr.b - nr.a) + " 分鐘"); return false; }
+  const or = parseRange(cur);
+  const delta = or ? nr.a - or.a : 0;
+  const newT = fmtHM(nr.a) + "-" + fmtHM(nr.b);
+  if (newT !== cur) pushHist(id, cur);
+  if (newT === m.t) delete state.times[id]; else state.times[id] = newT;
+  if (delta !== 0 && m.v) {
+    const later = Object.keys(MATCHES).map(k => MATCHES[k]).filter(x => {
+      if (x.id === id || x.v !== m.v) return false;
+      const r = parseRange(getTime(x));
+      return r && r.a >= or.a;
+    });
+    const word = delta > 0 ? ("順延 " + delta + " 分鐘") : ("提前 " + (-delta) + " 分鐘");
+    if (later.length && confirm("同場地（" + m.v + "）原時間在其後的 " + later.length + " 場，是否一併" + word + "？")) {
+      later.forEach(x => {
+        const old = getTime(x);
+        const r = parseRange(old);
+        const t2 = fmtHM(r.a + delta) + "-" + fmtHM(r.b + delta);
+        if (t2 !== old) pushHist(x.id, old);
+        if (t2 === x.t) delete state.times[x.id]; else state.times[x.id] = t2;
+      });
+    }
+  }
+  state.dirty = true;
+  save(); render();
+  return true;
+}
+function pushHist(id, val) {
+  if (!state.timeHist) state.timeHist = {};
+  const h = state.timeHist[id] || (state.timeHist[id] = []);
+  if (h[h.length - 1] !== val) h.push(val);
+  if (h.length > 15) h.shift();
+}
+let editingTimeId = null;
+function editTime(id) {
+  editingTimeId = id;
+  const m = MATCHES[id];
+  document.getElementById("tmTitle").textContent = "修改「" + m.lb + "」比賽時間（格式 11:00-11:10）";
+  const inp = document.getElementById("tmInput");
+  inp.value = getTime(m);
+  // 歷史版本清單（排除目前時間、去重、新→舊，原訂永遠在最後）
+  const curT = getTime(m);
+  const seen = {};
+  const opts = [];
+  ((state.timeHist && state.timeHist[id]) || []).slice().reverse().forEach(v => {
+    if (v !== curT && v !== m.t && !seen[v]) { seen[v] = 1; opts.push({ v:v, label:v }); }
+  });
+  if (m.t !== curT) opts.push({ v:m.t, label:"原訂 " + m.t });
+  const wrap = document.getElementById("tmHistWrap");
+  if (opts.length) {
+    document.getElementById("tmHist").innerHTML = opts.map(o => '<option value="' + esc(o.v) + '">' + esc(o.label) + "</option>").join("");
+    wrap.style.display = "flex";
+  } else {
+    wrap.style.display = "none";
+  }
+  document.getElementById("timeModal").style.display = "flex";
+  inp.focus(); inp.select();
+}
+function closeTimeModal() { document.getElementById("timeModal").style.display = "none"; editingTimeId = null; }
+document.getElementById("tmOk").onclick = () => {
+  if (editingTimeId && applyTimeChange(editingTimeId, document.getElementById("tmInput").value)) closeTimeModal();
+};
+document.getElementById("tmReset").onclick = () => {
+  const v = document.getElementById("tmHist").value;
+  if (editingTimeId && v && applyTimeChange(editingTimeId, v)) closeTimeModal();
+};
+document.getElementById("tmNow").onclick = () => {
+  const now = new Date();
+  const a = now.getHours() * 60 + now.getMinutes();
+  const inp = document.getElementById("tmInput");
+  inp.value = fmtHM(a) + "-" + fmtHM(a + 10);
+  inp.focus();
+};
+document.getElementById("tmCancel").onclick = closeTimeModal;
+document.getElementById("tmInput").addEventListener("keydown", ev => {
+  if (ev.key === "Enter") document.getElementById("tmOk").click();
+  if (ev.key === "Escape") closeTimeModal();
+});
+function matchHTML(m) {
+  const isBye = m.b && m.b.bye;
+  const editable = m.t !== "—";
+  let html = '<div class="match' + (m.star ? " star" : "") + '" id="card-' + m.id + '">';
+  html += '<div class="mhead"><span class="mtime' + (state.times[m.id] && state.times[m.id] !== m.t ? " changed" : "") + '"' +
+          (editable ? ' data-edit="' + m.id + '" title="點擊修改時間"' : "") + ">" + esc(getTime(m)) + "</span>" +
+          (m.v ? "<span>" + esc(m.v) + "</span>" : "") +
+          (m.star ? "<span>★壓軸</span>" : "") +
+          '<span class="mlabel">' + esc(m.lb) + "</span></div>";
+  html += sideHTML(m, "a") + sideHTML(m, "b");
+  if (!isBye) {
+    html += '<div class="mref">裁判<select data-ref="' + m.id + '">' + refOptions(m, state.refs[m.id] || "") + "</select></div>";
+  }
+  if (m.crown) {
+    const w = winnerOf(m);
+    if (w) {
+      html += '<div class="result">' + (m.crown === "冠軍" ? "🏆" : "🥉") + " " + esc(m.crown) + "：" + esc(w) + "</div>";
+      if (m.crown === "冠軍" && m.sport !== "bad") {
+        const l = loserOf(m);
+        if (l) html += '<div class="result silver">🥈 亞軍：' + esc(l) + "</div>";
+      }
+    }
+  }
+  return html + "</div>";
+}
+const TAB_ORDER = ["all", "tm", "tw", "ttall", "bm", "bw", "bx", "badall", "bb", "shoot", "bball", "meal", "roster", "fun", "awards"];
+const SPORT_ICON = { tt:"🏓", bad:"🏸", bb:"🏀" };
+/* 冠、亞、季三名皆產生才算完成 */
+function podiumDone(fId, bId) {
+  const f = MATCHES[fId], b = MATCHES[bId];
+  return !!(winnerOf(f) && loserOf(f) && winnerOf(b));
+}
+function ttAllDone() { return podiumDone("tmf", "tmb") && podiumDone("twf", "twb"); }
+function bbAllDone() { return podiumDone("bbf", "bbb") && shootRank(true).length >= 3; }
+function tabInfo(id) {
+  if (id === "badall") return { id:id, name:OVERALL_TAB.name, icon:"🏸", done:badAllDone() };
+  if (id === "ttall")  return { id:id, name:"桌球排名", icon:"🏓", done:ttAllDone() };
+  if (id === "bball")  return { id:id, name:"籃球排名", icon:"🏀", done:bbAllDone() };
+  if (id === "shoot")  return { id:id, name:"投籃大賽", icon:"🏀", done:!!shootRank(true)[0] };
+  if (id === "all")    return { id:id, name:"賽程總表", icon:"🗓", done:false };
+  if (id === "meal")   return { id:id, name:"餐點", icon:"🍔", done:false };
+  if (id === "roster") return { id:id, name:"紅白隊名單", icon:"🎯", done:false };
+  if (id === "fun")    return { id:id, name:"趣味競賽", icon:"🎯", done:FUN_EVENTS.every(e => funScore(e.id) !== null) };
+  if (id === "awards") return { id:id, name:"頒獎", icon:"🏅", done:ttAllDone() && badAllDone() && bbAllDone() };
+  const g = GROUPS.find(x => x.id === id);
+  return { id:id, name:g.name, icon:SPORT_ICON[g.sport], done:!!winnerOf(g.cols[g.cols.length-1].ms[0]) };
+}
+function updateSearchPlaceholder() {
+  const sb = document.getElementById("searchBox");
+  if (sb) sb.placeholder = state.tab === "meal" ? "🔍 搜尋同仁餐點" : "🔍 搜尋選手／裁判";
+  const wrap = document.querySelector(".searchwrap");
+  if (wrap) wrap.classList.toggle("floatTop", state.tab === "meal");
+  requestAnimationFrame(positionFloatSearch);
+}
+/* 餐點頁：浮動搜尋框貼齊表格右緣（飲品選擇欄右側） */
+function positionFloatSearch() {
+  const wrap = document.querySelector(".searchwrap");
+  if (!wrap) return;
+  if (!wrap.classList.contains("floatTop")) { wrap.style.left = ""; wrap.style.right = ""; return; }
+  // 取所有表格中最右緣者（各區塊寬度不同：依餐點發放、依紅白分隊皆適用）
+  const tbls = document.querySelectorAll("#stage .regtable, #stage .mealtable");
+  if (!tbls.length) { wrap.style.left = ""; wrap.style.right = ""; return; }
+  let right = 0;
+  tbls.forEach(t => { const rr = t.getBoundingClientRect(); if (rr.width > 0) right = Math.max(right, rr.right); });
+  if (!right) { wrap.style.left = ""; wrap.style.right = ""; return; }
+  const w = wrap.offsetWidth || 230;
+  const x = Math.max(12, Math.min(right + 20, window.innerWidth - w - 24));
+  wrap.style.left = x + "px";
+  wrap.style.right = "auto";
+}
+window.addEventListener("resize", positionFloatSearch);
+window.addEventListener("scroll", positionFloatSearch, { passive:true });
+function renderTabs() {
+  let html = "", lastIcon = null;
+  TAB_ORDER.forEach(id => {
+    if (state.hidden && state.hidden[id]) return;
+    const t = tabInfo(id);
+    if (lastIcon !== null && t.icon !== lastIcon) html += '<span class="tabsep">｜</span>';
+    lastIcon = t.icon;
+    html += '<button class="tab' + (state.tab === t.id ? " active" : "") + '" data-tab="' + t.id + '">' +
+            t.icon + " " + esc(t.name) + (t.done && ["ttall","badall","bball","awards"].indexOf(t.id) >= 0 ? ' <span class="champ">🏆</span>' : "") + "</button>";
+  });
+  tabsEl.innerHTML = html;
+  const act = tabsEl.querySelector(".tab.active");
+  if (act && act.scrollIntoView) act.scrollIntoView({ block:"nearest", inline:"nearest" });
+}
+function getZoom() { return state.zooms[state.tab] || state.zoom || 1; }
+function renderMedalPage(title, sub, defs) {
+  let html = '<div class="gtitle">' + title + "</div>";
+  html += '<div class="gsub">' + sub + "</div>";
+  html += '<div class="ovwrap medals pair">';
+  defs.forEach((d, di) => {
+    let rows;
+    if (d.shoot) {
+      const sr = shootRank(true);
+      rows = ["🏆","🥈","🥉"].map((md, k) => ({ medal:md, rk:["冠軍","亞軍","季軍"][k], name:sr[k] ? SHOOTERS[sr[k].i][1] : null }));
+    } else {
+      const fm = MATCHES[d.f], bm2 = MATCHES[d.b];
+      rows = [
+        { medal:"🏆", rk:"冠軍", name:winnerOf(fm) },
+        { medal:"🥈", rk:"亞軍", name:loserOf(fm) },
+        { medal:"🥉", rk:"季軍", name:winnerOf(bm2) }
+      ];
+    }
+    html += '<div class="ovcard" style="animation-delay:' + (di * 0.25) + 's"><h3>' + esc(d.label) + '</h3><div class="ovbody">';
+    rows.forEach(r => {
+      html += '<div class="ttrow"><span class="medal">' + r.medal + '</span><span class="rk">' + r.rk + '</span>' +
+              '<span class="nm' + (r.name ? "" : " tbd2") + '">' + esc(r.name || "待定") + "</span></div>";
+    });
+    html += "</div></div>";
+  });
+  html += "</div>";
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+/* 頒獎彩帶 */
+function throwConfetti(count) {
+  if (!count && document.querySelector(".confetti")) return;
+  const box = document.createElement("div");
+  box.className = "confetti";
+  const emo = ["🎉","🎊","✨","🏆","🥇"];
+  let html = "";
+  for (let i = 0; i < (count || 42); i++) {
+    html += '<span style="left:' + (Math.random() * 100).toFixed(1) + "vw;animation-duration:" + (2.6 + Math.random() * 2.4).toFixed(2) + "s;animation-delay:" + (Math.random() * 1.8).toFixed(2) + 's">' + emo[i % emo.length] + "</span>";
+  }
+  box.innerHTML = html;
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 6500);
+}
+/* ===== 賽程總表（時間 × 場地） ===== */
+const VENUES = ["桌1", "桌2", "桌3", "A面", "B面", "籃球場"];
+const VENUE_LABEL = { "桌1":"🏓 桌1", "桌2":"🏓 桌2", "桌3":"🏓 桌3", "A面":"🏸 羽A面", "B面":"🏸 羽B面", "籃球場":"🏀 籃球場" };
+function renderSchedule() {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  // 收集所有已排時間的場次
+  const items = [];
+  Object.keys(MATCHES).forEach(k => {
+    const m = MATCHES[k];
+    const r = parseRange(getTime(m));
+    if (!r || !m.v) return;
+    items.push({ m:m, r:r });
+  });
+  const slots = [];
+  items.forEach(it => { if (slots.indexOf(it.r.a) < 0) slots.push(it.r.a); });
+  slots.sort((a, b) => a - b);
+  const doneN = items.filter(it => winnerOf(it.m)).length;
+  let html = '<div class="gtitle">🗓 賽程總表　<span class="prog">已完成 ' + doneN + "/" + items.length + " 場</span></div>";
+  html += '<div class="gsub">時間 × 場地一覽（含裁判）；金框＝進行中，✓＝已分出勝負，點格子可跳到該組對戰圖</div>';
+  html += '<table class="schtable"><thead><tr><th>時間</th>' +
+    VENUES.map(v => "<th>" + VENUE_LABEL[v] + "</th>").join("") + "</tr></thead><tbody>";
+  slots.forEach(a => {
+    const rowItems = items.filter(it => it.r.a === a);
+    const label = fmtHM(a) + "-" + fmtHM(rowItems[0].r.b);
+    const isNow = rowItems.some(it => nowMin >= it.r.a && !winnerOf(it.m));
+    html += '<tr><td class="slot' + (isNow ? " nowslot" : "") + '">' + esc(label) + "</td>";
+    VENUES.forEach(v => {
+      const it = rowItems.find(x => x.m.v === v);
+      if (!it) { html += '<td class="empty"></td>'; return; }
+      const m = it.m;
+      const w = winnerOf(m);
+      const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+      const live = !w && isReady(m) && nowMin >= it.r.a;
+      const ref = state.refs[m.id] || "";
+      html += '<td class="cell' + (w ? " cdone" : "") + (live ? " clive" : "") + '" data-go="m:' + m.id + '">' +
+        '<div class="c1">' + esc(groupNameOf(m.group)) + "　" + esc(m.lb) + "</div>" +
+        '<div class="c2">' + esc(A.name || "—") + '<span class="vs"> vs </span>' + esc(B.bye ? "輪空" : (B.name || "—")) + "</div>" +
+        (ref ? '<div class="c3">裁判 ' + esc(ref) + "</div>" : "") +
+        (w ? '<div class="c4">✓ ' + esc(w) + "</div>" : "") + "</td>";
+    });
+    html += "</tr>";
+  });
+  html += "</tbody></table>";
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+
+/* ===== 投籃大賽（29 人；預賽取前 4 名 → 總決賽） ===== */
+const SHOOTERS = [
+  ["002","扈端華(Daniel)","CO"],["1072","吳宇宸(Leo)","CO"],["974","吳彥輝(Nick)","DIB·DMD"],["1050","呂婉慈(Vanessa)","DIB·DMD"],
+  ["021","洪崇銘","CO·FAD"],["1069","滕威愷(Andy)","CO·FAD"],["850","范書維(Derek)","FSB·FS1"],["469","陳孟君(Jun)","FSB·FS2"],
+  ["591","鄭帆軒","FSB·FS2"],["656","李雯萱(Flora)","FSB·FS2"],["649","林建志(Kenny)","FSB·FS3"],["649","林少睿","FSB·FS3"],
+  ["1049","陳立學(Lucas)","FSB·FS3"],["1062","王聖翔(Shuan)","FSB·FS3"],["1073","謝安倪(Annie)","GAO·HRD"],["816","張博凱(Kenny)","MSB·MS1"],
+  ["811","張瑋恬(Amy)","MSB·MS2"],["971","林千翔(Coco)","MSB·MS2"],["1068","王漢雍(Mario)","MSB·MS2"],["121","朱俊綱(Stanley)","PSB·PS1"],
+  ["334","黃柏盛(Benson)","PSB·PS2"],["1028","洪祥盛(Joshua)","PSB·PS3"],["1037","林宛樺(Lena)","PSB·PS3"],["1056","楊勝傑(Allen)","PSB·PS3"],
+  ["1074","廖子鑫(Jason)","PSB·PS3"],["912","陳志明(Raven)","GAO·ITS"],["966","封智翔(Vito)","GAO·ITS"],["P118","黃禎宗(Zong)","FSE·PCMA"],
+  ["P147","蘇威諺(Ziv)","FSE·FCMA"]
+];
+function shootVal(kind, i) {
+  const o = state.shoot && state.shoot[kind];
+  const v = o ? o[i] : null;
+  return (v === "" || v == null) ? null : Number(v);
+}
+/* 依預賽得分排序，回傳前 4 名（不足或並列造成無法取滿 4 名時仍回傳現況） */
+function shootTop4() {
+  const arr = [];
+  SHOOTERS.forEach((p, i) => { const v = shootVal("p", i); if (v !== null) arr.push({ i:i, v:v }); });
+  arr.sort((a, b) => b.v - a.v || a.i - b.i);
+  return arr.slice(0, 4);
+}
+function shootTieNote() {
+  const arr = [];
+  SHOOTERS.forEach((p, i) => { const v = shootVal("p", i); if (v !== null) arr.push(v); });
+  if (arr.length < 5) return "";
+  arr.sort((a, b) => b - a);
+  return arr[3] === arr[4] ? "⚠ 第 4 名同分，請現場加賽決定晉級者" : "";
+}
+/* 總決賽名次：依決賽得分排序（同分並列） */
+function shootRank(finalOnly) {
+  const top = shootTop4();
+  const arr = top.map(t => ({ i:t.i, p:t.v, f:shootVal("f", t.i) })).filter(x => !finalOnly || x.f !== null);
+  arr.sort((a, b) => (b.f || 0) - (a.f || 0) || b.p - a.p || a.i - b.i);
+  if (finalOnly && arr.length < top.length) return [];
+  if (finalOnly && top.length < 4) return [];
+  return arr;
+}
+function renderShoot() {
+  const top = shootTop4();
+  const topSet = {}; top.forEach((t, k) => { topSet[t.i] = k + 1; });
+  let doneN = 0;
+  SHOOTERS.forEach((p, i) => { if (shootVal("p", i) !== null) doneN++; });
+  const ranked = shootRank(true);
+  const medals = ["🏆 冠軍", "🥈 亞軍", "🥉 季軍", "第 4 名"];
+  let html = '<div class="gtitle">🏀 投籃大賽 <span class="prog">預賽已登記 ' + doneN + "/" + SHOOTERS.length + " 人</span></div>";
+  html += '<div class="gsub">預賽 11:30-13:20（籃球場）取前 4 名 → 總決賽 14:50-15:00（★壓軸）</div>';
+  // 決賽區
+  html += '<div class="ovwrap"><div class="ovcard" style="min-width:520px;max-width:620px"><h3>★ 總決賽（前 4 名）　14:50-15:00</h3><div class="ovbody">';
+  if (!top.length) {
+    html += '<div class="ovpend">尚未產生晉級者（請先登記預賽成績）</div>';
+  } else {
+    html += '<div class="fhead"><span class="c1">名次</span><span class="c2">選手</span><span class="c3">預賽</span><span class="c4">決賽得分</span></div>';
+    // 依現名次排序顯示（未完成時維持晉級序）
+    const order = ranked.length ? ranked.map(x => x.i) : top.map(x => x.i);
+    order.forEach(idx => {
+      const t = top.find(x => x.i === idx);
+      const nm = SHOOTERS[idx];
+      const v = (state.shoot && state.shoot.f && state.shoot.f[idx] != null) ? state.shoot.f[idx] : "";
+      const r = ranked.length ? ranked.findIndex(x => x.i === idx) : -1;
+      const k = top.findIndex(x => x.i === idx);
+      html += '<div class="frow' + (r === 0 ? " winner" : "") + (r === 3 ? " out" : "") + '">' +
+        '<span class="c1 rk">' + (r >= 0 ? medals[r] : "晉級 " + (k + 1)) + "</span>" +
+        '<span class="c2 pname">' + esc(nm[1]) + "</span>" +
+        '<span class="c3"><small>預賽</small> ' + t.v + "</span>" +
+        '<span class="c4"><small>決賽</small><input class="score shootscore" type="number" min="0" inputmode="numeric" data-s="f" data-i="' + idx + '" value="' + esc(v) + '"></span></div>';
+    });
+    if (ranked.length) {
+      const line = (cls, md, rk, o) => '<div class="result' + cls + '">' + md + " " + rk + "：" + esc(SHOOTERS[o.i][1]) +
+        '　<small style="font-weight:normal">決賽 ' + o.f + " 分／預賽 " + o.p + " 分</small></div>";
+      html += line("", "🏆", "冠軍", ranked[0]);
+      if (ranked[1]) html += line(" silver", "🥈", "亞軍", ranked[1]);
+      if (ranked[2]) html += line(" silver", "🥉", "季軍", ranked[2]);
+    }
+  }
+  html += "</div></div></div>";
+  const note = shootTieNote();
+  if (note) html += '<div class="gsub" style="color:var(--rkc);font-weight:bold">' + note + "</div>";
+  // 預賽名單表
+  html += '<div class="gtitle" style="font-size:18px">預賽成績登記（29 人）</div>';
+  html += '<table class="shoottable"><thead><tr><th>#</th><th>員編</th><th style="text-align:left">姓名</th><th>單位</th><th>預賽得分</th><th>名次</th></tr></thead><tbody>';
+  SHOOTERS.forEach((p, i) => {
+    const v = (state.shoot && state.shoot.p && state.shoot.p[i] != null) ? state.shoot.p[i] : "";
+    const rk = topSet[i];
+    html += '<tr id="shrow-' + i + '"' + (rk ? ' class="qual"' : "") + "><td>" + (i + 1) + "</td><td>" + esc(p[0]) + '</td><td class="nmcell">' + esc(p[1]) + "</td><td>" + esc(p[2]) + "</td>" +
+      '<td><input class="score shootscore" type="number" min="0" inputmode="numeric" data-s="p" data-i="' + i + '" value="' + esc(v) + '"></td>' +
+      "<td>" + (rk ? '<span class="qualtag">晉級 ' + rk + "</span>" : "") + "</td></tr>";
+  });
+  html += "</tbody></table>";
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+
+/* ===== 餐點登記（117 份；三種顯示模式） ===== */
+const MEAL_TYPES = ["4. 麥香雞 + DE餐(小薯、麥克雞6塊)", "7. 招牌素飯糰(飲品選填)", "2. 大麥克 + DE餐(小薯、麥克雞6塊)", "5. 麥克雞6塊 + A餐(中薯)", "6. 藜麥沙拉(義式油醋沙拉醬包) + A餐(中薯)", "1. 大麥克 + A餐(中薯)", "3. 麥香雞 + A餐(中薯)", "8. 免"];
+const DRINK_TYPES = ["無糖綠茶(中)(去冰)", "玉米濃湯(小)", "無糖綠茶(中)(冰)", ""];
+/* [序號,分隊,組別,部門,員編,姓名,身份,餐食,餐點index,飲品index,所屬同仁] */
+const MEAL_ROWS = [[1,"大家長","1","CO","002","扈端華","同仁","葷食",0,0,""],[2,"大家長","1","CO","002","張勤玫","配偶","葷食",1,1,"扈端華"],[3,"福委","40","IBB","598","張兆嘉","同仁","葷食",2,0,""],[4,"福委","16","FSB","850","范書維","同仁","葷食",2,2,""],[5,"福委","9","DIB","974","吳彥輝","同仁","葷食",2,2,""],[6,"福委","44","MSB","1016","陳毓升","同仁","葷食",2,2,""],[7,"福委","62","PSB","1020","游椀詒","同仁","葷食",0,1,""],[8,"福委","63","PSB","1027","張逸鴻","同仁","葷食",2,2,""],[9,"福委","64","PSB","1028","洪祥盛","同仁","葷食",2,2,""],[10,"福委","22","FSB","1066","許世展","同仁","葷食",2,2,""],[11,"福委","83","OPM","P025","莫為智","同仁","葷食",2,0,""],[12,"福委","76","FSE","P032","游凱鈞","同仁","葷食",2,2,""],[13,"福委","76","FSE","P032","游承益","子女","葷食",0,2,"游凱鈞"],[14,"福委","84","OPM","P106","許依慧","同仁","葷食",0,0,""],[15,"福委","85","OPM","P124","楊欣瑜","同仁","葷食",2,2,""],[16,"福委","81","FSS","P133","陳俊諺","同仁","葷食",2,2,""],[17,"福委","82","FSS","P134","謝東恩","同仁","葷食",0,2,""],[18,"紅隊","50","PSB","008","左明德","同仁","葷食",2,0,""],[19,"紅隊","48","PSB","009","曾仁坤","同仁","葷食",0,1,""],[20,"紅隊","49","PSB","062","簡任余","同仁","葷食",0,0,""],[21,"紅隊","49","PSB","062","范曉君","配偶","素食",1,0,"簡任余"],[22,"紅隊","49","PSB","062","簡允允","子女","葷食",0,2,"簡任余"],[23,"紅隊","51","PSB","120","黃俊欽","同仁","葷食",2,2,""],[24,"紅隊","52","PSB","121","朱俊綱","同仁","葷食",0,2,""],[25,"紅隊","52","PSB","121","朱家緯","子女","葷食",3,1,"朱俊綱"],[26,"紅隊","53","PSB","154","宋思潔","同仁","葷食",0,1,""],[27,"紅隊","53","PSB","154","朱品蓁","子女","葷食",3,1,"宋思潔"],[28,"紅隊","54","PSB","251","潘姝蘋","同仁","葷食",0,0,""],[29,"紅隊","54","PSB","251","劉佳昇","配偶","葷食",2,0,"潘姝蘋"],[30,"紅隊","54","PSB","251","劉宸允","子女","葷食",4,1,"潘姝蘋"],[31,"紅隊","57","PSB","260","陳軍屏","同仁","葷食",2,2,""],[32,"紅隊","55","PSB","334","黃柏盛","同仁","葷食",2,1,""],[33,"紅隊","35","GAO","595","邱瑋亭","同仁","葷食",0,0,""],[34,"紅隊","35","GAO","595","陳昱任","配偶","葷食",5,2,"邱瑋亭"],[35,"紅隊","35","GAO","595","陳浩哲","子女","葷食",3,1,"邱瑋亭"],[36,"紅隊","56","PSB","597","李曉雲","同仁","葷食",6,2,""],[37,"紅隊","41","MSB","672","許至昊","同仁","葷食",2,2,""],[38,"紅隊","41","MSB","672","李秋賦","配偶","葷食",1,1,"許至昊"],[39,"紅隊","58","PSB","750","蘇進家","同仁","葷食",0,2,""],[40,"紅隊","45","MSB","811","張瑋恬","同仁","葷食",2,1,""],[41,"紅隊","42","MSB","816","張博凱","同仁","葷食",2,2,""],[42,"紅隊","2","CO","818","朱瑋婷","同仁","葷食",0,0,""],[43,"紅隊","2","CO","818","朱翊寧","同住兄弟姊妹","葷食",1,1,"朱瑋婷"],[44,"紅隊","59","PSB","961","楊妤婷","同仁","葷食",2,1,""],[45,"紅隊","46","MSB","971","林千翔","同仁","葷食",0,2,""],[46,"紅隊","46","MSB","971","梁禎芳","配偶","葷食",0,1,"林千翔"],[47,"紅隊","46","MSB","971","林育陞","子女","葷食",3,1,"林千翔"],[48,"紅隊","60","PSB","978","陳崇銘","同仁","葷食",2,1,""],[49,"紅隊","43","MSB","988","李依如","同仁","葷食",2,2,""],[50,"紅隊","61","PSB","1001","林秉賢","同仁","葷食",2,1,""],[51,"紅隊","65","PSB","1037","林宛樺","同仁","葷食",2,0,""],[52,"紅隊","66","PSB","1055","周思蓉","同仁","葷食",0,1,""],[53,"紅隊","67","PSB","1056","楊勝傑","同仁","葷食",2,2,""],[54,"紅隊","4","CO","1061","林靜吟","同仁","葷食",2,0,""],[55,"紅隊","47","MSB","1068","王漢雍","同仁","葷食",2,0,""],[56,"紅隊","3","CO","1072","吳宇宸","同仁","葷食",2,2,""],[57,"紅隊","36","GAO","1073","謝安倪","同仁","葷食",0,2,""],[58,"紅隊","68","PSB","1074","廖子鑫","同仁","葷食",2,1,""],[59,"紅隊","77","FSE","P036","李柏儀","同仁","葷食",5,2,""],[60,"紅隊","77","FSE","P036","凌巧倫","配偶","葷食",6,2,"李柏儀"],[61,"紅隊","77","FSE","P036","李苡澄","子女","葷食",3,1,"李柏儀"],[62,"紅隊","77","FSE","P036","凌苡安","子女","葷食",3,1,"李柏儀"],[63,"紅隊","78","FSE","P118","黃禎宗","同仁","葷食",2,2,""],[64,"紅隊","79","FSE","P147","蘇威諺","同仁","葷食",2,2,""],[65,"紅隊","80","FSE","P151","尤勝弘","同仁","葷食",0,2,""],[66,"白隊","11","CO","021","鍾宜珍","同仁","葷食",2,2,""],[67,"白隊","11","CO","021","洪崇銘","配偶","葷食",0,2,"鍾宜珍"],[68,"白隊","23","FSB","115","麥如君","同仁","葷食",2,1,""],[69,"白隊","23","FSB","115","賴名家","配偶","葷食",2,2,"麥如君"],[70,"白隊","23","FSB","115","賴品瀚","子女","葷食",0,2,"麥如君"],[71,"白隊","12","CO","144","游雅蕙","同仁","葷食",2,2,""],[72,"白隊","39","IBB","213","侯志霖","同仁","葷食",2,2,""],[73,"白隊","24","FSB","267","歐蕙綺","同仁","葷食",4,2,""],[74,"白隊","25","FSB","469","陳孟君","同仁","葷食",0,2,""],[75,"白隊","26","FSB","591","楊明真","同仁","葷食",2,2,""],[76,"白隊","26","FSB","591","鄭帆軒","子女","葷食",6,1,"楊明真"],[77,"白隊","30","FSB","649","林建志","同仁","葷食",2,1,""],[78,"白隊","30","FSB","649","林少睿","子女","葷食",0,1,"林建志"],[79,"白隊","27","FSB","656","李雯萱","同仁","葷食",2,2,""],[80,"白隊","5","DIB","700","王浚懿","同仁","葷食",6,0,""],[81,"白隊","5","DIB","700","王柏叡","子女","葷食",3,1,"王浚懿"],[82,"白隊","5","DIB","700","王柏諺","子女","葷食",3,1,"王浚懿"],[83,"白隊","6","DIB","742","洪東昇","同仁","葷食",2,2,""],[84,"白隊","6","DIB","742","洪若晨","子女","葷食",0,1,"洪東昇"],[85,"白隊","69","GAO","788","郭欣怡","同仁","葷食",2,2,""],[86,"白隊","13","CO","819","陳麗芳","同仁","葷食",2,2,""],[87,"白隊","13","CO","819","党夢熊","配偶","葷食",2,0,"陳麗芳"],[88,"白隊","13","CO","819","党子欣","子女","葷食",2,2,"陳麗芳"],[89,"白隊","28","FSB","836","康晉豪","同仁","葷食",0,2,""],[90,"白隊","7","DIB","843","楊權","同仁","素食",1,1,""],[91,"白隊","70","GAO","900","黃祥焜","同仁","葷食",2,2,""],[92,"白隊","71","GAO","908","林彥成","同仁","葷食",0,2,""],[93,"白隊","72","GAO","912","陳志明","同仁","葷食",0,0,""],[94,"白隊","37","GAO","931","王璟瑜","同仁","葷食",0,1,""],[95,"白隊","73","GAO","935","洪義凱","同仁","葷食",2,1,""],[96,"白隊","73","GAO","935","謝妤婕","配偶","葷食",0,0,"洪義凱"],[97,"白隊","38","GAO","953","鄧起宇","同仁","葷食",2,0,""],[98,"白隊","74","GAO","966","封智翔","同仁","葷食",0,2,""],[99,"白隊","17","FSB","998","張翔","同仁","葷食",2,2,""],[100,"白隊","8","DIB","1012","廖昱甄","同仁","葷食",2,0,""],[101,"白隊","18","FSB","1013","蔡季澄","同仁","葷食",2,2,""],[102,"白隊","31","FSB","1033","張正瑜","同仁","葷食",2,2,""],[103,"白隊","75","GAO","1042","蔡慧娟","同仁","葷食",0,1,""],[104,"白隊","32","FSB","1048","吳東育","同仁","葷食",0,2,""],[105,"白隊","33","FSB","1049","陳立學","同仁","葷食",2,2,""],[106,"白隊","10","DIB","1050","呂婉慈","同仁","葷食",2,2,""],[107,"白隊","10","DIB","1050","林柏宇","配偶","葷食",5,2,"呂婉慈"],[108,"白隊","10","DIB","1050","林琮淵","子女","葷食",6,1,"呂婉慈"],[109,"白隊","10","DIB","1050","林畇杉","子女","葷食",7,3,"呂婉慈"],[110,"白隊","29","FSB","1054","林苡勤","同仁","葷食",0,2,""],[111,"白隊","29","FSB","1054","林苡暄","同住兄弟姊妹","葷食",0,2,"林苡勤"],[112,"白隊","19","FSB","1060","孫秉家","同仁","葷食",0,2,""],[113,"白隊","34","FSB","1062","王聖翔","同仁","葷食",5,2,""],[114,"白隊","20","FSB","1063","吳治寰","同仁","葷食",2,0,""],[115,"白隊","21","FSB","1064","李亭鋒","同仁","葷食",2,2,""],[116,"白隊","14","CO","1069","滕威愷","同仁","葷食",3,1,""],[117,"白隊","15","CO","1070","蘇珮瑄","同仁","葷食",0,2,""]];
+
+const MEAL_INFO = {"扈端華":["","Daniel Hu"],"張勤玫":["",""],"吳彥輝":["DMD","Nick Wu"],"范書維":["FS1","Derek Fan"],"許世展":["FS1","Ian Hsu"],"張兆嘉":["","Cindy Chang"],"陳毓升":["MS1","Sam Chen"],"游椀詒":["PS3","Wynne Yu"],"張逸鴻":["PS3","Ethan Chang"],"洪祥盛":["PS3","Joshua Hong"],"游凱鈞":["","Matrix Yu"],"游承益":["",""],"陳俊諺":["","Ivor Chen"],"謝東恩":["","Bryan Hsieh"],"莫為智":["","Eric Mo"],"許依慧":["","Wendy Hsu"],"楊欣瑜":["","Tina Yang"],"朱瑋婷":["","Weiting Chu"],"朱翊寧":["",""],"吳宇宸":["","Leo Wu"],"林靜吟":["AO","Emily Lin"],"邱瑋亭":["HRD","Stella Chiu"],"陳昱任":["HRD",""],"陳浩哲":["HRD",""],"謝安倪":["HRD","Annie Shie"],"許至昊":["MS1","Gershwin Hsu"],"李秋賦":["MS1",""],"張博凱":["MS1","Kenny Chang"],"李依如":["MS1","Janice Li"],"張瑋恬":["MS2","Amy Chang"],"林千翔":["MS2","Coco Lin"],"梁禎芳":["MS2",""],"林育陞":["MS2",""],"王漢雍":["MS2","Mario Wang"],"曾仁坤":["","James Tseng"],"簡任余":["","Jerry Chien"],"范曉君":["",""],"簡允允":["",""],"左明德":["PS1","MT Tso"],"黃俊欽":["PS1","ChunChin Huang"],"朱俊綱":["PS1","Stanley Jui"],"朱家緯":["PS1",""],"宋思潔":["PS2","Suzie Sung"],"朱品蓁":["PS2",""],"潘姝蘋":["PS2","Apple Pan"],"劉佳昇":["PS2",""],"劉宸允":["PS2",""],"黃柏盛":["PS2","Benson Huang"],"李曉雲":["PS2","Wennie Li"],"陳軍屏":["PS3","Tommy Chen"],"蘇進家":["PS3","Josh Su"],"楊妤婷":["PS3","Tina Yang"],"陳崇銘":["PS3","Tom Chen"],"林秉賢":["PS3","Adam Lin"],"林宛樺":["PS3","Lena Lin"],"周思蓉":["PS3","Zoey Zhou"],"楊勝傑":["PS3","Allen Yang"],"廖子鑫":["PS3","Jason Liao"],"李柏儀":["EDC","Eric Lee"],"凌巧倫":["EDC",""],"李苡澄":["EDC",""],"凌苡安":["EDC",""],"黃禎宗":["PCMA","Zong Huang"],"蘇威諺":["FCMA","Ziv Su"],"尤勝弘":["","Harries Yu"],"王浚懿":["","Frank Wang"],"王柏叡":["",""],"王柏諺":["",""],"洪東昇":["DIL","Keith Hung"],"洪若晨":["DIL",""],"楊權":["DIL","Chorld Yang"],"廖昱甄":["DIL","Nova Liao"],"呂婉慈":["DMD","Vanessa Lu"],"林柏宇":["DMD",""],"林琮淵":["DMD",""],"林畇杉":["DMD",""],"鍾宜珍":["FAD","Selena Chung"],"洪崇銘":["FAD",""],"游雅蕙":["FAD","Grace Yu"],"陳麗芳":["FAD","Vivian Chen"],"党夢熊":["FAD",""],"党子欣":["FAD",""],"滕威愷":["FAD","Andy Teng"],"蘇珮瑄":["FAD","Sherry Su"],"張翔":["FS1","Cliff Chang"],"蔡季澄":["FS1","Joseph Tsai"],"孫秉家":["FS1","Jack Sun"],"吳治寰":["FS1","Benson Wu"],"李亭鋒":["FS1","Ryan Lee"],"麥如君":["FS2","Amy Mai"],"賴名家":["FS2",""],"賴品瀚":["FS2",""],"歐蕙綺":["FS2","Ciara Ou"],"陳孟君":["FS2","Jun Chen"],"楊明真":["FS2","Minjane Yang"],"鄭帆軒":["FS2",""],"李雯萱":["FS2","Flora Lee"],"康晉豪":["FS2","Brian Kang"],"林苡勤":["FS2","Betty Lin"],"林苡暄":["FS2",""],"林建志":["FS3","Kenny Lin"],"林少睿":["FS3",""],"張正瑜":["FS3","John Chang"],"吳東育":["FS3","Teddy Wu"],"陳立學":["FS3","Lucas Chen"],"王聖翔":["FS3","Shuan Wang"],"王璟瑜":["ITS","Julie Wang"],"鄧起宇":["ITS","Richard Deng"],"侯志霖":["","Oliver Hou"],"郭欣怡":["ITS","Teresa Kuo"],"黃祥焜":["ITS","Yellow Huang"],"林彥成":["ITS","Nick Lin"],"陳志明":["ITS","Raven Chen"],"洪義凱":["ITS","Wilkai Hung"],"謝妤婕":["ITS",""],"封智翔":["ITS","Vito Feng"],"蔡慧娟":["ITS","Zoe Cai"]};  /* 姓名 -> [單位, 英文全名] */
+function unitOf(n) { return (MEAL_INFO[n] && MEAL_INFO[n][0]) || ""; }
+function engFull(n) { return (MEAL_INFO[n] && MEAL_INFO[n][1]) || ""; }
+function maskName(n) { return n.length >= 3 ? n[0] + "Ｏ" + n.slice(2) : (n.length === 2 ? n[0] + "Ｏ" : n); }
+const MEAL_ENG = {"扈端華":"Daniel","吳彥輝":"Nick","范書維":"Derek","許世展":"Ian","張兆嘉":"Cindy","陳毓升":"Sam","游椀詒":"Wynne","張逸鴻":"Ethan","洪祥盛":"Joshua","游凱鈞":"Matrix","陳俊諺":"Ivor","謝東恩":"Bryan","莫為智":"Eric","許依慧":"Wendy","楊欣瑜":"Tina","朱瑋婷":"Weiting","吳宇宸":"Leo","林靜吟":"Emily","邱瑋亭":"Stella","謝安倪":"Annie","許至昊":"Gershwin","張博凱":"Kenny","李依如":"Janice","張瑋恬":"Amy","林千翔":"Coco","王漢雍":"Mario","曾仁坤":"James","簡任余":"Jerry","左明德":"MT","黃俊欽":"ChunChin","朱俊綱":"Stanley","宋思潔":"Suzie","潘姝蘋":"Apple","黃柏盛":"Benson","李曉雲":"Wennie","陳軍屏":"Tommy","蘇進家":"Josh","楊妤婷":"Tina","陳崇銘":"Tom","林秉賢":"Adam","林宛樺":"Lena","周思蓉":"Zoey","楊勝傑":"Allen","廖子鑫":"Jason","李柏儀":"Eric","黃禎宗":"Zong","蘇威諺":"Ziv","尤勝弘":"Harries","王浚懿":"Frank","洪東昇":"Keith","楊權":"Chorld","廖昱甄":"Nova","呂婉慈":"Vanessa","鍾宜珍":"Selena","游雅蕙":"Grace","陳麗芳":"Vivian","滕威愷":"Andy","蘇珮瑄":"Sherry","張翔":"Cliff","蔡季澄":"Joseph","孫秉家":"Jack","吳治寰":"Benson","李亭鋒":"Ryan","麥如君":"Amy","歐蕙綺":"Ciara","陳孟君":"Jun","楊明真":"Minjane","李雯萱":"Flora","康晉豪":"Brian","林苡勤":"Betty","林建志":"Kenny","張正瑜":"John","吳東育":"Teddy","陳立學":"Lucas","王聖翔":"Shuan","王璟瑜":"Julie","鄧起宇":"Richard","侯志霖":"Oliver","郭欣怡":"Teresa","黃祥焜":"Yellow","林彥成":"Nick","陳志明":"Raven","洪義凱":"Wilkai","封智翔":"Vito","蔡慧娟":"Zoe"};
+function engOf(r) { return r[10] ? "" : (MEAL_ENG[r[5]] || ""); }
+const MEAL_FIELDS = { NO:0, TEAM:1, GRP:2, DEPT:3, EID:4, NAME:5, ROLE:6, DIET:7, MEAL:8, DRINK:9, OF:10 };
+function mealMode() { return ["meal","team","sum","todo"].indexOf(state.mealMode) >= 0 ? state.mealMode : "all"; }
+function mealTaken(no) { return !!(state.mealTaken && state.mealTaken[no]); }
+function mealShort(i) { return MEAL_TYPES[i].replace(/\s*\+\s*/g, "+"); }
+function drinkOf(i) { return DRINK_TYPES[i] || "（未選）"; }
+function updateMealProgress() {
+  const F = MEAL_FIELDS;
+  const takenN = MEAL_ROWS.filter(r => mealTaken(r[F.NO])).length;
+  const p = stage.querySelector(".gtitle .prog");
+  if (p) p.textContent = "已領取 " + takenN + "/" + MEAL_ROWS.length + " 份";
+  stage.querySelectorAll(".mealsec").forEach(sec => {
+    const el = sec.querySelector(".mealprog");
+    if (!el) return;
+    const nos = Array.prototype.map.call(sec.querySelectorAll(".mealchk"), x => x.getAttribute("data-no"));
+    const done = nos.filter(n => mealTaken(n)).length;
+    el.textContent = "已領 " + done + "/" + nos.length;
+  });
+}
+function renderMeal() {
+  const F = MEAL_FIELDS;
+  const mode = mealMode();
+  const takenN = MEAL_ROWS.filter(r => mealTaken(r[F.NO])).length;
+  let html = '<div class="gtitle">🍔 餐點登記　<span class="prog">已領取 ' + takenN + "/" + MEAL_ROWS.length + " 份</span></div>";
+  html += '<div class="gsub">2026 經貿 x 經采 運動家庭日｜共 ' + MEAL_ROWS.length + ' 份（同仁 ' +
+          MEAL_ROWS.filter(r => r[F.ROLE] === "同仁").length + ' 人／眷屬 ' + MEAL_ROWS.filter(r => r[F.ROLE] !== "同仁").length + ' 人；素食 ' +
+          MEAL_ROWS.filter(r => r[F.DIET] === "素食").length + ' 份）</div>';
+  html += '<div class="prow" style="margin:0 0 12px">' +
+    ["sum:📊 統計總覽", "all:📋 點餐一覽", "meal:🍟 依餐點發放", "team:🚩 依紅白分隊", "todo:📮 未領取名單"].map(x => {
+      const k = x.split(":")[0];
+      let label = x.split(":")[1];
+      if (k === "all" && mode === "all") label += "（" + (state.mealLayout === "tb" ? "上下" : "左右") + "）";
+      return '<button class="btn secondary' + (mode === k ? " on" : "") + '" data-mealmode="' + k + '"' +
+             (k === "all" ? ' title="再按一次可切換左右／上下排列"' : "") + ">" + label + "</button>";
+    }).join("") +
+    '<label class="stickychk"><input type="checkbox" id="stickyHdr"' + (state.mealSticky ? " checked" : "") + ">固定標頭</label></div>";
+
+  if (mode === "sum") {
+    // 餐點 × 飲品 交叉統計
+    const dOrder = [];
+    DRINK_TYPES.forEach((d, i) => { if (d) dOrder.push(i); });
+    const noneIdx = DRINK_TYPES.indexOf("");
+    html += '<table class="mealtable"><thead><tr><th style="text-align:left">餐點選擇</th>' +
+      dOrder.map(i => "<th>" + esc(DRINK_TYPES[i]) + "</th>").join("") + "<th>未選飲品</th><th>小計</th></tr></thead><tbody>";
+    MEAL_TYPES.map((mt, mi) => ({ mt:mt, mi:mi })).sort((a, b) => a.mt.localeCompare(b.mt, "zh-Hant")).forEach(o => {
+      const sub = MEAL_ROWS.filter(r => r[F.MEAL] === o.mi);
+      html += '<tr><td class="nmcell">' + esc(o.mt) + "</td>" +
+        dOrder.map(i => "<td>" + (sub.filter(r => r[F.DRINK] === i).length || "－") + "</td>").join("") +
+        "<td>" + (noneIdx >= 0 ? (sub.filter(r => r[F.DRINK] === noneIdx).length || "－") : "－") + "</td>" +
+        '<td class="tot">' + sub.length + "</td></tr>";
+    });
+    html += '<tr class="sumrow"><td class="nmcell">合計</td>' +
+      dOrder.map(i => "<td>" + MEAL_ROWS.filter(r => r[F.DRINK] === i).length + "</td>").join("") +
+      "<td>" + (noneIdx >= 0 ? MEAL_ROWS.filter(r => r[F.DRINK] === noneIdx).length : 0) + "</td>" +
+      '<td class="tot">' + MEAL_ROWS.length + "</td></tr></tbody></table>";
+    // 分隊與部門統計
+    html += '<div class="ovwrap" style="margin-top:16px">';
+    const cnt = (key, val) => MEAL_ROWS.filter(r => r[key] === val).length;
+    html += '<div class="ovcard"><h3>依分隊</h3><div class="ovbody">';
+    ["大家長", "福委", "紅隊", "白隊"].forEach(t => {
+      const sub = MEAL_ROWS.filter(r => r[F.TEAM] === t);
+      if (!sub.length) return;
+      html += '<div class="ovrow"><span>' + esc(t) + "</span><span class=\"d\">" + sub.length + " 份（同仁 " +
+        sub.filter(r => r[F.ROLE] === "同仁").length + "／眷屬 " + sub.filter(r => r[F.ROLE] !== "同仁").length + "）</span></div>";
+    });
+    html += "</div></div>";
+    const depts = {};
+    MEAL_ROWS.forEach(r => { depts[r[F.DEPT]] = (depts[r[F.DEPT]] || 0) + 1; });
+    html += '<div class="ovcard"><h3>依部門</h3><div class="ovbody">';
+    Object.keys(depts).sort((a, b) => depts[b] - depts[a]).forEach(dp => {
+      html += '<div class="ovrow"><span>' + esc(dp) + '</span><span class="d">' + depts[dp] + " 份</span></div>";
+    });
+    html += "</div></div></div>";
+  } else if (mode === "all") {
+    // 投影用：仿登記表，左右各半（左＝前半、右＝後半）
+    const list = MEAL_ROWS.slice().sort((a, b) => (Number(a[F.GRP]) - Number(b[F.GRP])) || a[F.NO] - b[F.NO]);
+    const half = Math.ceil(list.length / 2);
+    const cols = ["組別", "部門", "單位", "員編", "英文名", "姓名", "身份", "餐食", "餐點選擇", "飲品選擇"];
+    const tbl = arr => {
+      let h = '<table class="regtable"><thead><tr>' + cols.map(c => "<th>" + c + "</th>").join("") + "</tr></thead><tbody>";
+      arr.forEach(r => {
+        const staff = r[F.ROLE] === "同仁";
+        h += '<tr id="mealrow-' + r[F.NO] + '" class="' + (r[F.DIET] === "素食" ? "vege " : "") + (mealTaken(r[F.NO]) ? "taken" : "") + '">' +
+          "<td>" + esc(r[F.GRP]) + "</td><td>" + esc(r[F.DEPT]) + "</td><td>" + esc(unitOf(r[F.NAME])) + "</td><td>" + esc(r[F.EID]) + "</td>" +
+          '<td class="lft">' + esc(staff ? (MEAL_ENG[r[F.NAME]] || "") : "") + "</td>" +
+          '<td class="nm">' + esc(staff ? r[F.NAME] : maskName(r[F.NAME])) + "</td>" +
+          '<td class="role">' + esc(r[F.ROLE]) + "</td><td>" + esc(r[F.DIET]) + "</td>" +
+          '<td class="lft meal">' + esc(MEAL_TYPES[r[F.MEAL]]) + "</td>" +
+          '<td class="lft drink">' + esc(DRINK_TYPES[r[F.DRINK]] || "") + "</td></tr>";
+      });
+      return h + "</tbody></table>";
+    };
+    html += '<div class="regwrap' + (state.mealLayout === "tb" ? " tb" : "") + '">' +
+      (state.mealLayout === "tb" ? tbl(list) : tbl(list.slice(0, half)) + tbl(list.slice(half))) + "</div>";
+  } else if (mode === "meal") {
+    // 依餐點分區，內含飲品分組
+    MEAL_TYPES.map((mt, mi) => ({ mt:mt, mi:mi })).sort((a, b) => a.mt.localeCompare(b.mt, "zh-Hant")).forEach(o => {
+      const sub = MEAL_ROWS.filter(r => r[F.MEAL] === o.mi)
+        .sort((a, b) => (a[F.DRINK] - b[F.DRINK]) || String(a[F.EID]).localeCompare(String(b[F.EID])) || (a[F.ROLE] === "同仁" ? -1 : 1));
+      if (!sub.length) return;
+      const done = sub.filter(r => mealTaken(r[F.NO])).length;
+      html += '<div class="mealsec"><div class="mealhd">▼ ' + esc(o.mt) + "　共 " + sub.length + " 份　" +
+        '<span class="mealprog">已領 ' + done + "/" + sub.length + "</span></div>";
+      html += '<table class="mealtable"><thead><tr><th>飲品</th><th>員編</th><th>英文名</th><th style="text-align:left">姓名</th><th>身份</th><th>部門</th><th>所屬同仁</th><th>領取</th></tr></thead><tbody>';
+      sub.forEach(r => {
+        html += '<tr id="mealrow-' + r[F.NO] + '" class="' + (mealTaken(r[F.NO]) ? "taken" : "") + (r[F.DIET] === "素食" ? " vege" : "") + '">' +
+          '<td class="nmcell dk">' + esc(drinkOf(r[F.DRINK])) + "</td><td>" + esc(r[F.EID]) + '</td><td class="engcell">' + esc(engOf(r)) + '</td><td class="nmcell">' + esc(r[F.NAME]) +
+          (r[F.DIET] === "素食" ? ' <span class="vtag">素</span>' : "") + '</td><td class="rolecell">' + esc(r[F.ROLE]) + "</td><td>" + esc(r[F.DEPT]) + '</td><td class="ofcell">' + esc(r[F.OF] || "—") + "</td>" +
+          '<td><input type="checkbox" class="mealchk" data-no="' + r[F.NO] + '"' + (mealTaken(r[F.NO]) ? " checked" : "") + "></td></tr>";
+      });
+      html += "</tbody></table></div>";
+    });
+  } else {
+    const todoOnly = (mode === "todo");
+    if (todoOnly) {
+      const left = MEAL_ROWS.filter(r => !mealTaken(r[F.NO])).length;
+      html += '<div class="gsub" style="font-size:16px;font-weight:bold;color:var(--rkc)">尚未領取 ' + left + " 份" +
+        (left === 0 ? "　🎉 全部發放完畢" : "") + "</div>";
+    }
+    ["大家長", "福委", "紅隊", "白隊"].forEach(t => {
+      const sub = MEAL_ROWS.filter(r => r[F.TEAM] === t && (!todoOnly || !mealTaken(r[F.NO])))
+        .sort((a, b) => String(a[F.EID]).localeCompare(String(b[F.EID])) || (a[F.ROLE] === "同仁" ? -1 : 1));
+      if (!sub.length) return;
+      const done = sub.filter(r => mealTaken(r[F.NO])).length;
+      html += '<div class="mealsec team-' + (t === "紅隊" ? "red" : (t === "白隊" ? "white" : "other")) + '"><div class="mealhd">▼ ' + esc(t) +
+        (todoOnly ? "　未領 " + sub.length + " 份" : "　共 " + sub.length + " 份") +
+        "（同仁 " + sub.filter(r => r[F.ROLE] === "同仁").length + "／眷屬 " + sub.filter(r => r[F.ROLE] !== "同仁").length +
+        "；素食 " + sub.filter(r => r[F.DIET] === "素食").length + "）" +
+        (todoOnly ? "" : '　<span class="mealprog">已領 ' + done + "/" + sub.length + "</span>") + "</div>";
+      html += '<table class="mealtable"><thead><tr><th>員編</th><th>英文名</th><th style="text-align:left">姓名</th><th>身份</th><th>部門</th><th style="text-align:left">餐點</th><th>飲品</th><th>所屬同仁</th><th>領取</th></tr></thead><tbody>';
+      sub.forEach(r => {
+        html += '<tr id="mealrow-' + r[F.NO] + '" class="' + (mealTaken(r[F.NO]) ? "taken" : "") + (r[F.DIET] === "素食" ? " vege" : "") + '">' +
+          "<td>" + esc(r[F.EID]) + '</td><td class="engcell">' + esc(engOf(r)) + '</td><td class="nmcell">' + esc(r[F.NAME]) + (r[F.DIET] === "素食" ? ' <span class="vtag">素</span>' : "") +
+          '</td><td class="rolecell">' + esc(r[F.ROLE]) + "</td><td>" + esc(r[F.DEPT]) + '</td><td class="nmcell">' + esc(mealShort(r[F.MEAL])) + '</td><td class="nmcell dk">' + esc(drinkOf(r[F.DRINK])) + '</td><td class="ofcell">' + esc(r[F.OF] || "—") + "</td>" +
+          '<td><input type="checkbox" class="mealchk" data-no="' + r[F.NO] + '"' + (mealTaken(r[F.NO]) ? " checked" : "") + "></td></tr>";
+      });
+      html += "</tbody></table></div>";
+    });
+  }
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+
+/* ===== 紅白分隊名單 ===== */
+const CAPTAINS = { "紅隊":["曾仁坤", "黃俊欽"], "白隊":["侯志霖", "歐蕙綺"] };
+function renderRoster() {
+  const F = MEAL_FIELDS;
+  const isCap = (t, n) => (CAPTAINS[t] || []).indexOf(n) >= 0;
+  const card = (t, cls) => {
+    const list = MEAL_ROWS.filter(r => r[F.TEAM] === t).sort((a, b) =>
+      ((isCap(t, b[F.NAME]) ? 1 : 0) - (isCap(t, a[F.NAME]) ? 1 : 0)) ||
+      ((a[F.ROLE] === "同仁" ? 0 : 1) - (b[F.ROLE] === "同仁" ? 0 : 1)) ||
+      String(a[F.EID]).localeCompare(String(b[F.EID])));
+    if (!list.length) return "";
+    const st = list.filter(r => r[F.ROLE] === "同仁").length;
+    let h = '<div class="rosterbox ' + cls + '"><div class="rhead">' + esc(t) +
+      '<span class="rcnt">' + list.length + " 人（同仁 " + st + "／眷屬 " + (list.length - st) + "）</span></div>";
+    h += '<table class="rtable"><thead><tr><th>員編</th><th>英文名</th><th style="text-align:left">姓名</th><th>身份</th><th>部門</th><th>單位</th><th>所屬同仁</th></tr></thead><tbody>';
+    list.forEach(r => {
+      const staff = r[F.ROLE] === "同仁";
+      const cap = isCap(t, r[F.NAME]);
+      h += '<tr' + (cap ? ' class="caprow"' : "") + "><td>" + esc(r[F.EID]) + '</td><td class="engcell">' + esc(staff ? (MEAL_ENG[r[F.NAME]] || "") : "") +
+        '</td><td class="nmcell">' + esc(r[F.NAME]) + (cap ? ' <span class="captag">隊長</span>' : "") +
+        '</td><td class="rolecell">' + esc(r[F.ROLE]) + "</td><td>" + esc(r[F.DEPT]) +
+        "</td><td>" + esc(unitOf(r[F.NAME])) + '</td><td class="ofcell">' + esc(r[F.OF] || "—") + "</td></tr>";
+    });
+    return h + "</tbody></table></div>";
+  };
+  let html = '<div class="gtitle">🎯 紅白隊名單　<span class="prog">共 ' + MEAL_ROWS.length + " 人</span></div>";
+  html += '<div class="rosterrow center">' + card("大家長", "other") + "</div>";
+  html += '<div class="rosterrow teams">' + card("紅隊", "red") + card("白隊", "white") + "</div>";
+  html += '<div class="rosterrow center">' + card("福委", "other") + "</div>";
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+
+/* ===== 團體趣味競賽（紅白兩隊） ===== */
+const FUN_EVENTS = [
+  { id:"f1", name:"戰鬥陀螺組", slot:"上午", t:"10:30-11:00", v:"籃球區" },
+  { id:"f2", name:"近在咫尺",   slot:"下午", t:"13:20-13:50", v:"羽球區" },
+  { id:"f3", name:"翻山越嶺",   slot:"下午", t:"13:20-13:50", v:"羽球區" },
+  { id:"f4", name:"羽球神射手", slot:"下午", t:"13:50-14:20", v:"羽球區" },
+  { id:"f5", name:"呼拉圈+跳繩", slot:"下午", t:"13:50-14:20", v:"羽球區" }
+];
+function funScore(id) {
+  const f = state.fun && state.fun[id];
+  if (!f) return null;
+  if (f.r === "" || f.w === "" || f.r == null || f.w == null) return null;
+  return { r:Number(f.r), w:Number(f.w) };
+}
+function renderFun() {
+  let winR = 0, winW = 0, sumR = 0, sumW = 0, doneN = 0;
+  FUN_EVENTS.forEach(e => {
+    const sc = funScore(e.id);
+    if (!sc) return;
+    doneN++; sumR += sc.r; sumW += sc.w;
+    if (sc.r > sc.w) winR++; else if (sc.w > sc.r) winW++;
+  });
+  let html = '<div class="funcenter"><div class="gtitle">🎯 團體趣味競賽（紅白兩隊）' +
+             '<span class="prog">已完成 ' + doneN + "/" + FUN_EVENTS.length + " 項</span></div>";
+  html += '<div class="gsub">共 ' + FUN_EVENTS.length + ' 項；每項勝方得 1 勝，下方依勝場數計算團體優勝</div>';
+
+  // 總計看板
+  const finished = doneN === FUN_EVENTS.length;
+  const status = finished ? (winR === winW ? "🤝 雙方平手" : "🏆 " + (winR > winW ? "紅隊優勝" : "白隊優勝"))
+                          : (winR > winW ? "紅隊領先" : (winW > winR ? "白隊領先" : "戰況膠著"));
+  html += '<div class="funtotal">' +
+    '<div class="funteam red' + (finished && winR > winW ? " champ" : "") + '"><div class="tname">紅隊</div><div class="tbig">' + winR + '<small>勝</small></div>' +
+    '<div class="tcap">👑 ' + CAPTAINS["紅隊"].map(n => (MEAL_ENG[n] || "") + " " + n).join("　") + "</div></div>" +
+    '<div class="funmid"><div class="vsball">VS</div><div class="vsstat">' + status + "</div></div>" +
+    '<div class="funteam white' + (finished && winW > winR ? " champ" : "") + '"><div class="tname">白隊</div><div class="tbig">' + winW + '<small>勝</small></div>' +
+    '<div class="tcap">👑 ' + CAPTAINS["白隊"].map(n => (MEAL_ENG[n] || "") + " " + n).join("　") + "</div></div>" +
+    "</div>";
+  // 各項目卡（上排 2 張、下排 3 張）
+  const cardHTML = e => {
+    const sc = funScore(e.id);
+    const rw = sc && sc.r > sc.w, ww = sc && sc.w > sc.r;
+    const val = k => (state.fun && state.fun[e.id] && state.fun[e.id][k] != null) ? state.fun[e.id][k] : "";
+    let h = '<div class="ovcard funcard" id="funcard-' + e.id + '"><h3>' + esc(e.name) + "</h3>" +
+      '<div class="mhead"><span class="mtime">' + esc(e.t) + "</span><span>" + esc(e.v) + '</span><span class="mlabel">' + esc(e.slot) + "</span></div>" +
+      '<div class="side' + (rw ? " winner" : "") + '"><span class="pname">🔴 紅隊</span>' +
+      '<input class="score funscore" type="number" min="0" inputmode="numeric" data-f="' + e.id + '" data-k="r" value="' + esc(val("r")) + '"></div>' +
+      '<div class="side' + (ww ? " winner" : "") + '"><span class="pname">⚪ 白隊</span>' +
+      '<input class="score funscore" type="number" min="0" inputmode="numeric" data-f="' + e.id + '" data-k="w" value="' + esc(val("w")) + '"></div>';
+    if (sc) h += '<div class="result">' + (sc.r === sc.w ? "🤝 平手" : "🏆 " + (rw ? "紅隊" : "白隊") + "勝") + "</div>";
+    return h + "</div>";
+  };
+  html += '<div class="ovwrap funwrap">' + FUN_EVENTS.slice(0, 2).map(cardHTML).join("") + "</div>";
+  html += '<div class="ovwrap funwrap">' + FUN_EVENTS.slice(2).map(cardHTML).join("") + "</div>";
+  html += "</div>";   /* funcenter */
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+}
+function renderAwards() {
+  const medals = ["🏆", "🥈", "🥉"];
+  let html = '<div class="gtitle">🏅 頒獎名單</div>';
+  html += '<div class="gsub">桌球（男單／女單）、羽球雙打（總排名）、籃球3對3、投籃大賽 前三名　<span id="awHint">｜點擊滑鼠左鍵揭曉下一組</span></div>';
+  const fits3 = (stage.clientWidth - 48) >= 500 * 3 + 40;
+  html += '<div class="ovwrap medals awardswrap' + (fits3 ? " three" : "") + '" data-stage="' + awStage + '">';
+  // 桌球、籃球
+  [ { label:"🏓 桌球男單", f:"tmf", b:"tmb", cls:"aw-tm" },
+    { label:"🏓 桌球女單", f:"twf", b:"twb", cls:"aw-tw" },
+    { label:"🏀 籃球3對3", f:"bbf", b:"bbb", cls:"aw-bb" } ].forEach((d, di) => {
+    const fm = MATCHES[d.f], bm2 = MATCHES[d.b];
+    const rows = [
+      { medal:"🏆", rk:"冠軍", name:winnerOf(fm) },
+      { medal:"🥈", rk:"亞軍", name:loserOf(fm) },
+      { medal:"🥉", rk:"季軍", name:winnerOf(bm2) }
+    ];
+    html += '<div class="ovcard ' + d.cls + '"><h3>' + d.label + '</h3><div class="ovbody">';
+    rows.forEach(r => {
+      html += '<div class="ttrow"><span class="medal">' + r.medal + '</span><span class="rk">' + r.rk + '</span>' +
+              '<span class="nm' + (r.name ? "" : " tbd2") + '">' + esc(r.name || "待定") + '</span></div>';
+    });
+    html += "</div></div>";
+  });
+  // 投籃大賽
+  const sr = shootRank(true);
+  html += '<div class="ovcard aw-shoot"><h3>🏀 投籃大賽</h3><div class="ovbody">';
+  ["🏆","🥈","🥉"].forEach((md, k) => {
+    const nm = sr[k] ? SHOOTERS[sr[k].i][1] : null;
+    html += '<div class="ttrow"><span class="medal">' + md + '</span><span class="rk">' + ["冠軍","亞軍","季軍"][k] + "</span>" +
+            '<span class="nm' + (nm ? "" : " tbd2") + '">' + esc(nm || "待定") + '</span></div>';
+  });
+  html += "</div></div>";
+  // 羽球總排名
+  const ranked = badRanking(badOverall());
+  html += '<div class="ovcard aw-bad"><h3>🏸 羽球雙打（總排名）</h3><div class="ovbody">';
+  if (ranked) {
+    ranked.forEach((r, k) => {
+      html += '<div class="ttrow"><span class="medal">' + medals[r.rank] + '</span>' +
+              '<span class="rk" style="min-width:110px">' + esc(r.title) + '</span>' +
+              '<span class="grp" style="background:var(--navy);color:#fff;font-size:13px;padding:2px 8px">' + esc(r.label) + '</span>' +
+              '<span class="nm">' + esc(r.champ) + '</span></div>';
+    });
+  } else {
+    ["總冠軍", "總亞軍", "總季軍"].forEach((t, i) => {
+      html += '<div class="ttrow"><span class="medal">' + medals[i] + '</span>' +
+              '<span class="rk" style="min-width:110px">' + t + '</span><span class="nm tbd2">待定</span></div>';
+    });
+  }
+  html += "</div></div></div>";
+  stage.innerHTML = '<div style="zoom:' + getZoom() + '">' + html + "</div>";
+  requestAnimationFrame(updateAwardsLayout);
+  if (awFresh) { throwConfetti(28); awFresh = false; }
+}
+/* 依實際容器寬度判斷一列可否放 3 張，切換順序 */
+function updateAwardsLayout() {
+  const wrap = document.querySelector(".awardswrap");
+  if (!wrap) return;
+  const card = wrap.querySelector(".ovcard");
+  if (!card) return;
+  const gap = 20;
+  const fits3 = wrap.clientWidth >= card.offsetWidth * 3 + gap * 2;
+  wrap.classList.toggle("three", fits3);
+}
+window.addEventListener("resize", () => { if (state.tab === "awards") updateAwardsLayout(); });
+/* ===== 進行中 / 下一場 標示 ===== */
+function isReady(m) {
+  return (resolveEntrant(m.a).ok || (m.a && m.a.bye)) && (resolveEntrant(m.b).ok || (m.b && m.b.bye));
+}
+function updateLiveMarks() {
+  const g = GROUPS.find(x => x.id === state.tab);
+  if (!g) return;
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  // 全賽事掃描：每個場地（桌1/桌2/桌3/A面/B面/籃球場）只讓「開賽時間最早」的一場顯示進行中
+  const liveByVenue = {};
+  Object.keys(MATCHES).forEach(k => {
+    const m = MATCHES[k];
+    const r = parseRange(getTime(m));
+    if (!r || winnerOf(m) || !isReady(m)) return;
+    if (nowMin < r.a) return;                    // 尚未開賽
+    const v = m.v || "_";
+    const cur = liveByVenue[v];
+    if (!cur || r.a < cur.r.a) liveByVenue[v] = { m:m, r:r };
+  });
+  const liveIds = {};
+  Object.keys(liveByVenue).forEach(v => { liveIds[liveByVenue[v].m.id] = liveByVenue[v].r; });
+  // 本組的「下一場」：名單已確定、尚未開賽中最早的一場
+  let nextStart = Infinity;
+  g.cols.forEach(c => c.ms.forEach(m => {
+    const r = parseRange(getTime(m));
+    if (r && isReady(m) && !winnerOf(m) && r.a > nowMin) nextStart = Math.min(nextStart, r.a);
+  }));
+  g.cols.forEach(c => c.ms.forEach(m => {
+    const el = document.getElementById("card-" + m.id);
+    if (!el) return;
+    const r = parseRange(getTime(m));
+    const live = !!liveIds[m.id];
+    el.classList.toggle("live", live);
+    const hd = el.querySelector(".mhead");
+    if (hd) hd.setAttribute("data-over", live && nowMin > r.b ? "！" : "");
+    el.classList.toggle("next", !!(r && isReady(m) && !winnerOf(m) && !live && r.a === nextStart && r.a > nowMin));
+  }));
+}
+setInterval(updateLiveMarks, 10000);
+
+/* ===== 撞場偵測 ===== */
+function findConflicts() {
+  const entries = [];
+  Object.keys(MATCHES).forEach(k => {
+    const m = MATCHES[k];
+    if (m.b && m.b.bye) return;
+    if (winnerOf(m)) return;
+    const r = parseRange(getTime(m));
+    if (!r) return;
+    ["a","b"].forEach(kk => {
+      const e = resolveEntrant(kk === "a" ? m.a : m.b);
+      if (!e.ok) return;
+      e.name.split("/").forEach(n => { n = n.trim(); if (n) entries.push({ n:n, m:m, r:r }); });
+    });
+  });
+  const out = [], seen = {};
+  for (let i = 0; i < entries.length; i++) for (let j = i + 1; j < entries.length; j++) {
+    const a = entries[i], b = entries[j];
+    if (a.n !== b.n || a.m.id === b.m.id) continue;
+    if (a.r.a < b.r.b && b.r.a < a.r.b) {
+      const key = a.n + "|" + [a.m.id, b.m.id].sort().join("|");
+      if (!seen[key]) { seen[key] = 1; out.push({ n:a.n, m1:a.m, m2:b.m }); }
+    }
+  }
+  // 裁判衝突：已指派裁判在該時段有出賽或任裁判其他場
+  Object.keys(state.refs).forEach(id => {
+    const name = state.refs[id];
+    const m = MATCHES[id];
+    if (!name || !m || winnerOf(m)) return;
+    const r = parseRange(getTime(m));
+    if (!r) return;
+    if (isPlayerIn(name, m)) {
+      const key = "RS|" + name + "|" + id;
+      if (!seen[key]) { seen[key] = 1; out.push({ n:name, ref:true, self:true, m1:m }); }
+    }
+    engagementsOf(name, id).filter(e => overlapR(e.r, r)).forEach(e => {
+      const key = "R|" + name + "|" + [id, e.m.id].sort().join("|");
+      if (!seen[key]) { seen[key] = 1; out.push({ n:name, ref:true, m1:m, m2:e.m, role:e.role }); }
+    });
+  });
+  return out;
+}
+let showConflicts = true;
+try { showConflicts = sessionStorage.getItem("jc_conf") !== "0"; } catch(e) {}
+function renderConflictBar() {
+  const bar = document.getElementById("conflictBar");
+  if (!showConflicts) { bar.style.display = "none"; bar.innerHTML = ""; return; }
+  const cs = findConflicts();
+  if (!cs.length) { bar.style.display = "none"; bar.innerHTML = ""; return; }
+  const part = m => '<span class="clink" data-go="m:' + m.id + '">' +
+    esc(groupNameOf(m.group) + " " + m.lb + "（" + getTime(m) + (m.v ? "·" + m.v : "") + "）") + "</span>";
+  bar.innerHTML = "⚠ 撞場提示：" + cs.map(c => {
+    if (c.ref && c.self) return "【裁判】" + esc(c.n) + "：任裁判 " + part(c.m1) + " 且為本場出賽選手";
+    if (c.ref) return "【裁判】" + esc(c.n) + "：任裁判 " + part(c.m1) + " × " + c.role + " " + part(c.m2);
+    return esc(c.n) + "：" + part(c.m1) + " × " + part(c.m2);
+  }).join("　｜　");
+  bar.style.display = "block";
+}
+
+let awStage = 1, awFresh = false, lastTabRendered = null;
+function render() {
+  renderTabs();
+  updateSearchPlaceholder();
+  if (state.tab !== lastTabRendered) {
+    if (state.tab === "awards") { awStage = 1; awFresh = true; }
+    lastTabRendered = state.tab;
+  }
+  // 餐點頁需讓表頭 sticky 生效 → 該頁不建立橫向捲動容器
+  stage.classList.toggle("nooverflow", state.tab === "meal" && !!state.mealSticky);
+  renderConflictBar();
+  stage.setAttribute("data-sport", ({tm:"tt",tw:"tt",ttall:"tt",bm:"bad",bw:"bad",bx:"bad",badall:"bad",bb:"bb",bball:"bb",awards:"mix"})[state.tab] || "tt");
+  if (state.tab === OVERALL_TAB.id) { renderOverall(); return; }
+  if (state.tab === "ttall") {
+    renderMedalPage("🏓 桌球排名", "桌球男單／女單 各取冠軍、亞軍、季軍",
+      [ { label:"桌球男單", f:"tmf", b:"tmb" }, { label:"桌球女單", f:"twf", b:"twb" } ]);
+    return;
+  }
+  if (state.tab === "bball") {
+    renderMedalPage("🏀 籃球排名", "籃球3對3 與 投籃大賽 各取冠軍、亞軍、季軍",
+      [ { label:"🏀 籃球3對3", f:"bbf", b:"bbb" }, { label:"🏀 投籃大賽", shoot:true } ]);
+    return;
+  }
+  if (state.tab === "shoot") { renderShoot(); return; }
+  if (state.tab === "all") { renderSchedule(); return; }
+  if (state.tab === "meal") { renderMeal(); return; }
+  if (state.tab === "roster") { renderRoster(); return; }
+  if (state.tab === "fun") { renderFun(); return; }
+  if (state.tab === "awards") { renderAwards(); return; }
+  const g = GROUPS.find(x => x.id === state.tab) || GROUPS[0];
+  let total = 0, done = 0;
+  g.cols.forEach(c => c.ms.forEach(m => { if (!(m.b && m.b.bye)) { total++; if (winnerOf(m)) done++; } }));
+  let html = '<div class="gtitle">' + esc(g.name) + (g.cols[g.cols.length-1].ms[0].star ? ' <span class="star">★下午壓軸決賽</span>' : "") +
+             ' <span class="prog">已完成 ' + done + "/" + total + " 場</span></div>";
+  html += '<div class="gsub">' + esc(g.sub) + "</div>";
+  html += '<div class="bracket" style="--cardw:' + Math.round(300*getZoom()) + 'px;font-size:' + Math.round(100*getZoom()) + '%">';
+  html += '<svg class="wires"></svg><div class="cols">';
+  g.cols.forEach(c => {
+    html += '<div class="colwrap"><div class="rtitle">' + esc(c.title) + '</div><div class="col">';
+    c.ms.forEach(m => { html += matchHTML(m); });
+    html += "</div></div>";
+  });
+  html += "</div></div>";
+  stage.innerHTML = html;
+  requestAnimationFrame(() => { drawWires(); updateLiveMarks(); });
+}
+function drawWires() {
+  const bracket = stage.querySelector(".bracket");
+  if (!bracket) return;
+  const svg = bracket.querySelector(".wires");
+  const br = bracket.getBoundingClientRect();
+  svg.setAttribute("width", bracket.scrollWidth);
+  svg.setAttribute("height", bracket.scrollHeight);
+  let paths = "";
+  const g = GROUPS.find(x => x.id === state.tab) || GROUPS[0];
+  g.cols.forEach(c => c.ms.forEach(m => {
+    ["a","b"].forEach(k => {
+      const e = k === "a" ? m.a : m.b;
+      if (!e || (!e.win && !e.lose)) return;
+      const srcId = e.win || e.lose;
+      const src = document.getElementById("card-" + srcId);
+      const dst = document.getElementById("card-" + m.id);
+      if (!src || !dst) return;
+      const sr = src.getBoundingClientRect();
+      const sideEls = dst.querySelectorAll(".side");
+      const dr = (sideEls[k === "a" ? 0 : 1] || dst).getBoundingClientRect();
+      const x1 = sr.right - br.left, y1 = sr.top + sr.height/2 - br.top;
+      const x2 = dr.left - br.left, y2 = dr.top + dr.height/2 - br.top;
+      const mx = (x1 + x2) / 2;
+      const resolved = resolveEntrant(e).ok;
+      const WIRE = { dark:{w:"#f2b93b",l:"#e85d4b",p:"#3a4f6b"}, light:{w:"#e8a71c",l:"#e0523f",p:"#b6c6d8"}, paper:{w:"#b8860b",l:"#c74738",p:"#b9c2ca"}, festival:{w:"#f2a007",l:"#e4572e",p:"#d8cfc4"}, broadcast:{w:"#2ee6c9",l:"#ff4d6d",p:"#204468"} };
+      const wc = WIRE[curTheme] || WIRE.dark;
+      const color = e.lose ? wc.l : wc.w;
+      paths += '<path d="M' + x1 + " " + y1 + " C" + mx + " " + y1 + "," + mx + " " + y2 + "," + x2 + " " + y2 + '" fill="none" stroke="' +
+        (resolved ? color : wc.p) + '" stroke-width="' + (resolved ? 3 : 2) + '"' +
+        (resolved ? "" : ' stroke-dasharray="6 5"') + (e.lose ? ' opacity="0.75"' : "") + "/>";
+    });
+  }));
+  svg.innerHTML = paths;
+}
+
+/* ===== 事件 ===== */
+/* 重繪並保留捲動位置與焦點（避免輸入比分後跳回頂端） */
+function rerenderKeepView(el) {
+  const x = window.scrollX, y = window.scrollY;
+  let sel = null;
+  if (el) {
+    if (el.hasAttribute("data-m")) sel = 'input[data-m="' + el.getAttribute("data-m") + '"][data-k="' + el.getAttribute("data-k") + '"]';
+    else if (el.hasAttribute("data-f")) sel = 'input[data-f="' + el.getAttribute("data-f") + '"][data-k="' + el.getAttribute("data-k") + '"]';
+    else if (el.hasAttribute("data-s")) sel = 'input[data-s="' + el.getAttribute("data-s") + '"][data-i="' + el.getAttribute("data-i") + '"]';
+    else if (el.hasAttribute("data-ref")) sel = 'select[data-ref="' + el.getAttribute("data-ref") + '"]';
+  }
+  render();
+  window.scrollTo(x, y);
+  if (sel) {
+    const back = document.querySelector(sel);
+    if (back) { try { back.focus({ preventScroll:true }); } catch (e) { back.focus(); } }
+  }
+}
+stage.addEventListener("change", ev => {
+  const t = ev.target;
+  if (t.classList.contains("mealchk")) {
+    const no = t.getAttribute("data-no");
+    if (!state.mealTaken) state.mealTaken = {};
+    if (t.checked) state.mealTaken[no] = 1; else delete state.mealTaken[no];
+    state.dirty = true;
+    save();
+    const tr = document.getElementById("mealrow-" + no);
+    if (mealMode() === "todo" && t.checked) {
+      // 未領取名單：勾選後該筆淡出並移除
+      if (tr) {
+        tr.classList.add("removing");
+        setTimeout(() => { if (mealMode() === "todo") render(); }, 420);
+      }
+      return;
+    }
+    // 就地更新該列與進度，不重繪整頁（畫面不跳動）
+    if (tr) tr.classList.toggle("taken", t.checked);
+    updateMealProgress();
+  } else if (t.classList.contains("shootscore")) {
+    const kind = t.getAttribute("data-s"), idx = t.getAttribute("data-i");
+    if (!state.shoot) state.shoot = { p:{}, f:{} };
+    if (!state.shoot[kind]) state.shoot[kind] = {};
+    state.shoot[kind][idx] = t.value === "" ? "" : Number(t.value);
+    state.dirty = true;
+    save(); rerenderKeepView(t);
+  } else if (t.classList.contains("funscore")) {
+    const fid = t.getAttribute("data-f"), fk = t.getAttribute("data-k");
+    if (!state.fun) state.fun = {};
+    if (!state.fun[fid]) state.fun[fid] = { r:"", w:"" };
+    state.fun[fid][fk] = t.value === "" ? "" : Number(t.value);
+    state.dirty = true;
+    save(); rerenderKeepView(t);
+  } else if (t.classList.contains("score")) {
+    const id = t.getAttribute("data-m"), k = t.getAttribute("data-k");
+    if (!state.scores[id]) state.scores[id] = { a:"", b:"" };
+    state.scores[id][k] = t.value === "" ? "" : Number(t.value);
+    state.dirty = true;
+    save(); rerenderKeepView(t);
+  } else if (t.hasAttribute("data-ref")) {
+    const id = t.getAttribute("data-ref");
+    const name = t.value;
+    if (name) {
+      const cs = refConflictsFor(name, id);
+      if (cs.length) {
+        const c = cs[0];
+        const msg = c.self
+          ? name + " 是本場出賽選手，仍要指派為本場裁判？"
+          : name + " 於 " + getTime(c.m) + (c.m.v ? "（" + c.m.v + "）" : "") + " 需" + c.role + " " +
+            groupNameOf(c.m.group) + " " + c.m.lb + "，仍要指派為本場裁判？";
+        if (!confirm(msg)) { t.value = state.refs[id] || ""; return; }
+      }
+    }
+    state.refs[id] = name;
+    state.dirty = true;
+    save(); rerenderKeepView(t);
+  }
+});
+stage.addEventListener("click", ev => {
+  if (ev.target.id === "stickyHdr") {
+    state.mealSticky = ev.target.checked;
+    save();
+    stage.classList.toggle("nooverflow", !!state.mealSticky);
+    return;
+  }
+  if (state.tab === "awards" && awStage < 3 && !ev.target.closest("button, input, select, a")) {
+    awStage++;
+    const wrap = stage.querySelector(".awardswrap");
+    if (wrap) wrap.setAttribute("data-stage", awStage);
+    if (awStage >= 3) {
+      const h = document.getElementById("awHint");
+      if (h) h.style.display = "none";
+    }
+    // 新出現的卡片若被擋住 → 緩緩往下捲 180px
+    const newSel = awStage === 2 ? ".aw-bb, .aw-shoot" : ".aw-bad";
+    const scrollDist = awStage === 2 ? 180 : 260;
+    setTimeout(() => {
+      let blocked = false;
+      stage.querySelectorAll(newSel).forEach(c => {
+        const r = c.getBoundingClientRect();
+        if (r.bottom > window.innerHeight) blocked = true;
+      });
+      if (blocked) {
+        const startY = window.scrollY;
+        const t0 = performance.now();
+        const dur = 900;
+        const step = ts => {
+          const k = Math.min(1, (ts - t0) / dur);
+          const ease = 1 - Math.pow(1 - k, 3);
+          window.scrollTo(0, startY + scrollDist * ease);
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      }
+    }, 300);
+    throwConfetti(28);
+    return;
+  }
+  const cellGo = ev.target.closest(".schtable .cell[data-go]");
+  if (cellGo) { gotoTarget(cellGo.getAttribute("data-go")); return; }
+  const mb = ev.target.closest("[data-mealmode]");
+  if (mb) {
+    const nm = mb.getAttribute("data-mealmode");
+    // 已在「點餐一覽」時再按一次 → 切換左右／上下排列
+    if (nm === "all" && mealMode() === "all") state.mealLayout = (state.mealLayout === "tb") ? "lr" : "tb";
+    else state.mealMode = nm;
+    save(); render(); return;
+  }
+  const t = ev.target.closest(".mtime[data-edit]");
+  if (t) { stopPlay(); editTime(t.getAttribute("data-edit")); }
+});
+stage.addEventListener("focusin", ev => {
+  if (ev.target.matches("input,select")) stopPlay();
+});
+tabsEl.addEventListener("click", ev => {
+  const b = ev.target.closest(".tab");
+  if (!b) return;
+  state.tab = b.getAttribute("data-tab");
+  panel.classList.remove("open");
+  save(); stopPlay(); render();
+});
+window.addEventListener("resize", drawWires);
+/* 手動滾動時暫停自動滾動（下一組切換時恢復） */
+window.addEventListener("wheel", () => stopAutoScroll(), { passive:true });
+window.addEventListener("touchstart", () => stopAutoScroll(), { passive:true });
+
+/* 縮放（各組獨立記憶） */
+document.getElementById("zoomIn").onclick = () => { state.zooms[state.tab] = Math.min(1.6, +(getZoom() + 0.1).toFixed(2)); save(); render(); };
+document.getElementById("zoomOut").onclick = () => { state.zooms[state.tab] = Math.max(0.6, +(getZoom() - 0.1).toFixed(2)); save(); render(); };
+/* 撞場警示顯示開關（僅此分頁，不跨分頁同步） */
+const confBtn = document.getElementById("confBtn");
+function updateConfBtn() { confBtn.classList.toggle("on", showConflicts); confBtn.textContent = "⚠ 撞場提示"; }
+confBtn.onclick = () => {
+  showConflicts = !showConflicts;
+  try { sessionStorage.setItem("jc_conf", showConflicts ? "1" : "0"); } catch(e) {}
+  updateConfBtn(); renderConflictBar();
+};
+updateConfBtn();
+
+/* 鎖定模式（僅此分頁，不跨分頁同步） */
+const lockBtn = document.getElementById("lockBtn");
+function setLocked(on) {
+  document.body.classList.toggle("locked", on);
+  lockBtn.textContent = on ? "🔒 解除鎖定" : "🔓 鎖定編輯";
+  lockBtn.classList.toggle("on", on);
+  try { sessionStorage.setItem("jc_lock", on ? "1" : ""); } catch(e) {}
+  requestAnimationFrame(drawWires);
+}
+lockBtn.onclick = () => setLocked(!document.body.classList.contains("locked"));
+try { if (sessionStorage.getItem("jc_lock") === "1") setLocked(true); } catch(e) {}
+
+/* 跨分頁即時同步（另一分頁修改比分／設定，這裡自動更新；各分頁的頁籤獨立） */
+window.addEventListener("storage", ev => {
+  if (ev.key !== KEY || !ev.newValue) return;
+  try {
+    const incoming = JSON.parse(ev.newValue);
+    const localTab = state.tab;
+    incoming.tab = localTab;
+    const before = JSON.stringify(state);
+    state = Object.assign(state, incoming);
+    if (JSON.stringify(state) === before) return;
+    const ae = document.activeElement;
+    if (ae && ae.matches && ae.matches("input,textarea,select")) return; // 輸入中不打斷
+    render();
+    if (panel.classList.contains("open")) fillPanel();
+  } catch(e) {}
+});
+
+/* 關閉頁面前：比分有異動且未匯出備份時提醒 */
+window.addEventListener("beforeunload", ev => {
+  if (state.dirty) { ev.preventDefault(); ev.returnValue = ""; }
+});
+
+/* 全螢幕 */
+document.getElementById("fsBtn").onclick = () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+};
+
+/* ===== 輪播（含慢速上下來回滾動） ===== */
+let timer = null;
+let scrollAnim = null;
+const SCROLL_PAUSE = 1.2;     // 到頂/到底停頓秒數
+function scrollSpeed() { return Math.min(500, Math.max(10, Number(state.carousel.scrollSpeed) || 70)); }
+function startAutoScroll() {
+  stopAutoScroll();
+  const doc = document.scrollingElement || document.documentElement;
+  let dir = 1, last = null, hold = SCROLL_PAUSE; // 先在頂端停一下
+  function step(ts) {
+    if (last == null) last = ts;
+    const dt = Math.min(0.1, (ts - last) / 1000);
+    last = ts;
+    const max = doc.scrollHeight - window.innerHeight;
+    if (max > 20) {
+      if (hold > 0) { hold -= dt; }
+      else {
+        let y = doc.scrollTop + dir * scrollSpeed() * dt;
+        if (y >= max) { y = max; dir = -1; hold = SCROLL_PAUSE; }
+        if (y <= 0)   { y = 0;   dir = 1;  hold = SCROLL_PAUSE; }
+        doc.scrollTop = y;
+      }
+    }
+    scrollAnim = requestAnimationFrame(step);
+  }
+  scrollAnim = requestAnimationFrame(step);
+}
+function stopAutoScroll() {
+  if (scrollAnim) { cancelAnimationFrame(scrollAnim); scrollAnim = null; }
+}
+const playBtn = document.getElementById("playBtn");
+function stopPlay() {
+  if (timer) { clearTimeout(timer); timer = null; }
+  stopAutoScroll();
+  playBtn.textContent = "▶ 開始輪播";
+  playBtn.classList.remove("on");
+}
+function dwellOf(id) {
+  const s = state.carousel.secsBy && state.carousel.secsBy[id];
+  return Math.max(3, Number(s) || Number(state.carousel.secs) || 15) * 1000;
+}
+function scheduleNext() {
+  timer = setTimeout(() => {
+    const list = state.carousel.sel.length ? state.carousel.sel : TAB_ORDER.slice();
+    const i = list.indexOf(state.tab);
+    state.tab = list[(i + 1) % list.length];
+    save(); render();
+    window.scrollTo(0, 0);
+    startAutoScroll();
+    scheduleNext();
+  }, dwellOf(state.tab));
+}
+playBtn.onclick = () => {
+  if (timer) { stopPlay(); return; }
+  document.getElementById("panel").classList.remove("open");
+  const sel = state.carousel.sel.length ? state.carousel.sel : TAB_ORDER.slice();
+  playBtn.textContent = "⏸ 停止輪播";
+  playBtn.classList.add("on");
+  if (sel.indexOf(state.tab) < 0) { state.tab = sel[0]; save(); render(); }
+  window.scrollTo(0, 0);
+  startAutoScroll();
+  scheduleNext();
+};
+
+/* ===== 設定面板 ===== */
+const panel = document.getElementById("panel");
+document.getElementById("gearBtn").onclick = () => {
+  stopPlay();
+  panel.classList.toggle("open");
+  if (panel.classList.contains("open")) { fillPanel(); dangerUnlocked = false; updateDangerLock(); }
+};
+function fillPanel() {
+  document.getElementById("ref-tt").value = (state.refLists.tt || []).join("\n");
+  document.getElementById("ref-bad").value = (state.refLists.bad || []).join("\n");
+  document.getElementById("ref-bb").value = (state.refLists.bb || []).join("\n");
+  let html = '<table class="cktable"><thead><tr><th style="text-align:left">組別</th><th>輪播</th><th>顯示</th><th>停留秒數</th></tr></thead><tbody>';
+  TAB_ORDER.forEach(id => {
+    const t = tabInfo(id);
+    const s = (state.carousel.secsBy && state.carousel.secsBy[id]) || state.carousel.secs || 15;
+    const shown = !(state.hidden && state.hidden[id]);
+    html += "<tr>" +
+      '<td class="nmcell">' + t.icon + " " + esc(t.name) + "</td>" +
+      '<td><input type="checkbox" class="cksel" value="' + t.id + '"' + (state.carousel.sel.indexOf(t.id) >= 0 ? " checked" : "") + "></td>" +
+      '<td><input type="checkbox" class="ckshow" data-g="' + t.id + '"' + (shown ? " checked" : "") + "></td>" +
+      '<td><input type="number" class="cksecs" data-g="' + t.id + '" min="3" max="600" value="' + s + '"> 秒</td>' +
+      "</tr>";
+  });
+  html += "</tbody></table>";
+  document.getElementById("cklist").innerHTML = html;
+  document.getElementById("scrollspd").value = state.carousel.scrollSpeed || 70;
+}
+let saveToastTimer = null;
+function applySettings() {
+  const parse = id => document.getElementById(id).value.split("\n").map(s => s.trim()).filter(Boolean);
+  state.refLists = { tt:parse("ref-tt"), bad:parse("ref-bad"), bb:parse("ref-bb") };
+  state.carousel.sel = Array.prototype.map.call(document.querySelectorAll("#cklist .cksel:checked"), x => x.value);
+  state.hidden = {};
+  document.querySelectorAll("#cklist .ckshow").forEach(x => {
+    if (!x.checked) state.hidden[x.getAttribute("data-g")] = true;
+  });
+  if (state.hidden[state.tab]) {
+    const vis = TAB_ORDER.filter(id => !state.hidden[id]);
+    if (vis.length) state.tab = vis[0];
+  }
+  state.carousel.secsBy = {};
+  document.querySelectorAll("#cklist .cksecs").forEach(x => {
+    state.carousel.secsBy[x.getAttribute("data-g")] = Math.max(3, Number(x.value) || 15);
+  });
+  state.carousel.scrollSpeed = Math.min(500, Math.max(10, Number(document.getElementById("scrollspd").value) || 70));
+  save(); render();
+  const msg = document.getElementById("savemsg");
+  msg.textContent = "已儲存 ✓";
+  msg.classList.add("show");
+  if (saveToastTimer) clearTimeout(saveToastTimer);
+  saveToastTimer = setTimeout(() => { msg.classList.remove("show"); }, 1500);
+}
+let settingsDebounce = null;
+panel.addEventListener("input", ev => {
+  if (!ev.target.matches("input,textarea,select")) return;
+  const t = ev.target;
+  // 勾「輪播」自動勾「顯示」；取消「顯示」自動取消「輪播」
+  if (t.classList.contains("cksel") && t.checked) {
+    const show = document.querySelector('.ckshow[data-g="' + t.value + '"]');
+    if (show) show.checked = true;
+  }
+  if (t.classList.contains("ckshow") && !t.checked) {
+    const sel = document.querySelector('.cksel[value="' + t.getAttribute("data-g") + '"]');
+    if (sel) sel.checked = false;
+  }
+  if (settingsDebounce) clearTimeout(settingsDebounce);
+  settingsDebounce = setTimeout(applySettings, 300);
+});
+/* 測試區安全鎖：解鎖後才能按 */
+let dangerUnlocked = false;
+const dangerLock = document.getElementById("dangerLock");
+function updateDangerLock() {
+  ["clrBtn","testBtn","resetAllBtn"].forEach(id => { document.getElementById(id).disabled = !dangerUnlocked; });
+  dangerLock.textContent = dangerUnlocked ? "🔓" : "🔒";
+  dangerLock.classList.toggle("on", dangerUnlocked);
+}
+dangerLock.onclick = () => { dangerUnlocked = !dangerUnlocked; updateDangerLock(); };
+updateDangerLock();
+document.getElementById("testBtn").onclick = () => {
+  if (!confirm("測試模式：將以隨機比分覆蓋所有場次，確定？")) return;
+  Object.keys(MATCHES).forEach(id => {
+    const m = MATCHES[id];
+    if (m.b && m.b.bye) return;
+    const win = 15, lose = Math.floor(Math.random() * 14); // 0-13，不會平手
+    state.scores[id] = Math.random() < 0.5 ? { a:win, b:lose } : { a:lose, b:win };
+  });
+  state.shoot = { p:{}, f:{} };
+  SHOOTERS.forEach((x, i) => { state.shoot.p[i] = Math.floor(Math.random() * 12); });
+  shootTop4().forEach(t => { state.shoot.f[t.i] = Math.floor(Math.random() * 10) + 3; });
+  FUN_EVENTS.forEach(e => {
+    const a = Math.floor(Math.random() * 6) + 5, b = Math.floor(Math.random() * 6) + 5;
+    state.fun[e.id] = { r:a, w:(b === a ? b + 1 : b) };
+  });
+  state.dirty = true;
+  save(); render();
+};
+document.getElementById("clrBtn").onclick = () => {
+  if (confirm("確定清除全部比分與裁判指派？（裁判名單與輪播設定保留）")) {
+    state.scores = {}; state.refs = {}; state.fun = {}; state.shoot = { p:{}, f:{} }; state.dirty = true; save(); render();
+  }
+};
+document.getElementById("resetAllBtn").onclick = () => {
+  if (!confirm("恢復預設：將刪除此瀏覽器儲存的所有資料（比分、裁判、時間異動、輪播與縮放設定），回到網頁內建預設值。確定？\n\n（若不確定請先執行匯出備份）")) return;
+  state.dirty = false; // 避免關頁提醒
+  try { localStorage.removeItem(KEY); } catch(e) {}
+  location.reload();
+};
+document.getElementById("expBtn").onclick = () => {
+  state.dirty = false; save();
+  const dump = Object.assign({}, state, { theme:curTheme });
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "家庭日賽程備份_" + new Date().toISOString().slice(0,16).replace(/[:T]/g,"") + ".json";
+  a.click();
+};
+document.getElementById("impBtn").onclick = () => document.getElementById("impFile").click();
+document.getElementById("impFile").addEventListener("change", ev => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const s = JSON.parse(rd.result);
+      const th = s.theme;
+      delete s.theme;
+      state = Object.assign(state, s);
+      save();
+      if (th && ["dark","light","paper","festival","broadcast"].indexOf(th) >= 0) applyTheme(th);
+      render(); fillPanel();
+      alert("匯入完成");
+    } catch(e) { alert("匯入失敗：檔案格式錯誤"); }
+  };
+  rd.readAsText(f);
+  ev.target.value = "";
+});
+
+/* 風格切換（記憶於本機，各分頁載入時套用） */
+var curTheme = "paper";
+try { curTheme = localStorage.getItem("jc_theme") || "paper"; } catch(e) {}
+if (["dark","light","paper","festival","broadcast"].indexOf(curTheme) < 0) curTheme = "paper";
+function applyTheme(t) {
+  curTheme = t;
+  document.body.setAttribute("data-theme", t);
+  try { localStorage.setItem("jc_theme", t); } catch(e) {}
+  document.getElementById("themeSel").value = t;
+  requestAnimationFrame(drawWires);
+}
+document.getElementById("themeSel").onchange = ev => applyTheme(ev.target.value);
+applyTheme(curTheme);
+
+/* ===== 全域搜尋 ===== */
+const searchBox = document.getElementById("searchBox");
+const searchResults = document.getElementById("searchResults");
+const EID_BY_NAME = {};
+(function () {
+  const F = MEAL_FIELDS;
+  MEAL_ROWS.forEach(r => { EID_BY_NAME[r[F.NAME]] = r[F.EID]; });
+})();
+/* 取隊伍字串中每個人的員編與英文名，供搜尋比對（不影響畫面顯示） */
+function idHints(str) {
+  if (!str) return "";
+  let out = "";
+  String(str).split("/").forEach(n => {
+    const cn = n.replace(/\(.*?\)/g, "").trim();
+    if (!cn) return;
+    if (EID_BY_NAME[cn]) out += " " + EID_BY_NAME[cn];
+    if (MEAL_ENG[cn]) out += " " + MEAL_ENG[cn];
+    if (MEAL_INFO[cn] && MEAL_INFO[cn][1]) out += " " + MEAL_INFO[cn][1];
+  });
+  return out;
+}
+function doSearch(q) {
+  q = q.trim().toLowerCase();
+  if (!q) { searchResults.style.display = "none"; searchResults.innerHTML = ""; return; }
+  const out = [];
+  const mealOnly = state.tab === "meal";
+  if (!mealOnly) Object.keys(MATCHES).forEach(k => {
+    const m = MATCHES[k];
+    const A = resolveEntrant(m.a).name || "", B = resolveEntrant(m.b).name || "";
+    const ref = state.refs[m.id] || "";
+    const roles = [];
+    if ((A + "/" + B + idHints(A) + idHints(B)).toLowerCase().indexOf(q) >= 0) roles.push("出賽");
+    if ((ref + idHints(ref)).toLowerCase().indexOf(q) >= 0) roles.push("裁判");
+    if (m.lb.toLowerCase().indexOf(q) >= 0) roles.push("場次");
+    if (roles.length) {
+      out.push({ go:"m:" + m.id,
+        t1: SPORT_ICON[m.sport] + " " + groupNameOf(m.group) + "　" + m.lb + "　" + getTime(m) + (m.v ? "（" + m.v + "）" : ""),
+        t2: A + " vs " + B + (ref ? "｜裁判：" + ref : "") + "｜" + roles.join("、") });
+    }
+  });
+  if (!mealOnly) SHOOTERS.forEach((pp, i) => {
+    if ((pp[0] + pp[1] + pp[2]).toLowerCase().indexOf(q) >= 0) {
+      const v = shootVal("p", i);
+      out.push({ go:"s:" + i, t1:"🏀 投籃大賽　#" + (i + 1) + "　" + pp[1], t2:pp[2] + (v !== null ? "｜預賽 " + v + " 分" : "｜預賽未登記") });
+    }
+  });
+  if (!mealOnly) FUN_EVENTS.forEach(e => {
+    if (e.name.toLowerCase().indexOf(q) >= 0) out.push({ go:"f:" + e.id, t1:"🎯 趣味競賽　" + e.name, t2:"[" + e.slot + "] " + e.t + "（" + e.v + "）" });
+  });
+  const MF = MEAL_FIELDS;
+  // 餐點頁需在設定中勾選「顯示」後，才納入搜尋
+  if (!(state.hidden && state.hidden.meal)) MEAL_ROWS.forEach(r => {
+    const eng = r[MF.ROLE] === "同仁" ? (engFull(r[MF.NAME]) + " " + (MEAL_ENG[r[MF.NAME]] || "")) : "";
+    if ((r[MF.NAME] + " " + eng + " " + r[MF.EID] + " " + r[MF.DEPT] + " " + unitOf(r[MF.NAME]) + " " + r[MF.TEAM]).toLowerCase().indexOf(q) >= 0) {
+      out.push({ go:"e:" + r[MF.NO],
+        t1:"🍔 餐點　" + r[MF.NAME] + "（" + r[MF.ROLE] + "）" + (r[MF.DIET] === "素食" ? "・素食" : "") + (mealTaken(r[MF.NO]) ? "・已領取" : ""),
+        t2:r[MF.TEAM] + "｜" + r[MF.DEPT] + " " + r[MF.EID] + "｜" + mealShort(r[MF.MEAL]) + "＋" + drinkOf(r[MF.DRINK]) + (r[MF.OF] ? "｜眷屬（" + r[MF.OF] + "）" : "") });
+    }
+  });
+  if (!out.length) { searchResults.innerHTML = '<div class="snone">找不到「' + esc(q) + '」相關結果</div>'; }
+  else {
+    searchResults.innerHTML = out.slice(0, 30).map(r =>
+      '<div class="sresult" data-go="' + r.go + '"><div class="sr1">' + esc(r.t1) + '</div><div class="sr2">' + esc(r.t2) + "</div></div>").join("") +
+      (out.length > 30 ? '<div class="snone">…共 ' + out.length + ' 筆，僅顯示前 30 筆</div>' : "");
+  }
+  searchResults.style.display = "block";
+}
+let foundTimer = null;
+let toastTimer = null;
+function showToast(text, ms) {
+  const msg = document.getElementById("savemsg");
+  msg.textContent = text;
+  msg.classList.add("show");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => msg.classList.remove("show"), ms || 3000);
+}
+function gotoTarget(go) {
+  const kind = go.slice(0, 1), key = go.slice(2);
+  stopPlay();
+  searchResults.style.display = "none";
+  let tab, elId;
+  if (kind === "m") { tab = MATCHES[key].group; elId = "card-" + key; }
+  else if (kind === "e") { tab = "meal"; elId = "mealrow-" + key; if (mealMode() === "sum") state.mealMode = "all"; }
+  else if (kind === "s") { tab = "shoot"; elId = "shrow-" + key; }
+  else { tab = "fun"; elId = "funcard-" + key; }
+  state.tab = tab; save(); render();
+  requestAnimationFrame(() => {
+    const el = document.getElementById(elId);
+    if (!el) {
+      // 未領取名單中找不到 → 該筆已領取
+      if (kind === "e") {
+        const F = MEAL_FIELDS;
+        const row = MEAL_ROWS.find(r => String(r[F.NO]) === String(key));
+        if (row) {
+          const en = row[F.ROLE] === "同仁" ? (MEAL_ENG[row[F.NAME]] || "") : "";
+          showToast("✅ " + row[F.EID] + " - " + row[F.NAME] + (en ? "(" + en + ")" : "") + "　已領取", 3000);
+        }
+      }
+      return;
+    }
+    el.scrollIntoView({ behavior:"smooth", block:"center", inline:"center" });
+    document.querySelectorAll(".found").forEach(x => x.classList.remove("found", "fadeout"));
+    el.classList.add("found");
+    if (foundTimer) clearTimeout(foundTimer);
+    // 持久顯示，直到使用者點擊滑鼠左鍵後淡出
+    const dismiss = () => {
+      el.classList.add("fadeout");
+      foundTimer = setTimeout(() => el.classList.remove("found", "fadeout"), 900);
+    };
+    setTimeout(() => document.addEventListener("click", dismiss, { once:true }), 300);
+  });
+}
+const searchClear = document.getElementById("searchClear");
+function updateSearchClear() { searchClear.style.display = searchBox.value ? "block" : "none"; searchBox.classList.toggle("hasval", !!searchBox.value); }
+searchClear.onclick = () => {
+  searchBox.value = "";
+  searchResults.style.display = "none";
+  updateSearchClear();
+  searchBox.focus();
+};
+searchBox.addEventListener("input", () => { updateSearchClear(); doSearch(searchBox.value); });
+searchBox.addEventListener("focus", () => { if (searchBox.value.trim()) doSearch(searchBox.value); });
+searchBox.addEventListener("keydown", ev => {
+  if (ev.key === "Escape") { searchBox.value = ""; searchResults.style.display = "none"; updateSearchClear(); }
+  if (ev.key === "Enter") { const f = searchResults.querySelector(".sresult"); if (f) gotoTarget(f.getAttribute("data-go")); }
+});
+searchResults.addEventListener("click", ev => {
+  const r = ev.target.closest(".sresult");
+  if (r) gotoTarget(r.getAttribute("data-go"));
+});
+document.getElementById("conflictBar").addEventListener("click", ev => {
+  const r = ev.target.closest(".clink");
+  if (r) gotoTarget(r.getAttribute("data-go"));
+});
+document.addEventListener("click", ev => {
+  if (!ev.target.closest(".searchwrap")) searchResults.style.display = "none";
+});
+
+/* 回到頂端 */
+const topBtn = document.getElementById("topBtn");
+function updateTopBtn() {
+  const doc = document.scrollingElement || document.documentElement;
+  topBtn.classList.toggle("show", doc.scrollTop > 200);
+}
+topBtn.onclick = () => { stopAutoScroll(); window.scrollTo({ top:0, behavior:"smooth" }); };
+window.addEventListener("scroll", updateTopBtn, { passive:true });
+updateTopBtn();
+
+/* ===== 鍵盤快速鍵：←→切頁籤、空白鍵輪播、F全螢幕、Enter揭曉 ===== */
+document.addEventListener("keydown", ev => {
+  const t = ev.target;
+  if (t && t.matches && t.matches("input, textarea, select")) return;             // 輸入中不攔截
+  if (document.getElementById("timeModal").style.display === "flex") return;      // 時間視窗開啟時不攔截
+  if (ev.key === "ArrowLeft" || ev.key === "ArrowRight") {
+    const vis = TAB_ORDER.filter(id => !(state.hidden && state.hidden[id]));
+    let i = vis.indexOf(state.tab);
+    if (i < 0) i = 0;
+    i = (i + (ev.key === "ArrowRight" ? 1 : -1) + vis.length) % vis.length;
+    state.tab = vis[i];
+    save(); stopPlay(); render();
+    ev.preventDefault();
+  } else if (ev.key === " " || ev.code === "Space") {
+    document.getElementById("playBtn").click();
+    ev.preventDefault();
+  } else if (ev.key === "f" || ev.key === "F") {
+    document.getElementById("fsBtn").click();
+  }
+});
+
+/* 時鐘 */
+setInterval(() => {
+  const d = new Date();
+  const p = n => String(n).padStart(2, "0");
+  document.getElementById("clock").textContent = p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+}, 500);
+
+render();
+</script>
+</body>
+</html>
