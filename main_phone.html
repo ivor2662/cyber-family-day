@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>2026 經采家庭日｜賽程表（簡易版）</title>
+<title>2026 經采家庭日｜賽事看板（簡易版）</title>
 <style>
   :root{
     --paper:#faf8f3; --card:#ffffff; --ink:#2a2f38; --sub:#7c8390; --line:#e7e2d6;
-    --tt:#f76707; --tt-bg:#fff1e6; --bad:#2f9e44; --bad-bg:#eaf7ec; --bb:#c2402a; --bb-bg:#fbeae7;
-    --gold:#c8951f; --live-bg:#fff8e6; --done:#b7bcc4;
+    --tt:#f76707; --bad:#2f9e44; --bb:#c2402a;
+    --gold:#c8951f; --live-bg:#fff8e6; --red:#c0392b; --white-team:#4a6076;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -18,11 +18,19 @@
     -webkit-font-smoothing:antialiased; padding-bottom:40px;
   }
   header{
-    padding:18px 16px 12px; border-bottom:1px solid var(--line); background:var(--paper);
-    position:sticky; top:0; z-index:5;
+    padding:16px 16px 0; border-bottom:1px solid var(--line); background:var(--paper);
+    position:sticky; top:0; z-index:6;
   }
-  h1{margin:0; font-size:19px; font-weight:800; letter-spacing:.3px;}
-  .sub{color:var(--sub); font-size:12.5px; margin-top:3px;}
+  h1{margin:0; font-size:18px; font-weight:800; letter-spacing:.3px;}
+  .sub{color:var(--sub); font-size:12px; margin-top:3px; padding-bottom:10px;}
+
+  .nav{display:flex; gap:6px; padding:0 16px; background:var(--paper); position:sticky; top:52px; z-index:6; border-bottom:1px solid var(--line);}
+  .navtab{
+    flex:1; text-align:center; font-size:14px; font-weight:700; color:var(--sub);
+    padding:10px 4px 9px; border-bottom:3px solid transparent; cursor:pointer;
+  }
+  .navtab.active{color:var(--ink); border-bottom-color:var(--gold);}
+
   .searchrow{padding:10px 16px 0;}
   #q{
     width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
@@ -39,13 +47,19 @@
   .chip[data-s="tt"].active{background:var(--tt);}
   .chip[data-s="bad"].active{background:var(--bad);}
   .chip[data-s="bb"].active{background:var(--bb);}
+  #grpChips .chip.active{background:#3a4250;}
+  #grpChips .chip.active[data-sport="tt"]{background:var(--tt);}
+  #grpChips .chip.active[data-sport="bad"]{background:var(--bad);}
+  #grpChips .chip.active[data-sport="bb"]{background:var(--bb);}
+
   main{padding:4px 16px 0;}
-  .slot{
-    position:sticky; top:96px; z-index:4;
+  .slot, .round{
+    position:sticky; top:97px; z-index:4;
     font-size:14px; font-weight:800; color:var(--ink);
     padding:14px 2px 6px; background:var(--paper);
   }
-  .slot .n{color:var(--sub); font-weight:600; font-size:12px; margin-left:6px;}
+  .slot .n, .round .n{color:var(--sub); font-weight:600; font-size:12px; margin-left:6px;}
+
   .card{
     background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line);
     border-radius:10px; padding:11px 13px; margin-bottom:9px;
@@ -54,7 +68,7 @@
   .card.bad{border-left-color:var(--bad);}
   .card.bb{border-left-color:var(--bb);}
   .card.live{background:var(--live-bg); border-color:#f0d98a;}
-  .card.done{opacity:.55;}
+  .card.done{opacity:.68;}
   .row1{display:flex; align-items:baseline; justify-content:space-between; gap:8px;}
   .tag{font-size:11.5px; font-weight:700;}
   .card.tt .tag{color:var(--tt);}
@@ -62,29 +76,63 @@
   .card.bb .tag{color:var(--bb);}
   .venue{font-size:11.5px; color:var(--sub); font-weight:600;}
   .live .venue::before{content:"● 進行中　"; color:var(--gold);}
-  .grp{font-size:14px; font-weight:700; margin-top:3px;}
-  .vs{font-size:14.5px; margin-top:5px; line-height:1.45;}
-  .vs b{font-weight:700;}
-  .vs .vsmid{color:var(--sub); font-weight:400; padding:0 4px;}
+  .vs{font-size:14.5px; margin-top:5px; line-height:1.45; display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .vsnames{flex:1; min-width:0;}
+  .vsmid{color:var(--sub); font-weight:400; padding:0 4px; font-size:12.5px;}
   .ph{color:var(--sub); font-style:normal;}
+  .scorebadge{
+    flex:none; font-variant-numeric:tabular-nums; font-weight:800; font-size:15px;
+    background:#f2ede1; color:var(--ink); border:1px solid var(--line);
+    padding:3px 9px; border-radius:8px; white-space:nowrap;
+  }
   .foot{margin-top:6px; font-size:11.5px; color:var(--sub);}
   .empty{text-align:center; color:var(--sub); padding:40px 20px; font-size:14px;}
   .updated{text-align:center; color:var(--sub); font-size:11.5px; padding:18px 0 4px;}
+
+  /* 趣味競賽 */
+  .funtotal{display:flex; align-items:center; gap:10px; margin:6px 0 14px;}
+  .funteam{flex:1; text-align:center; background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:12px 6px;}
+  .funteam.red{border-color:var(--red);}
+  .funteam.white{border-color:var(--white-team);}
+  .funteam .tname{font-size:13px; font-weight:700; color:var(--sub);}
+  .funteam.red .tname{color:var(--red);}
+  .funteam.white .tname{color:var(--white-team);}
+  .funteam .tbig{font-size:30px; font-weight:800; margin-top:2px;}
+  .funteam .tbig small{font-size:13px; font-weight:600; margin-left:2px;}
+  .funteam .tcap{font-size:11px; color:var(--sub); margin-top:4px;}
+  .funmid{flex:none; text-align:center; font-size:12px; color:var(--sub); font-weight:700; width:52px;}
+  .funcard{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 13px; margin-bottom:10px;}
+  .funcard h3{margin:0 0 6px; font-size:15px;}
+  .funcard .fmeta{font-size:11.5px; color:var(--sub); margin-bottom:8px;}
+  .funside{display:flex; align-items:center; justify-content:space-between; padding:5px 0; font-size:14px;}
+  .funside.win{font-weight:800;}
+  .funresult{margin-top:6px; font-size:12.5px; color:var(--gold); font-weight:700;}
 </style>
 </head>
 <body>
 
 <header>
   <h1>🗓 2026 經貿 x 經采 運動家庭日</h1>
-  <div class="sub">賽程表（簡易版）｜依時間排序，點上方分類可篩選</div>
+  <div class="sub">簡易版｜比分送出後自動同步</div>
 </header>
 
-<div class="searchrow"><input id="q" placeholder="搜尋姓名／賽事（例如：桌球、Nick）"></div>
-<div class="chips" id="chips">
-  <div class="chip active" data-s="all">全部</div>
-  <div class="chip" data-s="tt">🏓 桌球</div>
-  <div class="chip" data-s="bad">🏸 羽球</div>
-  <div class="chip" data-s="bb">🏀 籃球</div>
+<div class="nav" id="nav">
+  <div class="navtab active" data-v="schedule">🗓 賽程</div>
+  <div class="navtab" data-v="bracket">🏆 對戰表</div>
+  <div class="navtab" data-v="fun">🎯 趣味競賽</div>
+</div>
+
+<div id="scheduleControls">
+  <div class="searchrow"><input id="q" placeholder="搜尋姓名／賽事（例如：桌球、Nick）"></div>
+  <div class="chips" id="chips">
+    <div class="chip active" data-s="all">全部</div>
+    <div class="chip" data-s="tt">🏓 桌球</div>
+    <div class="chip" data-s="bad">🏸 羽球</div>
+    <div class="chip" data-s="bb">🏀 籃球</div>
+  </div>
+</div>
+<div id="bracketControls" style="display:none">
+  <div class="chips" id="grpChips"></div>
 </div>
 
 <main id="main"></main>
@@ -123,6 +171,7 @@ const firebaseConfig = {
 
 let liveScores = {};
 let liveTimes = {};
+let liveFun = {};
 let fbStatus = "connecting"; // connecting | live | offline
 
 try {
@@ -135,6 +184,10 @@ try {
   }, () => { fbStatus = "offline"; render(); });
   fbDb.ref("event2026/times").on("value", snap => {
     liveTimes = snap.val() || {};
+    render();
+  }, () => {});
+  fbDb.ref("event2026/fun").on("value", snap => {
+    liveFun = snap.val() || {};
     render();
   }, () => {});
 } catch (e) {
@@ -217,6 +270,22 @@ const GROUPS = [
 const MATCHES = {};
 GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => { m.group = g.id; m.gname = g.name; m.sport = g.sport; MATCHES[m.id] = m; })));
 
+/* ===== 團體趣味競賽（紅白兩隊） ===== */
+const FUN_EVENTS = [
+  { id:"f1", name:"戰鬥陀螺組",   slot:"上午", t:"10:30-11:00", v:"籃球區" },
+  { id:"f2", name:"近在咫尺",     slot:"下午", t:"13:20-13:50", v:"羽球區" },
+  { id:"f3", name:"翻山越嶺",     slot:"下午", t:"13:20-13:50", v:"羽球區" },
+  { id:"f4", name:"羽球神射手",   slot:"下午", t:"13:50-14:20", v:"羽球區" },
+  { id:"f5", name:"呼拉圈+跳繩",  slot:"下午", t:"13:50-14:20", v:"羽球區" }
+];
+const CAPTAINS = { "紅隊":["曾仁坤", "黃俊欽"], "白隊":["侯志霖", "歐蕙綺"] };
+function funScore(id){
+  const f = liveFun[id];
+  if (!f) return null;
+  if (f.r === "" || f.w === "" || f.r == null || f.w == null) return null;
+  return { r:Number(f.r), w:Number(f.w) };
+}
+
 /* 未產生勝負前的佔位文字（例如「16強勝者1」） */
 function phWin(id){ const lb = MATCHES[id].lb; return lb.indexOf("冠軍賽") >= 0 ? "冠軍" : lb.replace(/-(\d+)$/, "勝者$1"); }
 function phLose(id){ return MATCHES[id].lb.replace(/-(\d+)$/, "敗者$1"); }
@@ -265,11 +334,11 @@ function parseRange(t){
   return { a:(+m[1])*60+(+m[2]), b:(+m[3])*60+(+m[4]) };
 }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+function fmtHM(min){ const h = Math.floor(min/60), m = min%60; return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); }
 
 const MATCH_LIST = Object.keys(MATCHES).map(k => MATCHES[k]);
-let state = { s:"all", q:"" };
-
-function fmtHM(min){ const h = Math.floor(min/60), m = min%60; return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); }
+let state = { view:"schedule", s:"all", q:"", grp:GROUPS[0].id };
+let nowMin = 0;
 
 function sideHTML(side, winnerText){
   const isWinner = winnerText && side.ok && side.text === winnerText;
@@ -278,18 +347,36 @@ function sideHTML(side, winnerText){
   return '<span class="' + cls + '">' + (isWinner ? "🏆 " : "") + esc(label) + '</span>';
 }
 
-function render(){
-  const now = new Date();
-  const nowMin = now.getHours()*60 + now.getMinutes();
-  const q = state.q.trim().toLowerCase();
+/* 單一場次卡片，賽程表與對戰表共用；showTime=true 時額外顯示時間（對戰表用，賽程表已用時段標題分組） */
+function matchCardHTML(m, showTime){
+  const r = parseRange(getTime(m));
+  const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+  const w = winnerOf(m);
+  const s = scoreOf(m.id);
+  const isDone = !!w;
+  const isLive = !isDone && r && nowMin >= r.a;
+  const cls = ["card", m.sport, isLive ? "live" : "", isDone ? "done" : ""].filter(Boolean).join(" ");
+  const timeTxt = showTime && getTime(m) && getTime(m) !== "—" ? esc(getTime(m)) + "　" : "";
+  const scoreTxt = s ? '<span class="scorebadge">' + s.a + ' : ' + s.b + '</span>' : "";
+  return '<div class="' + cls + '">' +
+    '<div class="row1"><span class="tag">' + SPORT_LABEL[m.sport] + ' · ' + esc(m.gname) + '　' + esc(m.lb) + (m.crown ? "（"+m.crown+"）" : "") + '</span></div>' +
+    '<div class="venue">' + timeTxt + (VENUE_LABEL[m.v] || esc(m.v || "")) + '</div>' +
+    '<div class="vs">' +
+      '<span class="vsnames">' + sideHTML(A, w) + '<span class="vsmid">vs</span>' + sideHTML(B, w) + '</span>' +
+      scoreTxt +
+    '</div>' +
+    (isDone ? '<div class="foot">✓ 已產生結果</div>' : "") +
+  '</div>';
+}
 
+function renderSchedule(){
+  const q = state.q.trim().toLowerCase();
   const items = MATCH_LIST.map(m => ({ m, r: parseRange(getTime(m)) }))
     .sort((x, y) => {
       const ax = x.r ? x.r.a : 9999, ay = y.r ? y.r.a : 9999;
       if (ax !== ay) return ax - ay;
       return (x.m.v || "").localeCompare(y.m.v || "");
     });
-
   const filtered = items.filter(it => {
     if (state.s !== "all" && it.m.sport !== state.s) return false;
     if (!q) return true;
@@ -297,44 +384,107 @@ function render(){
     const hay = (it.m.gname + " " + it.m.lb + " " + A + " " + B).toLowerCase();
     return hay.indexOf(q) >= 0;
   });
+  if (!filtered.length) return '<div class="empty">找不到符合的賽程</div>';
+  let html = "", lastSlot = null;
+  filtered.forEach(it => {
+    const slotLabel = it.r ? (fmtHM(it.r.a) + " – " + fmtHM(it.r.b)) : "時間未定";
+    if (slotLabel !== lastSlot) {
+      const n = filtered.filter(x => (x.r ? fmtHM(x.r.a)+" – "+fmtHM(x.r.b) : "時間未定") === slotLabel).length;
+      html += '<div class="slot">' + esc(slotLabel) + '<span class="n">' + n + ' 場</span></div>';
+      lastSlot = slotLabel;
+    }
+    html += matchCardHTML(it.m, false);
+  });
+  return html;
+}
+
+function renderBracket(){
+  const g = GROUPS.find(x => x.id === state.grp) || GROUPS[0];
+  let html = "";
+  g.cols.forEach(col => {
+    html += '<div class="round">' + esc(col.title) + '<span class="n">' + col.ms.length + ' 場</span></div>';
+    col.ms.forEach(m => { html += matchCardHTML(m, true); });
+  });
+  return html;
+}
+
+function renderFun(){
+  let winR = 0, winW = 0, doneN = 0;
+  FUN_EVENTS.forEach(e => {
+    const sc = funScore(e.id);
+    if (!sc) return;
+    doneN++;
+    if (sc.r > sc.w) winR++; else if (sc.w > sc.r) winW++;
+  });
+  const finished = doneN === FUN_EVENTS.length;
+  const status = finished ? (winR === winW ? "🤝 雙方平手" : "🏆 " + (winR > winW ? "紅隊優勝" : "白隊優勝"))
+                          : (winR > winW ? "紅隊領先" : (winW > winR ? "白隊領先" : "戰況膠著"));
+  let html = '<div class="funtotal">' +
+    '<div class="funteam red"><div class="tname">紅隊</div><div class="tbig">' + winR + '<small>勝</small></div>' +
+    '<div class="tcap">👑 ' + CAPTAINS["紅隊"].join("、") + '</div></div>' +
+    '<div class="funmid">VS<br>' + status + '</div>' +
+    '<div class="funteam white"><div class="tname">白隊</div><div class="tbig">' + winW + '<small>勝</small></div>' +
+    '<div class="tcap">👑 ' + CAPTAINS["白隊"].join("、") + '</div></div>' +
+  '</div>';
+  html += '<div class="foot" style="text-align:center;margin-bottom:10px;">共 ' + FUN_EVENTS.length + ' 項，已完成 ' + doneN + '/' + FUN_EVENTS.length + '</div>';
+  FUN_EVENTS.forEach(e => {
+    const sc = funScore(e.id);
+    const rw = sc && sc.r > sc.w, ww = sc && sc.w > sc.r;
+    html += '<div class="funcard">' +
+      '<h3>' + esc(e.name) + '</h3>' +
+      '<div class="fmeta">' + esc(e.t) + '　' + esc(e.v) + '　' + esc(e.slot) + '</div>' +
+      '<div class="funside' + (rw ? " win" : "") + '">🔴 紅隊<span>' + (sc ? sc.r : "—") + '</span></div>' +
+      '<div class="funside' + (ww ? " win" : "") + '">⚪ 白隊<span>' + (sc ? sc.w : "—") + '</span></div>' +
+      (sc ? '<div class="funresult">' + (sc.r === sc.w ? "🤝 平手" : "🏆 " + (rw ? "紅隊" : "白隊") + "勝") + '</div>' : "") +
+    '</div>';
+  });
+  return html;
+}
+
+function render(){
+  const now = new Date();
+  nowMin = now.getHours()*60 + now.getMinutes();
 
   const main = document.getElementById("main");
-  if (!filtered.length) {
-    main.innerHTML = '<div class="empty">找不到符合的賽程</div>';
-  } else {
-    let html = "", lastSlot = null;
-    filtered.forEach(it => {
-      const m = it.m, r = it.r;
-      const slotLabel = r ? (fmtHM(r.a) + " – " + fmtHM(r.b)) : "時間未定";
-      if (slotLabel !== lastSlot) {
-        const n = filtered.filter(x => (x.r ? fmtHM(x.r.a)+" – "+fmtHM(x.r.b) : "時間未定") === slotLabel).length;
-        html += '<div class="slot">' + esc(slotLabel) + '<span class="n">' + n + ' 場</span></div>';
-        lastSlot = slotLabel;
-      }
-      const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
-      const w = winnerOf(m);
-      const isDone = !!w;
-      const isLive = !isDone && r && nowMin >= r.a;
-      const cls = ["card", m.sport, isLive ? "live" : "", isDone ? "done" : ""].filter(Boolean).join(" ");
-      html += '<div class="' + cls + '">' +
-        '<div class="row1"><span class="tag">' + SPORT_LABEL[m.sport] + ' · ' + esc(m.gname) + '　' + esc(m.lb) + (m.crown ? "（"+m.crown+"）" : "") + '</span></div>' +
-        '<div class="venue">' + (VENUE_LABEL[m.v] || esc(m.v || "")) + '</div>' +
-        '<div class="vs">' +
-          sideHTML(A, w) + '<span class="vsmid">vs</span>' + sideHTML(B, w) +
-        '</div>' +
-        (isDone ? '<div class="foot">✓ 已產生結果</div>' : "") +
-      '</div>';
-    });
-    main.innerHTML = html;
-  }
-  const statusText = fbStatus === "live" ? "🟢 比分即時同步中" : fbStatus === "offline" ? "🔴 比分同步離線（顯示靜態賽程）" : "🟡 比分同步連線中…";
+  if (state.view === "schedule") main.innerHTML = renderSchedule();
+  else if (state.view === "bracket") main.innerHTML = renderBracket();
+  else main.innerHTML = renderFun();
+
+  const statusText = fbStatus === "live" ? "🟢 比分即時同步中" : fbStatus === "offline" ? "🔴 比分同步離線（顯示靜態資料）" : "🟡 比分同步連線中…";
   document.getElementById("updated").textContent = "更新時間 " + fmtHM(nowMin) + "　｜　" + statusText;
 }
+
+/* ===== 對戰表：賽事分類選單 ===== */
+const grpChips = document.getElementById("grpChips");
+grpChips.innerHTML = GROUPS.map(g =>
+  '<div class="chip' + (g.id === state.grp ? " active" : "") + '" data-grp="' + g.id + '" data-sport="' + g.sport + '">' +
+  (g.sport === "tt" ? "🏓 " : g.sport === "bad" ? "🏸 " : "🏀 ") + esc(g.name) + '</div>'
+).join("");
+grpChips.addEventListener("click", ev => {
+  const c = ev.target.closest(".chip");
+  if (!c) return;
+  grpChips.querySelectorAll(".chip").forEach(x => x.classList.remove("active"));
+  c.classList.add("active");
+  state.grp = c.getAttribute("data-grp");
+  render();
+});
+
+/* ===== 主頁籤切換 ===== */
+document.getElementById("nav").addEventListener("click", ev => {
+  const t = ev.target.closest(".navtab");
+  if (!t) return;
+  document.querySelectorAll(".navtab").forEach(x => x.classList.remove("active"));
+  t.classList.add("active");
+  state.view = t.getAttribute("data-v");
+  document.getElementById("scheduleControls").style.display = state.view === "schedule" ? "" : "none";
+  document.getElementById("bracketControls").style.display = state.view === "bracket" ? "" : "none";
+  render();
+});
 
 document.getElementById("chips").addEventListener("click", ev => {
   const c = ev.target.closest(".chip");
   if (!c) return;
-  document.querySelectorAll(".chip").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll("#chips .chip").forEach(x => x.classList.remove("active"));
   c.classList.add("active");
   state.s = c.getAttribute("data-s");
   render();
