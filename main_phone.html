@@ -24,19 +24,19 @@
   h1{margin:0; font-size:18px; font-weight:800; letter-spacing:.3px;}
   .sub{color:var(--sub); font-size:12px; margin-top:3px; padding-bottom:10px;}
 
-  .nav{display:flex; gap:6px; padding:0 16px; background:var(--paper); position:sticky; top:52px; z-index:6; border-bottom:1px solid var(--line);}
+  .nav{display:flex; gap:4px; padding:0 10px; background:var(--paper); position:sticky; top:52px; z-index:6; border-bottom:1px solid var(--line);}
   .navtab{
-    flex:1; text-align:center; font-size:14px; font-weight:700; color:var(--sub);
-    padding:10px 4px 9px; border-bottom:3px solid transparent; cursor:pointer;
+    flex:1; text-align:center; font-size:13px; font-weight:700; color:var(--sub);
+    padding:10px 2px 9px; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap;
   }
   .navtab.active{color:var(--ink); border-bottom-color:var(--gold);}
 
-  .searchrow{padding:10px 16px 0;}
-  #q{
-    width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+  .searchrow{padding:10px 16px 0; display:flex; gap:8px; align-items:center;}
+  .searchrow input{
+    flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
     border-radius:10px; padding:10px 12px; font-size:15px; font-family:inherit;
   }
-  #q:focus{outline:none; border-color:var(--gold);}
+  .searchrow input:focus{outline:none; border-color:var(--gold);}
   .chips{display:flex; gap:8px; padding:10px 16px 12px; overflow-x:auto;}
   .chip{
     flex:none; font-size:13.5px; font-weight:700; padding:7px 14px; border-radius:999px;
@@ -51,6 +51,12 @@
   #grpChips .chip.active[data-sport="tt"]{background:var(--tt);}
   #grpChips .chip.active[data-sport="bad"]{background:var(--bad);}
   #grpChips .chip.active[data-sport="bb"]{background:var(--bb);}
+  #mealChips .chip.active{background:#3a4250;}
+
+  .masktoggle{
+    flex:none; font-size:12.5px; font-weight:700; color:var(--gold); background:none; border:1.5px solid var(--gold);
+    border-radius:999px; padding:8px 12px; white-space:nowrap;
+  }
 
   main{padding:4px 16px 0;}
   .slot, .round{
@@ -103,10 +109,32 @@
   .funmid{flex:none; text-align:center; font-size:12px; color:var(--sub); font-weight:700; width:52px;}
   .funcard{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 13px; margin-bottom:10px;}
   .funcard h3{margin:0 0 6px; font-size:15px;}
-  .funcard .fmeta{font-size:11.5px; color:var(--sub); margin-bottom:8px;}
   .funside{display:flex; align-items:center; justify-content:space-between; padding:5px 0; font-size:14px;}
   .funside.win{font-weight:800;}
   .funresult{margin-top:6px; font-size:12.5px; color:var(--gold); font-weight:700;}
+
+  .sectionhd{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:14px; font-weight:800; margin:18px 0 8px;
+  }
+  .rosterbox{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px;}
+  .rosterbox.red{border-color:var(--red);}
+  .rosterbox.white{border-color:var(--white-team);}
+  .rhead{font-size:13.5px; font-weight:800; margin-bottom:6px;}
+  .rosterbox.red .rhead{color:var(--red);}
+  .rosterbox.white .rhead{color:var(--white-team);}
+  .rperson{display:flex; align-items:baseline; gap:6px; font-size:13.5px; padding:4px 0; border-top:1px dashed var(--line);}
+  .rperson:first-of-type{border-top:none;}
+  .rperson .eng{color:var(--sub); font-size:12px;}
+  .captag{font-size:10.5px; background:var(--gold); color:#fff; border-radius:6px; padding:1px 5px; margin-left:2px;}
+
+  /* 餐點 */
+  .mealcard{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:11px 13px; margin-bottom:9px;}
+  .mealcard .mtop{font-size:14.5px; font-weight:700;}
+  .mealcard .meid{color:var(--sub); font-weight:600; font-size:12.5px; margin-right:6px;}
+  .mealcard .meng{color:var(--sub); font-weight:600; font-size:12.5px;}
+  .mealcard .mline{font-size:13px; margin-top:5px; color:var(--ink);}
+  .mealcard .mline b{font-weight:700;}
 </style>
 </head>
 <body>
@@ -120,6 +148,7 @@
   <div class="navtab active" data-v="schedule">🗓 賽程</div>
   <div class="navtab" data-v="bracket">🏆 對戰表</div>
   <div class="navtab" data-v="fun">🎯 趣味競賽</div>
+  <div class="navtab" data-v="meal">🍱 餐點</div>
 </div>
 
 <div id="scheduleControls">
@@ -133,6 +162,19 @@
 </div>
 <div id="bracketControls" style="display:none">
   <div class="chips" id="grpChips"></div>
+</div>
+<div id="mealControls" style="display:none">
+  <div class="searchrow">
+    <input id="mq" placeholder="搜尋姓名／英文名／員編">
+    <button class="masktoggle" id="revealBtn">顯示眷屬姓名</button>
+  </div>
+  <div class="chips" id="mealChips">
+    <div class="chip active" data-t="all">全部</div>
+    <div class="chip" data-t="紅隊">🔴 紅隊</div>
+    <div class="chip" data-t="白隊">⚪ 白隊</div>
+    <div class="chip" data-t="福委">福委</div>
+    <div class="chip" data-t="大家長">大家長</div>
+  </div>
 </div>
 
 <main id="main"></main>
@@ -272,11 +314,11 @@ GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => { m.group = g.id; m.gn
 
 /* ===== 團體趣味競賽（紅白兩隊） ===== */
 const FUN_EVENTS = [
-  { id:"f1", name:"戰鬥陀螺組",   slot:"上午", t:"10:30-11:00", v:"籃球區" },
-  { id:"f2", name:"近在咫尺",     slot:"下午", t:"13:20-13:50", v:"羽球區" },
-  { id:"f3", name:"翻山越嶺",     slot:"下午", t:"13:20-13:50", v:"羽球區" },
-  { id:"f4", name:"羽球神射手",   slot:"下午", t:"13:50-14:20", v:"羽球區" },
-  { id:"f5", name:"呼拉圈+跳繩",  slot:"下午", t:"13:50-14:20", v:"羽球區" }
+  { id:"f1", name:"戰鬥陀螺組" },
+  { id:"f2", name:"近在咫尺" },
+  { id:"f3", name:"翻山越嶺" },
+  { id:"f4", name:"羽球神射手" },
+  { id:"f5", name:"呼拉圈+跳繩" }
 ];
 const CAPTAINS = { "紅隊":["曾仁坤", "黃俊欽"], "白隊":["侯志霖", "歐蕙綺"] };
 function funScore(id){
@@ -284,6 +326,23 @@ function funScore(id){
   if (!f) return null;
   if (f.r === "" || f.w === "" || f.r == null || f.w == null) return null;
   return { r:Number(f.r), w:Number(f.w) };
+}
+
+/* ===== 紅白隊名單／餐點資料（取自主控版原始資料） ===== */
+const MEAL_FIELDS = { NO:0, TEAM:1, GRP:2, DEPT:3, EID:4, NAME:5, ROLE:6, DIET:7, MEAL:8, DRINK:9, OF:10 };
+const MEAL_TYPES = ["4. 麥香雞 + DE餐(小薯、麥克雞6塊)", "7. 招牌素飯糰(飲品選填)", "2. 大麥克 + DE餐(小薯、麥克雞6塊)", "5. 麥克雞6塊 + A餐(中薯)", "6. 藜麥沙拉(義式油醋沙拉醬包) + A餐(中薯)", "1. 大麥克 + A餐(中薯)", "3. 麥香雞 + A餐(中薯)", "8. 免"];
+const DRINK_TYPES = ["無糖綠茶(中)(去冰)", "玉米濃湯(小)", "無糖綠茶(中)(冰)", ""];
+const MEAL_ENG = {"扈端華":"Daniel","吳彥輝":"Nick","范書維":"Derek","許世展":"Ian","張兆嘉":"Cindy","陳毓升":"Sam","游椀詒":"Wynne","張逸鴻":"Ethan","洪祥盛":"Joshua","游凱鈞":"Matrix","陳俊諺":"Ivor","謝東恩":"Bryan","莫為智":"Eric","許依慧":"Wendy","楊欣瑜":"Tina","朱瑋婷":"Weiting","吳宇宸":"Leo","林靜吟":"Emily","邱瑋亭":"Stella","謝安倪":"Annie","許至昊":"Gershwin","張博凱":"Kenny","李依如":"Janice","張瑋恬":"Amy","林千翔":"Coco","王漢雍":"Mario","曾仁坤":"James","簡任余":"Jerry","左明德":"MT","黃俊欽":"ChunChin","朱俊綱":"Stanley","宋思潔":"Suzie","潘姝蘋":"Apple","黃柏盛":"Benson","李曉雲":"Wennie","陳軍屏":"Tommy","蘇進家":"Josh","楊妤婷":"Tina","陳崇銘":"Tom","林秉賢":"Adam","林宛樺":"Lena","周思蓉":"Zoey","楊勝傑":"Allen","廖子鑫":"Jason","李柏儀":"Eric","黃禎宗":"Zong","蘇威諺":"Ziv","尤勝弘":"Harries","王浚懿":"Frank","洪東昇":"Keith","楊權":"Chorld","廖昱甄":"Nova","呂婉慈":"Vanessa","鍾宜珍":"Selena","游雅蕙":"Grace","陳麗芳":"Vivian","滕威愷":"Andy","蘇珮瑄":"Sherry","張翔":"Cliff","蔡季澄":"Joseph","孫秉家":"Jack","吳治寰":"Benson","李亭鋒":"Ryan","麥如君":"Amy","歐蕙綺":"Ciara","陳孟君":"Jun","楊明真":"Minjane","李雯萱":"Flora","康晉豪":"Brian","林苡勤":"Betty","林建志":"Kenny","張正瑜":"John","吳東育":"Teddy","陳立學":"Lucas","王聖翔":"Shuan","王璟瑜":"Julie","鄧起宇":"Richard","侯志霖":"Oliver","郭欣怡":"Teresa","黃祥焜":"Yellow","林彥成":"Nick","陳志明":"Raven","洪義凱":"Wilkai","封智翔":"Vito","蔡慧娟":"Zoe"};
+const ROSTER_SEQ = {"扈端華":1,"張勤玫":2,"吳彥輝":1,"范書維":2,"許世展":3,"張兆嘉":4,"陳毓升":5,"游椀詒":6,"張逸鴻":7,"洪祥盛":8,"游凱鈞":9,"游承益":10,"陳俊諺":11,"謝東恩":12,"莫為智":13,"許依慧":14,"楊欣瑜":15,"朱瑋婷":1,"朱翊寧":2,"吳宇宸":3,"林靜吟":4,"邱瑋亭":5,"陳昱任":6,"陳浩哲":7,"謝安倪":8,"許至昊":9,"李秋賦":10,"張博凱":11,"李依如":12,"張瑋恬":13,"林千翔":14,"梁禎芳":15,"林育陞":16,"王漢雍":17,"曾仁坤":18,"簡任余":19,"范曉君":20,"簡允允":21,"左明德":22,"黃俊欽":23,"朱俊綱":24,"朱家緯":25,"宋思潔":26,"朱品蓁":27,"潘姝蘋":28,"劉佳昇":29,"劉宸允":30,"黃柏盛":31,"李曉雲":32,"陳軍屏":33,"蘇進家":34,"楊妤婷":35,"陳崇銘":36,"林秉賢":37,"林宛樺":38,"周思蓉":39,"楊勝傑":40,"廖子鑫":41,"李柏儀":42,"凌巧倫":43,"李苡澄":44,"凌苡安":45,"黃禎宗":46,"蘇威諺":47,"尤勝弘":48,"王浚懿":1,"王柏叡":2,"王柏諺":3,"洪東昇":4,"洪若晨":5,"楊權":6,"廖昱甄":7,"呂婉慈":8,"林柏宇":9,"林琮淵":10,"林畇杉":11,"鍾宜珍":12,"洪崇銘":13,"游雅蕙":14,"陳麗芳":15,"党夢熊":16,"党子欣":17,"滕威愷":18,"蘇珮瑄":19,"張翔":20,"蔡季澄":21,"孫秉家":22,"吳治寰":23,"李亭鋒":24,"麥如君":25,"賴名家":26,"賴品瀚":27,"歐蕙綺":28,"陳孟君":29,"楊明真":30,"鄭帆軒":31,"李雯萱":32,"康晉豪":33,"林苡勤":34,"林苡暄":35,"林建志":36,"林少睿":37,"張正瑜":38,"吳東育":39,"陳立學":40,"王聖翔":41,"王璟瑜":42,"鄧起宇":43,"侯志霖":44,"郭欣怡":45,"黃祥焜":46,"林彥成":47,"陳志明":48,"洪義凱":49,"謝妤婕":50,"封智翔":51,"蔡慧娟":52};
+const MEAL_ROWS = [[1,"大家長","1","CO","002","扈端華","同仁","葷食",0,0,""],[2,"大家長","1","CO","002","張勤玫","配偶","葷食",1,1,"扈端華"],[3,"福委","40","IBB","598","張兆嘉","同仁","葷食",2,0,""],[4,"福委","16","FSB","850","范書維","同仁","葷食",2,2,""],[5,"福委","9","DIB","974","吳彥輝","同仁","葷食",2,2,""],[6,"福委","44","MSB","1016","陳毓升","同仁","葷食",2,2,""],[7,"福委","62","PSB","1020","游椀詒","同仁","葷食",0,1,""],[8,"福委","63","PSB","1027","張逸鴻","同仁","葷食",2,2,""],[9,"福委","64","PSB","1028","洪祥盛","同仁","葷食",2,2,""],[10,"福委","22","FSB","1066","許世展","同仁","葷食",2,2,""],[11,"福委","83","OPM","P025","莫為智","同仁","葷食",2,0,""],[12,"福委","76","FSE","P032","游凱鈞","同仁","葷食",2,2,""],[13,"福委","76","FSE","P032","游承益","子女","葷食",0,2,"游凱鈞"],[14,"福委","84","OPM","P106","許依慧","同仁","葷食",0,0,""],[15,"福委","85","OPM","P124","楊欣瑜","同仁","葷食",2,2,""],[16,"福委","81","FSS","P133","陳俊諺","同仁","葷食",2,2,""],[17,"福委","82","FSS","P134","謝東恩","同仁","葷食",0,2,""],[18,"紅隊","50","PSB","008","左明德","同仁","葷食",2,0,""],[19,"紅隊","48","PSB","009","曾仁坤","同仁","葷食",0,1,""],[20,"紅隊","49","PSB","062","簡任余","同仁","葷食",0,0,""],[21,"紅隊","49","PSB","062","范曉君","配偶","素食",1,0,"簡任余"],[22,"紅隊","49","PSB","062","簡允允","子女","葷食",0,2,"簡任余"],[23,"紅隊","51","PSB","120","黃俊欽","同仁","葷食",2,2,""],[24,"紅隊","52","PSB","121","朱俊綱","同仁","葷食",0,2,""],[25,"紅隊","52","PSB","121","朱家緯","子女","葷食",3,1,"朱俊綱"],[26,"紅隊","53","PSB","154","宋思潔","同仁","葷食",0,1,""],[27,"紅隊","53","PSB","154","朱品蓁","子女","葷食",3,1,"宋思潔"],[28,"紅隊","54","PSB","251","潘姝蘋","同仁","葷食",0,0,""],[29,"紅隊","54","PSB","251","劉佳昇","配偶","葷食",2,0,"潘姝蘋"],[30,"紅隊","54","PSB","251","劉宸允","子女","葷食",4,1,"潘姝蘋"],[31,"紅隊","57","PSB","260","陳軍屏","同仁","葷食",2,2,""],[32,"紅隊","55","PSB","334","黃柏盛","同仁","葷食",2,1,""],[33,"紅隊","35","GAO","595","邱瑋亭","同仁","葷食",0,0,""],[34,"紅隊","35","GAO","595","陳昱任","配偶","葷食",5,2,"邱瑋亭"],[35,"紅隊","35","GAO","595","陳浩哲","子女","葷食",3,1,"邱瑋亭"],[36,"紅隊","56","PSB","597","李曉雲","同仁","葷食",6,2,""],[37,"紅隊","41","MSB","672","許至昊","同仁","葷食",2,2,""],[38,"紅隊","41","MSB","672","李秋賦","配偶","葷食",1,1,"許至昊"],[39,"紅隊","58","PSB","750","蘇進家","同仁","葷食",0,2,""],[40,"紅隊","45","MSB","811","張瑋恬","同仁","葷食",2,1,""],[41,"紅隊","42","MSB","816","張博凱","同仁","葷食",2,2,""],[42,"紅隊","2","CO","818","朱瑋婷","同仁","葷食",0,0,""],[43,"紅隊","2","CO","818","朱翊寧","同住兄弟姊妹","葷食",1,1,"朱瑋婷"],[44,"紅隊","59","PSB","961","楊妤婷","同仁","葷食",2,1,""],[45,"紅隊","46","MSB","971","林千翔","同仁","葷食",0,2,""],[46,"紅隊","46","MSB","971","梁禎芳","配偶","葷食",0,1,"林千翔"],[47,"紅隊","46","MSB","971","林育陞","子女","葷食",3,1,"林千翔"],[48,"紅隊","60","PSB","978","陳崇銘","同仁","葷食",2,1,""],[49,"紅隊","43","MSB","988","李依如","同仁","葷食",2,2,""],[50,"紅隊","61","PSB","1001","林秉賢","同仁","葷食",2,1,""],[51,"紅隊","65","PSB","1037","林宛樺","同仁","葷食",2,0,""],[52,"紅隊","66","PSB","1055","周思蓉","同仁","葷食",0,1,""],[53,"紅隊","67","PSB","1056","楊勝傑","同仁","葷食",2,2,""],[54,"紅隊","4","CO","1061","林靜吟","同仁","葷食",2,0,""],[55,"紅隊","47","MSB","1068","王漢雍","同仁","葷食",2,0,""],[56,"紅隊","3","CO","1072","吳宇宸","同仁","葷食",2,2,""],[57,"紅隊","36","GAO","1073","謝安倪","同仁","葷食",0,2,""],[58,"紅隊","68","PSB","1074","廖子鑫","同仁","葷食",2,1,""],[59,"紅隊","77","FSE","P036","李柏儀","同仁","葷食",5,2,""],[60,"紅隊","77","FSE","P036","凌巧倫","配偶","葷食",6,2,"李柏儀"],[61,"紅隊","77","FSE","P036","李苡澄","子女","葷食",3,1,"李柏儀"],[62,"紅隊","77","FSE","P036","凌苡安","子女","葷食",3,1,"李柏儀"],[63,"紅隊","78","FSE","P118","黃禎宗","同仁","葷食",2,2,""],[64,"紅隊","79","FSE","P147","蘇威諺","同仁","葷食",2,2,""],[65,"紅隊","80","FSE","P151","尤勝弘","同仁","葷食",0,2,""],[66,"白隊","11","CO","021","鍾宜珍","同仁","葷食",2,2,""],[67,"白隊","11","CO","021","洪崇銘","配偶","葷食",0,2,"鍾宜珍"],[68,"白隊","23","FSB","115","麥如君","同仁","葷食",2,1,""],[69,"白隊","23","FSB","115","賴名家","配偶","葷食",2,2,"麥如君"],[70,"白隊","23","FSB","115","賴品瀚","子女","葷食",0,2,"麥如君"],[71,"白隊","12","CO","144","游雅蕙","同仁","葷食",2,2,""],[72,"白隊","39","IBB","213","侯志霖","同仁","葷食",2,2,""],[73,"白隊","24","FSB","267","歐蕙綺","同仁","葷食",4,2,""],[74,"白隊","25","FSB","469","陳孟君","同仁","葷食",0,2,""],[75,"白隊","26","FSB","591","楊明真","同仁","葷食",2,2,""],[76,"白隊","26","FSB","591","鄭帆軒","子女","葷食",6,1,"楊明真"],[77,"白隊","30","FSB","649","林建志","同仁","葷食",2,1,""],[78,"白隊","30","FSB","649","林少睿","子女","葷食",0,1,"林建志"],[79,"白隊","27","FSB","656","李雯萱","同仁","葷食",2,2,""],[80,"白隊","5","DIB","700","王浚懿","同仁","葷食",6,0,""],[81,"白隊","5","DIB","700","王柏叡","子女","葷食",3,1,"王浚懿"],[82,"白隊","5","DIB","700","王柏諺","子女","葷食",3,1,"王浚懿"],[83,"白隊","6","DIB","742","洪東昇","同仁","葷食",2,2,""],[84,"白隊","6","DIB","742","洪若晨","子女","葷食",0,1,"洪東昇"],[85,"白隊","69","GAO","788","郭欣怡","同仁","葷食",2,2,""],[86,"白隊","13","CO","819","陳麗芳","同仁","葷食",2,2,""],[87,"白隊","13","CO","819","党夢熊","配偶","葷食",2,0,"陳麗芳"],[88,"白隊","13","CO","819","党子欣","子女","葷食",2,2,"陳麗芳"],[89,"白隊","28","FSB","836","康晉豪","同仁","葷食",0,2,""],[90,"白隊","7","DIB","843","楊權","同仁","素食",1,1,""],[91,"白隊","70","GAO","900","黃祥焜","同仁","葷食",2,2,""],[92,"白隊","71","GAO","908","林彥成","同仁","葷食",0,2,""],[93,"白隊","72","GAO","912","陳志明","同仁","葷食",0,0,""],[94,"白隊","37","GAO","931","王璟瑜","同仁","葷食",0,1,""],[95,"白隊","73","GAO","935","洪義凱","同仁","葷食",2,1,""],[96,"白隊","73","GAO","935","謝妤婕","配偶","葷食",0,0,"洪義凱"],[97,"白隊","38","GAO","953","鄧起宇","同仁","葷食",2,0,""],[98,"白隊","74","GAO","966","封智翔","同仁","葷食",0,2,""],[99,"白隊","17","FSB","998","張翔","同仁","葷食",2,2,""],[100,"白隊","8","DIB","1012","廖昱甄","同仁","葷食",2,0,""],[101,"白隊","18","FSB","1013","蔡季澄","同仁","葷食",2,2,""],[102,"白隊","31","FSB","1033","張正瑜","同仁","葷食",2,2,""],[103,"白隊","75","GAO","1042","蔡慧娟","同仁","葷食",0,1,""],[104,"白隊","32","FSB","1048","吳東育","同仁","葷食",0,2,""],[105,"白隊","33","FSB","1049","陳立學","同仁","葷食",2,2,""],[106,"白隊","10","DIB","1050","呂婉慈","同仁","葷食",2,2,""],[107,"白隊","10","DIB","1050","林柏宇","配偶","葷食",5,2,"呂婉慈"],[108,"白隊","10","DIB","1050","林琮淵","子女","葷食",6,1,"呂婉慈"],[109,"白隊","10","DIB","1050","林畇杉","子女","葷食",7,3,"呂婉慈"],[110,"白隊","29","FSB","1054","林苡勤","同仁","葷食",0,2,""],[111,"白隊","29","FSB","1054","林苡暄","同住兄弟姊妹","葷食",0,2,"林苡勤"],[112,"白隊","19","FSB","1060","孫秉家","同仁","葷食",0,2,""],[113,"白隊","34","FSB","1062","王聖翔","同仁","葷食",5,2,""],[114,"白隊","20","FSB","1063","吳治寰","同仁","葷食",2,0,""],[115,"白隊","21","FSB","1064","李亭鋒","同仁","葷食",2,2,""],[116,"白隊","14","CO","1069","滕威愷","同仁","葷食",3,1,""],[117,"白隊","15","CO","1070","蘇珮瑄","同仁","葷食",0,2,""]];
+function engOf(r){ return r[MEAL_FIELDS.OF] ? "" : (MEAL_ENG[r[MEAL_FIELDS.NAME]] || ""); }
+function mealShort(i){ return MEAL_TYPES[i].replace(/\s*\+\s*/g, "+"); }
+function drinkOf(i){ return DRINK_TYPES[i] || "（未選）"; }
+function maskName(n){ return n.length >= 3 ? n[0] + "Ｏ" + n.slice(2) : (n.length === 2 ? n[0] + "Ｏ" : n); }
+function isDependent(r){ return !!r[MEAL_FIELDS.OF]; }
+function displayName(r){
+  const n = r[MEAL_FIELDS.NAME];
+  return (isDependent(r) && !state.reveal) ? maskName(n) : n;
 }
 
 /* 未產生勝負前的佔位文字（例如「16強勝者1」） */
@@ -337,7 +396,7 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt
 function fmtHM(min){ const h = Math.floor(min/60), m = min%60; return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); }
 
 const MATCH_LIST = Object.keys(MATCHES).map(k => MATCHES[k]);
-let state = { view:"schedule", s:"all", q:"", grp:GROUPS[0].id };
+let state = { view:"schedule", s:"all", q:"", grp:GROUPS[0].id, mealQ:"", mealTeam:"all", reveal:false };
 let nowMin = 0;
 
 function sideHTML(side, winnerText){
@@ -408,6 +467,27 @@ function renderBracket(){
   return html;
 }
 
+function rosterListHTML(team, cls){
+  const F = MEAL_FIELDS;
+  const isCap = n => (CAPTAINS[team] || []).indexOf(n) >= 0;
+  const capIdx = r => { const i = (CAPTAINS[team] || []).indexOf(r[F.NAME]); return i < 0 ? 99 : i; };
+  const seq = r => (ROSTER_SEQ[r[F.NAME]] != null ? ROSTER_SEQ[r[F.NAME]] : 999);
+  const list = MEAL_ROWS.filter(r => r[F.TEAM] === team).sort((a, b) =>
+    (capIdx(a) - capIdx(b)) || (seq(a) - seq(b)) || String(a[F.EID]).localeCompare(String(b[F.EID])));
+  if (!list.length) return "";
+  let h = '<div class="rosterbox ' + cls + '"><div class="rhead">' + esc(team) + '　<span style="font-weight:600;color:var(--sub);font-size:11.5px">共 ' + list.length + ' 人</span></div>';
+  list.forEach(r => {
+    const staff = r[F.ROLE] === "同仁";
+    const eng = staff ? (MEAL_ENG[r[F.NAME]] || "") : "";
+    h += '<div class="rperson">' +
+      (eng ? '<span class="eng">' + esc(eng) + '</span>' : "") +
+      '<span>' + esc(displayName(r)) + '</span>' +
+      (isCap(r[F.NAME]) ? '<span class="captag">隊長</span>' : "") +
+    '</div>';
+  });
+  return h + "</div>";
+}
+
 function renderFun(){
   let winR = 0, winW = 0, doneN = 0;
   FUN_EVENTS.forEach(e => {
@@ -432,10 +512,42 @@ function renderFun(){
     const rw = sc && sc.r > sc.w, ww = sc && sc.w > sc.r;
     html += '<div class="funcard">' +
       '<h3>' + esc(e.name) + '</h3>' +
-      '<div class="fmeta">' + esc(e.t) + '　' + esc(e.v) + '　' + esc(e.slot) + '</div>' +
       '<div class="funside' + (rw ? " win" : "") + '">🔴 紅隊<span>' + (sc ? sc.r : "—") + '</span></div>' +
       '<div class="funside' + (ww ? " win" : "") + '">⚪ 白隊<span>' + (sc ? sc.w : "—") + '</span></div>' +
       (sc ? '<div class="funresult">' + (sc.r === sc.w ? "🤝 平手" : "🏆 " + (rw ? "紅隊" : "白隊") + "勝") + '</div>' : "") +
+    '</div>';
+  });
+  html += '<div class="sectionhd">👥 紅白隊名單<span class="masktoggle" id="revealBtnFun" style="cursor:pointer">' + (state.reveal ? "隱藏眷屬姓名" : "顯示眷屬姓名") + '</span></div>';
+  html += rosterListHTML("紅隊", "red");
+  html += rosterListHTML("白隊", "white");
+  return html;
+}
+
+function renderMeal(){
+  const F = MEAL_FIELDS;
+  const q = state.mealQ.trim().toLowerCase();
+  const filtered = MEAL_ROWS.filter(r => {
+    if (state.mealTeam !== "all" && r[F.TEAM] !== state.mealTeam) return false;
+    if (!q) return true;
+    const eng = (MEAL_ENG[r[F.NAME]] || "").toLowerCase();
+    const hay = (r[F.NAME] + " " + eng + " " + r[F.EID]).toLowerCase();
+    return hay.indexOf(q) >= 0;
+  });
+  if (!filtered.length) return '<div class="empty">找不到符合的同仁／眷屬</div>';
+  let html = "", lastTeam = null;
+  filtered.forEach(r => {
+    if (r[F.TEAM] !== lastTeam) {
+      const n = filtered.filter(x => x[F.TEAM] === r[F.TEAM]).length;
+      html += '<div class="slot">' + esc(r[F.TEAM]) + '<span class="n">' + n + ' 人</span></div>';
+      lastTeam = r[F.TEAM];
+    }
+    const eng = engOf(r);
+    html += '<div class="mealcard">' +
+      '<div class="mtop"><span class="meid">' + esc(r[F.EID]) + '</span>' +
+      (eng ? '<span class="meng">' + esc(eng) + '　</span>' : "") +
+      esc(displayName(r)) + '</div>' +
+      '<div class="mline">🍔 <b>' + esc(mealShort(r[F.MEAL])) + '</b></div>' +
+      '<div class="mline">🥤 ' + esc(drinkOf(r[F.DRINK])) + '</div>' +
     '</div>';
   });
   return html;
@@ -448,7 +560,13 @@ function render(){
   const main = document.getElementById("main");
   if (state.view === "schedule") main.innerHTML = renderSchedule();
   else if (state.view === "bracket") main.innerHTML = renderBracket();
+  else if (state.view === "meal") main.innerHTML = renderMeal();
   else main.innerHTML = renderFun();
+
+  const revealBtn = document.getElementById("revealBtn");
+  if (revealBtn) revealBtn.textContent = state.reveal ? "隱藏眷屬姓名" : "顯示眷屬姓名";
+  const revealBtnFun = document.getElementById("revealBtnFun");
+  if (revealBtnFun) revealBtnFun.addEventListener("click", () => { state.reveal = !state.reveal; render(); });
 
   const statusText = fbStatus === "live" ? "🟢 比分即時同步中" : fbStatus === "offline" ? "🔴 比分同步離線（顯示靜態資料）" : "🟡 比分同步連線中…";
   document.getElementById("updated").textContent = "更新時間 " + fmtHM(nowMin) + "　｜　" + statusText;
@@ -478,6 +596,7 @@ document.getElementById("nav").addEventListener("click", ev => {
   state.view = t.getAttribute("data-v");
   document.getElementById("scheduleControls").style.display = state.view === "schedule" ? "" : "none";
   document.getElementById("bracketControls").style.display = state.view === "bracket" ? "" : "none";
+  document.getElementById("mealControls").style.display = state.view === "meal" ? "" : "none";
   render();
 });
 
@@ -490,6 +609,17 @@ document.getElementById("chips").addEventListener("click", ev => {
   render();
 });
 document.getElementById("q").addEventListener("input", ev => { state.q = ev.target.value; render(); });
+
+document.getElementById("mealChips").addEventListener("click", ev => {
+  const c = ev.target.closest(".chip");
+  if (!c) return;
+  document.querySelectorAll("#mealChips .chip").forEach(x => x.classList.remove("active"));
+  c.classList.add("active");
+  state.mealTeam = c.getAttribute("data-t");
+  render();
+});
+document.getElementById("mq").addEventListener("input", ev => { state.mealQ = ev.target.value; render(); });
+document.getElementById("revealBtn").addEventListener("click", () => { state.reveal = !state.reveal; render(); });
 
 render();
 setInterval(render, 30000);
