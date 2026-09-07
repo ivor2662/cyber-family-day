@@ -82,8 +82,14 @@
     font-size:20px; font-weight:800; color:var(--ink); display:flex; align-items:center; justify-content:center;
   }
   .stepbtn:active{background:#f0ece2;}
-  .stepval{width:44px; text-align:center; font-size:19px; font-weight:800; font-variant-numeric:tabular-nums;}
-  .stepval.empty{color:var(--sub); font-weight:600; font-size:14px;}
+  .stepval{
+    width:50px; text-align:center; font-size:19px; font-weight:800; font-variant-numeric:tabular-nums;
+    border:1.5px solid transparent; border-radius:8px; background:transparent; color:var(--ink);
+    padding:6px 2px; font-family:inherit; -moz-appearance:textfield;
+  }
+  .stepval::-webkit-outer-spin-button, .stepval::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .stepval::placeholder{color:var(--sub); font-weight:600; font-size:14px;}
+  .stepval:focus{outline:none; border-color:var(--gold); background:#fff;}
 
   .cardfoot{display:flex; justify-content:flex-end; margin-top:4px;}
   .clearlink{font-size:11.5px; color:var(--sub); text-decoration:underline; padding:4px;}
@@ -308,10 +314,10 @@ GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => { m.group = g.id; m.gn
 
 const FUN_EVENTS = [
   { id:"f1", name:"戰鬥陀螺PK賽", slot:"上午", t:"10:30-11:00", v:"籃球區" , ord:1},
-  { id:"f4", name:"羽球神射手", slot:"下午", t:"13:50-14:20", v:"羽球區", row:"13:20-14:20" , ord:3},
-  { id:"f3", name:"翻山越嶺",   slot:"下午", t:"13:20-13:50", v:"羽球區", row:"13:20-14:20" , ord:2},
-  { id:"f5", name:"呼拉圈+跳繩", slot:"下午", t:"13:50-14:20", v:"羽球區", row:"13:20-14:20" , ord:4},
-  { id:"f2", name:"近在咫尺",   slot:"下午", t:"13:20-13:50", v:"羽球區", row:"13:20-14:20" , ord:5}
+  { id:"f4", name:"羽球神射手", slot:"下午", t:"13:35-13:50", v:"羽球區", row:"13:20-14:20" , ord:3},
+  { id:"f3", name:"翻山越嶺",   slot:"下午", t:"13:20-13:35", v:"羽球區", row:"13:20-14:20" , ord:2},
+  { id:"f5", name:"呼拉圈+跳繩", slot:"下午", t:"13:50-14:05", v:"羽球區", row:"13:20-14:20" , ord:4},
+  { id:"f2", name:"近在咫尺",   slot:"下午", t:"14:05-14:20", v:"羽球區", row:"13:20-14:20" , ord:5}
 ];
 
 const SHOOTERS = [
@@ -380,11 +386,13 @@ function shootTop4(){
 
 let state = { view:"schedule", s:"all", q:"" };
 
-/* ===== 共用：數字加減器 ===== */
+/* ===== 共用：數字加減器（可以直接點兩側按鈕，也可以直接點數字輸入） ===== */
 function stepperHTML(kind, key, sub, val){
-  const shown = (val === null || val === undefined || val === "") ? '<span class="stepval empty">未輸入</span>' : '<span class="stepval">' + val + '</span>';
+  const v = (val === null || val === undefined) ? "" : val;
   return '<div class="stepper" data-kind="' + kind + '" data-key="' + key + '" data-sub="' + sub + '">' +
-    '<button class="stepbtn" data-op="-">－</button>' + shown + '<button class="stepbtn" data-op="+">＋</button>' +
+    '<button class="stepbtn" data-op="-">－</button>' +
+    '<input class="stepval" type="tel" inputmode="numeric" pattern="[0-9]*" placeholder="0" value="' + esc(v) + '">' +
+    '<button class="stepbtn" data-op="+">＋</button>' +
   '</div>';
 }
 
@@ -459,7 +467,40 @@ function render(){
   document.getElementById("updated").textContent = statusText;
 }
 
-/* ===== 加減按鈕與清除連結事件（用事件代理，畫面會一直重繪） ===== */
+/* ===== 共用：讀取／寫入某個計分欄位的目前值 ===== */
+function getStepValue(kind, key, sub){
+  if (kind === "score") { const cur = liveScores[key] || {}; return cur[sub]; }
+  if (kind === "fun") { const cur = liveFun[key] || {}; return cur[sub]; }
+  if (kind === "shootp" || kind === "shootf") { const k = kind === "shootp" ? "p" : "f"; return (liveShoot[k] || {})[key]; }
+}
+function setStepValue(kind, key, sub, v){
+  if (kind === "score") {
+    const cur = liveScores[key] || {};
+    liveScores[key] = Object.assign({}, cur); liveScores[key][sub] = v;
+    markRecent("s:"+key);
+    pushLeaf("event2026/scores/" + key + "/" + sub, v);
+  } else if (kind === "fun") {
+    const cur = liveFun[key] || {};
+    liveFun[key] = Object.assign({}, cur); liveFun[key][sub] = v;
+    markRecent("f:"+key);
+    pushLeaf("event2026/fun/" + key + "/" + sub, v);
+  } else if (kind === "shootp" || kind === "shootf") {
+    const k = kind === "shootp" ? "p" : "f";
+    if (!liveShoot[k]) liveShoot[k] = {};
+    liveShoot[k][key] = v;
+    markRecent("sh:"+k+":"+key);
+    pushLeaf("event2026/shoot/" + k + "/" + key, v);
+  }
+}
+/* 把使用者直接打的字串，轉成合法的分數值（非負整數）；打不出數字就當作清空 */
+function parseTypedScore(raw){
+  raw = String(raw).trim();
+  if (raw === "") return "";
+  const n = Math.floor(Number(raw));
+  return (isNaN(n) || n < 0) ? "" : n;
+}
+
+/* ===== 加減按鈕、直接輸入與清除連結事件（用事件代理，畫面會一直重繪） ===== */
 document.getElementById("main").addEventListener("click", ev => {
   const clearEl = ev.target.closest("[data-clear]");
   if (clearEl) {
@@ -489,31 +530,23 @@ document.getElementById("main").addEventListener("click", ev => {
   const kind = wrap.getAttribute("data-kind"), key = wrap.getAttribute("data-key"), sub = wrap.getAttribute("data-sub");
   const op = btn.getAttribute("data-op");
 
-  if (kind === "score") {
-    const cur = liveScores[key] || {};
-    let v = (cur[sub] === "" || cur[sub] == null) ? -1 : Number(cur[sub]);
-    v = op === "+" ? v + 1 : Math.max(0, v - 1);
-    liveScores[key] = Object.assign({}, cur); liveScores[key][sub] = v;
-    markRecent("s:"+key);
-    pushLeaf("event2026/scores/" + key + "/" + sub, v);
-  } else if (kind === "fun") {
-    const cur = liveFun[key] || {};
-    let v = (cur[sub] === "" || cur[sub] == null) ? -1 : Number(cur[sub]);
-    v = op === "+" ? v + 1 : Math.max(0, v - 1);
-    liveFun[key] = Object.assign({}, cur); liveFun[key][sub] = v;
-    markRecent("f:"+key);
-    pushLeaf("event2026/fun/" + key + "/" + sub, v);
-  } else if (kind === "shootp" || kind === "shootf") {
-    const k = kind === "shootp" ? "p" : "f";
-    if (!liveShoot[k]) liveShoot[k] = {};
-    let v = (liveShoot[k][key] === "" || liveShoot[k][key] == null) ? -1 : Number(liveShoot[k][key]);
-    v = op === "+" ? v + 1 : Math.max(0, v - 1);
-    liveShoot[k][key] = v;
-    markRecent("sh:"+k+":"+key);
-    pushLeaf("event2026/shoot/" + k + "/" + key, v);
-  }
+  const raw = getStepValue(kind, key, sub);
+  let v = (raw === "" || raw == null) ? -1 : Number(raw);
+  v = op === "+" ? v + 1 : Math.max(0, v - 1);
+  setStepValue(kind, key, sub, v);
   render();
 });
+/* 直接點數字輸入打字：打完離開欄位（或按完成／Enter）才送出，避免每打一個字就送一次 */
+document.getElementById("main").addEventListener("change", ev => {
+  const el = ev.target;
+  if (!el.classList || !el.classList.contains("stepval")) return;
+  const wrap = el.closest(".stepper");
+  const kind = wrap.getAttribute("data-kind"), key = wrap.getAttribute("data-key"), sub = wrap.getAttribute("data-sub");
+  const v = parseTypedScore(el.value);
+  setStepValue(kind, key, sub, v);
+  render();
+});
+
 
 document.getElementById("nav").addEventListener("click", ev => {
   const t = ev.target.closest(".navtab");
