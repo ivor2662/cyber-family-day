@@ -24,10 +24,11 @@
   h1{margin:0; font-size:18px; font-weight:800; letter-spacing:.3px;}
   .sub{color:var(--sub); font-size:12px; margin-top:3px; padding-bottom:10px;}
 
-  .nav{display:flex; gap:4px; padding:0 10px; background:var(--paper); position:sticky; top:52px; z-index:6; border-bottom:1px solid var(--line);}
+  .nav{display:flex; gap:2px; padding:0 6px; background:var(--paper); position:sticky; top:52px; z-index:6; border-bottom:1px solid var(--line); overflow-x:auto;}
+  .nav::-webkit-scrollbar{display:none;}
   .navtab{
-    flex:1; text-align:center; font-size:13px; font-weight:700; color:var(--sub);
-    padding:10px 2px 9px; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap;
+    flex:1 0 auto; text-align:center; font-size:12px; font-weight:700; color:var(--sub);
+    padding:10px 4px 9px; border-bottom:3px solid transparent; cursor:pointer; white-space:nowrap;
   }
   .navtab.active{color:var(--ink); border-bottom-color:var(--gold);}
 
@@ -65,6 +66,7 @@
     padding:14px 2px 6px; background:var(--paper);
   }
   .slot .n, .round .n{color:var(--sub); font-weight:600; font-size:12px; margin-left:6px;}
+  .slot .note, .round .note{color:var(--sub); font-weight:600; font-size:11px; margin-left:4px;}
 
   .card{
     background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line);
@@ -81,19 +83,25 @@
   .card.bad .tag{color:var(--bad);}
   .card.bb .tag{color:var(--bb);}
   .venue{font-size:11.5px; color:var(--sub); font-weight:600;}
+  .card.next{border-color:#cfd8e3; border-style:dashed;}
   .live .venue::before{content:"● 進行中　"; color:var(--gold);}
+  .live.over .venue::before{content:"● 進行中！　"; color:var(--red);}
+  .next .venue::before{content:"○ 下一場　"; color:#5b7ba6; font-weight:800;}
   .vs{font-size:14.5px; margin-top:5px; line-height:1.45; display:flex; align-items:center; justify-content:space-between; gap:8px;}
   .vsnames{flex:1; min-width:0;}
   .vsmid{color:var(--sub); font-weight:400; padding:0 4px; font-size:12.5px;}
   .ph{color:var(--sub); font-style:normal;}
+  .vsnames .winner{font-weight:800; color:var(--ink);}
   .scorebadge{
     flex:none; font-variant-numeric:tabular-nums; font-weight:800; font-size:15px;
     background:#f2ede1; color:var(--ink); border:1px solid var(--line);
     padding:3px 9px; border-radius:8px; white-space:nowrap;
   }
   .foot{margin-top:6px; font-size:11.5px; color:var(--sub);}
+  .refline{font-weight:700; color:var(--ink);}
   .empty{text-align:center; color:var(--sub); padding:40px 20px; font-size:14px;}
   .updated{text-align:center; color:var(--sub); font-size:11.5px; padding:18px 0 4px;}
+  .verline{text-align:center; color:var(--sub); font-size:10.5px; padding:0 0 16px; opacity:.75;}
 
   /* 趣味競賽 */
   .funtotal{display:flex; align-items:center; gap:10px; margin:6px 0 14px;}
@@ -117,6 +125,34 @@
     display:flex; align-items:center; justify-content:space-between;
     font-size:14px; font-weight:800; margin:18px 0 8px;
   }
+  /* 投籃大賽 */
+  .shrow{
+    display:flex; align-items:center; gap:7px; font-size:13.5px;
+    background:var(--card); border:1px solid var(--line); border-radius:9px;
+    padding:8px 10px; margin-bottom:6px;
+  }
+  .shrow.qual{border-color:var(--bb); background:var(--live-bg);}
+  .shrow .sheid{flex:none; color:var(--sub); font-size:11.5px; font-weight:700; min-width:34px;}
+  .shrow .shname{flex:1; min-width:0; font-weight:600;}
+  .shrow .shunit{display:block; color:var(--sub); font-size:11px; font-weight:600;}
+  .shrow .shtag{flex:none; font-size:10.5px; font-weight:800; color:#fff; background:var(--bb); border-radius:6px; padding:2px 6px;}
+  .shrow .shsc{flex:none; font-variant-numeric:tabular-nums; font-weight:800; font-size:15px; min-width:30px; text-align:right;}
+
+  .rosterhd{padding:10px 16px 0; display:flex; gap:8px; align-items:center;}
+  .rosterhd .rosterttl{flex:none; font-size:14px; font-weight:800; white-space:nowrap;}
+  .rosterhd input{
+    flex:1; min-width:0; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:10px; padding:9px 11px; font-size:14px; font-family:inherit;
+  }
+  .rosterhd input:focus{outline:none; border-color:var(--gold);}
+  .rhit{
+    background:var(--card); border:1.5px solid var(--gold); border-radius:10px;
+    padding:9px 12px; margin-bottom:10px; font-size:13.5px; font-weight:700;
+  }
+  .rhit .hitteam{font-weight:800;}
+  .rhit .hitteam.red{color:var(--red);}
+  .rhit .hitteam.white{color:var(--white-team);}
+  .rperson.hit{background:rgba(212,175,55,.16); border-radius:6px; padding-left:5px;}
   .rosterbox{background:var(--card); border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:12px;}
   .rosterbox.red{border-color:var(--red);}
   .rosterbox.white{border-color:var(--white-team);}
@@ -126,6 +162,7 @@
   .rperson{display:flex; align-items:baseline; gap:6px; font-size:13.5px; padding:4px 0; border-top:1px dashed var(--line);}
   .rperson:first-of-type{border-top:none;}
   .rperson .eng{color:var(--sub); font-size:12px;}
+  .rperson .ofname{color:var(--sub); font-size:11.5px; margin-left:2px;}
   .captag{font-size:10.5px; background:var(--gold); color:#fff; border-radius:6px; padding:1px 5px; margin-left:2px;}
 
   /* 餐點 */
@@ -148,11 +185,12 @@
   <div class="navtab active" data-v="schedule">🗓 賽程</div>
   <div class="navtab" data-v="bracket">🏆 對戰表</div>
   <div class="navtab" data-v="fun">🎯 趣味競賽</div>
+  <div class="navtab" data-v="roster">👥 紅白名單</div>
   <div class="navtab" data-v="meal">🍱 餐點</div>
 </div>
 
 <div id="scheduleControls">
-  <div class="searchrow"><input id="q" placeholder="搜尋姓名／賽事（例如：桌球、Nick）"></div>
+  <div class="searchrow"><input id="q" placeholder="搜尋姓名／英文名／員編"></div>
   <div class="chips" id="chips">
     <div class="chip active" data-s="all">全部</div>
     <div class="chip" data-s="tt">🏓 桌球</div>
@@ -163,10 +201,15 @@
 <div id="bracketControls" style="display:none">
   <div class="chips" id="grpChips"></div>
 </div>
+<div id="rosterControls" style="display:none">
+  <div class="rosterhd">
+    <div class="rosterttl">👥 紅白隊名單</div>
+    <input id="rq" placeholder="搜尋姓名／英文名／員編">
+  </div>
+</div>
 <div id="mealControls" style="display:none">
   <div class="searchrow">
     <input id="mq" placeholder="搜尋姓名／英文名／員編">
-    <button class="masktoggle" id="revealBtn">顯示眷屬姓名</button>
   </div>
   <div class="chips" id="mealChips">
     <div class="chip active" data-t="all">全部</div>
@@ -179,6 +222,7 @@
 
 <main id="main"></main>
 <div class="updated" id="updated"></div>
+<div class="verline" id="verline"></div>
 <div id="debugBanner" style="display:none; margin:10px 16px; padding:10px 12px; background:#fdecea; border:1px solid #f2b8b5; color:#8a1f11; font-size:12px; border-radius:8px; word-break:break-all;"></div>
 
 <script>
@@ -214,6 +258,8 @@ const firebaseConfig = {
 let liveScores = {};
 let liveTimes = {};
 let liveFun = {};
+let liveShoot = {};
+let liveRefs = {};
 let fbStatus = "connecting"; // connecting | live | offline
 
 try {
@@ -230,6 +276,14 @@ try {
   }, () => {});
   fbDb.ref("event2026/fun").on("value", snap => {
     liveFun = snap.val() || {};
+    render();
+  }, () => {});
+  fbDb.ref("event2026/shoot").on("value", snap => {
+    liveShoot = snap.val() || {};
+    render();
+  }, () => {});
+  fbDb.ref("event2026/refs").on("value", snap => {
+    liveRefs = snap.val() || {};
     render();
   }, () => {});
 } catch (e) {
@@ -312,6 +366,43 @@ const GROUPS = [
 const MATCHES = {};
 GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => { m.group = g.id; m.gname = g.name; m.sport = g.sport; MATCHES[m.id] = m; })));
 
+/* ===== 投籃大賽（29 人；預賽取前 4 名 → 總決賽，資料與主控版一致） ===== */
+const SHOOTERS = [
+  ["002","扈端華(Daniel)","CO"],["1072","吳宇宸(Leo)","CO"],["974","吳彥輝(Nick)","DIB·DMD"],["1050","呂婉慈(Vanessa)","DIB·DMD"],
+  ["021","洪崇銘","CO·FAD"],["1069","滕威愷(Andy)","CO·FAD"],["850","范書維(Derek)","FSB·FS1"],["469","陳孟君(Jun)","FSB·FS2"],
+  ["591","鄭帆軒","FSB·FS2"],["656","李雯萱(Flora)","FSB·FS2"],["649","林建志(Kenny)","FSB·FS3"],["649","林少睿","FSB·FS3"],
+  ["1049","陳立學(Lucas)","FSB·FS3"],["1062","王聖翔(Shuan)","FSB·FS3"],["1073","謝安倪(Annie)","GAO·HRD"],["816","張博凱(Kenny)","MSB·MS1"],
+  ["811","張瑋恬(Amy)","MSB·MS2"],["971","林千翔(Coco)","MSB·MS2"],["1068","王漢雍(Mario)","MSB·MS2"],["121","朱俊綱(Stanley)","PSB·PS1"],
+  ["334","黃柏盛(Benson)","PSB·PS2"],["1028","洪祥盛(Joshua)","PSB·PS3"],["1037","林宛樺(Lena)","PSB·PS3"],["1056","楊勝傑(Allen)","PSB·PS3"],
+  ["1074","廖子鑫(Jason)","PSB·PS3"],["912","陳志明(Raven)","GAO·ITS"],["966","封智翔(Vito)","GAO·ITS"],["P118","黃禎宗(Zong)","FSE·PCMA"],
+  ["P147","蘇威諺(Ziv)","FSE·FCMA"]
+];
+function shootVal(kind, i){
+  const o = liveShoot && liveShoot[kind];
+  const v = o ? o[i] : null;
+  return (v === "" || v == null) ? null : Number(v);
+}
+function shootTop4(){
+  const arr = [];
+  SHOOTERS.forEach((p, i) => { const v = shootVal("p", i); if (v !== null) arr.push({ i:i, v:v }); });
+  arr.sort((a, b) => b.v - a.v || a.i - b.i);
+  return arr.slice(0, 4);
+}
+function shootTieNote(){
+  const arr = [];
+  SHOOTERS.forEach((p, i) => { const v = shootVal("p", i); if (v !== null) arr.push(v); });
+  if (arr.length < 5) return "";
+  arr.sort((a, b) => b - a);
+  return arr[3] === arr[4] ? "⚠ 第 4 名同分，現場加賽決定晉級者" : "";
+}
+function shootRank(finalOnly){
+  const top = shootTop4();
+  const arr = top.map(t => ({ i:t.i, p:t.v, f:shootVal("f", t.i) })).filter(x => !finalOnly || x.f !== null);
+  arr.sort((a, b) => (b.f || 0) - (a.f || 0) || b.p - a.p || a.i - b.i);
+  if (finalOnly && (arr.length < top.length || top.length < 4)) return [];
+  return arr;
+}
+
 /* ===== 團體趣味競賽（紅白兩隊） ===== */
 const FUN_EVENTS = [
   { id:"f1", name:"戰鬥陀螺組" },
@@ -384,6 +475,12 @@ function loserOf(m){
 }
 function getTime(m){ return (liveTimes && liveTimes[m.id]) || m.t; }
 
+/* 版號：與主控版 main_pc.html 同步遞增 */
+const APP_VER = "3.57.2";
+
+/* 手機版是否顯示裁判（true = 進行中／下一場才顯示；需主控端已同步 event2026/refs） */
+const SHOW_REFS = false;
+
 const VENUE_LABEL = { "桌1":"🏓 桌1", "桌2":"🏓 桌2", "桌3":"🏓 桌3", "A面":"🏸 羽球A面", "B面":"🏸 羽球B面", "籃球場":"🏀 籃球場" };
 const SPORT_LABEL = { tt:"桌球", bad:"羽球", bb:"籃球" };
 
@@ -396,13 +493,84 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt
 function fmtHM(min){ const h = Math.floor(min/60), m = min%60; return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); }
 
 const MATCH_LIST = Object.keys(MATCHES).map(k => MATCHES[k]);
-let state = { view:"schedule", s:"all", q:"", grp:GROUPS[0].id, mealQ:"", mealTeam:"all", reveal:false };
+let state = { view:"schedule", s:"all", q:"", grp:GROUPS[0].id, mealQ:"", mealTeam:"all", rosterQ:"", reveal:true };
 let nowMin = 0;
+
+/* ===== 姓名 → 員編／英文名（供賽程搜尋用） ===== */
+const NAME_EID = (function(){
+  const F = MEAL_FIELDS, o = {};
+  MEAL_ROWS.forEach(r => { if (!o[r[F.NAME]]) o[r[F.NAME]] = String(r[F.EID]); });
+  return o;
+})();
+/* 由「王聖翔(Shuan)/林建志(Kenny)」這類字串取出可搜尋的關鍵字：中文名、英文名、員編 */
+const _keysCache = {};
+function searchKeysOf(text){
+  if (_keysCache[text] != null) return _keysCache[text];
+  let out = text;
+  text.split("/").forEach(part => {
+    const name = part.replace(/\(.*?\)/g, "").trim();
+    if (NAME_EID[name]) out += " " + NAME_EID[name];
+    if (MEAL_ENG[name]) out += " " + MEAL_ENG[name];
+  });
+  return (_keysCache[text] = out.toLowerCase());
+}
+
+/* ===== 進行中 / 下一場 標示（邏輯與主控版 main_pc.html updateLiveMarks 完全一致） ===== */
+function isReady(m){
+  return (resolveEntrant(m.a).ok || (m.a && m.a.bye)) && (resolveEntrant(m.b).ok || (m.b && m.b.bye));
+}
+let liveIds = {}, nextIds = {};
+function computeVenueState(){
+  // 每個場地只讓「開賽時間最早」且已開賽、未完賽的一場顯示進行中
+  const liveByVenue = {};
+  MATCH_LIST.forEach(m => {
+    const r = parseRange(getTime(m));
+    if (!r || winnerOf(m) || !isReady(m)) return;
+    if (nowMin < r.a) return;                          // 尚未開賽
+    const v = m.v || "_";
+    const cur = liveByVenue[v];
+    if (!cur || r.a < cur.r.a) liveByVenue[v] = { m:m, r:r };
+  });
+  liveIds = {};
+  Object.keys(liveByVenue).forEach(v => { liveIds[liveByVenue[v].m.id] = liveByVenue[v].r; });
+  // 下一場：同場地中，排在進行中那場之後、時間最早的未完賽場次
+  nextIds = {};
+  Object.keys(liveByVenue).forEach(v => {
+    const cur = liveByVenue[v];
+    let best = null;
+    MATCH_LIST.forEach(m => {
+      if (m.id === cur.m.id || (m.v || "_") !== v) return;
+      const r = parseRange(getTime(m));
+      if (!r || winnerOf(m)) return;
+      if (r.a < cur.r.a) return;                       // 早於進行中那場的不算
+      if (r.a === cur.r.a && m.id <= cur.m.id) return; // 同時段取後者
+      if (!best || r.a < best.r.a) best = { m:m, r:r };
+    });
+    if (best) nextIds[best.m.id] = true;
+  });
+  // 該場地尚無進行中場次時：取該場地最早的未完賽場次為下一場
+  const venues = {};
+  MATCH_LIST.forEach(m => {
+    const v = m.v || "_";
+    if (liveByVenue[v]) return;
+    const r = parseRange(getTime(m));
+    if (!r || winnerOf(m)) return;
+    if (!venues[v] || r.a < venues[v].r.a) venues[v] = { m:m, r:r };
+  });
+  Object.keys(venues).forEach(v => { nextIds[venues[v].m.id] = true; });
+}
+function matchPhase(m){
+  if (liveIds[m.id]) {
+    const r = liveIds[m.id];
+    return (r && nowMin > r.b) ? "live over" : "live";   // 超時加註「！」
+  }
+  return nextIds[m.id] ? "next" : "";
+}
 
 function sideHTML(side, winnerText){
   const isWinner = winnerText && side.ok && side.text === winnerText;
   const label = side.bye ? "輪空" : side.text;
-  const cls = side.ok ? "" : "ph";
+  const cls = (side.ok ? "" : "ph") + (isWinner ? " winner" : "");
   return '<span class="' + cls + '">' + (isWinner ? "🏆 " : "") + esc(label) + '</span>';
 }
 
@@ -413,10 +581,13 @@ function matchCardHTML(m, showTime){
   const w = winnerOf(m);
   const s = scoreOf(m.id);
   const isDone = !!w;
-  const isLive = !isDone && r && nowMin >= r.a;
-  const cls = ["card", m.sport, isLive ? "live" : "", isDone ? "done" : ""].filter(Boolean).join(" ");
+  const phase = isDone ? "" : matchPhase(m);
+  const cls = ["card", m.sport, phase, isDone ? "done" : ""].filter(Boolean).join(" ");
   const timeTxt = showTime && getTime(m) && getTime(m) !== "—" ? esc(getTime(m)) + "　" : "";
   const scoreTxt = s ? '<span class="scorebadge">' + s.a + ' : ' + s.b + '</span>' : "";
+  // 裁判暫不顯示（改 SHOW_REFS = true 即可恢復：只在「進行中」與「下一場」顯示）
+  const ref = (SHOW_REFS && (phase === "next" || phase.indexOf("live") === 0)) ? (liveRefs[m.id] || "") : "";
+  const refTxt = ref ? '<div class="foot refline">🚩 裁判　' + esc(ref) + '</div>' : "";
   return '<div class="' + cls + '">' +
     '<div class="row1"><span class="tag">' + SPORT_LABEL[m.sport] + ' · ' + esc(m.gname) + '　' + esc(m.lb) + (m.crown ? "（"+m.crown+"）" : "") + '</span></div>' +
     '<div class="venue">' + timeTxt + (VENUE_LABEL[m.v] || esc(m.v || "")) + '</div>' +
@@ -424,7 +595,7 @@ function matchCardHTML(m, showTime){
       '<span class="vsnames">' + sideHTML(A, w) + '<span class="vsmid">vs</span>' + sideHTML(B, w) + '</span>' +
       scoreTxt +
     '</div>' +
-    (isDone ? '<div class="foot">✓ 已產生結果</div>' : "") +
+    (isDone ? '<div class="foot">✓ 已產生結果</div>' : refTxt) +
   '</div>';
 }
 
@@ -439,8 +610,8 @@ function renderSchedule(){
   const filtered = items.filter(it => {
     if (state.s !== "all" && it.m.sport !== state.s) return false;
     if (!q) return true;
-    const A = resolveEntrant(it.m.a).text, B = resolveEntrant(it.m.b).text;
-    const hay = (it.m.gname + " " + it.m.lb + " " + A + " " + B).toLowerCase();
+    const A = resolveEntrant(it.m.a), B = resolveEntrant(it.m.b);
+    const hay = (A.ok ? searchKeysOf(A.text) : "") + " " + (B.ok ? searchKeysOf(B.text) : "");
     return hay.indexOf(q) >= 0;
   });
   if (!filtered.length) return '<div class="empty">找不到符合的賽程</div>';
@@ -449,7 +620,8 @@ function renderSchedule(){
     const slotLabel = it.r ? (fmtHM(it.r.a) + " – " + fmtHM(it.r.b)) : "時間未定";
     if (slotLabel !== lastSlot) {
       const n = filtered.filter(x => (x.r ? fmtHM(x.r.a)+" – "+fmtHM(x.r.b) : "時間未定") === slotLabel).length;
-      html += '<div class="slot">' + esc(slotLabel) + '<span class="n">' + n + ' 場</span></div>';
+      html += '<div class="slot">' + esc(slotLabel) + '<span class="n">' + n + ' 場</span>' +
+        '<span class="note">（實際時間以現場安排為準）</span></div>';
       lastSlot = slotLabel;
     }
     html += matchCardHTML(it.m, false);
@@ -457,31 +629,85 @@ function renderSchedule(){
   return html;
 }
 
+function renderShootPage(){
+  const top = shootTop4();
+  const topRank = {}; top.forEach((t, k) => { topRank[t.i] = k + 1; });
+  const ranked = shootRank(true);
+  const medals = ["🏆 冠軍", "🥈 亞軍", "🥉 季軍", "第 4 名"];
+  let doneN = 0;
+  SHOOTERS.forEach((p, i) => { if (shootVal("p", i) !== null) doneN++; });
+
+  let html = '<div class="round" style="position:static">★ 總決賽（預賽前 4 名）<span class="n">14:50-15:00　籃球場</span></div>';
+  if (!top.length) {
+    html += '<div class="empty" style="padding:24px 12px">尚未產生晉級者（預賽成績登記中）</div>';
+  } else {
+    const order = ranked.length ? ranked.map(x => x.i) : top.map(x => x.i);
+    order.forEach(idx => {
+      const t = top.find(x => x.i === idx);
+      const f = shootVal("f", idx);
+      const r = ranked.length ? ranked.findIndex(x => x.i === idx) : -1;
+      html += '<div class="card bb' + (r === 0 ? " live" : "") + '">' +
+        '<div class="row1"><span class="tag">' + (r >= 0 ? medals[r] : "晉級 " + topRank[idx]) + '</span></div>' +
+        '<div class="vs"><span class="vsnames">' + esc(SHOOTERS[idx][1]) + '</span>' +
+          '<span class="scorebadge">' + (f === null ? "—" : f) + '</span></div>' +
+        '<div class="foot">單位 ' + esc(SHOOTERS[idx][2]) + '　｜　預賽 ' + t.v + ' 分</div>' +
+      '</div>';
+    });
+  }
+  const note = shootTieNote();
+  if (note) html += '<div class="foot" style="color:var(--red);font-weight:700;margin-bottom:6px">' + note + '</div>';
+
+  html += '<div class="round" style="position:static">預賽成績<span class="n">11:30-13:20　已登記 ' + doneN + '/' + SHOOTERS.length + ' 人</span></div>';
+  const rows = SHOOTERS.map((p, i) => ({ p:p, i:i, v:shootVal("p", i) }))
+    .sort((a, b) => (b.v === null) - (a.v === null) || (b.v - a.v) || a.i - b.i);
+  rows.forEach(r => {
+    html += '<div class="shrow' + (topRank[r.i] ? " qual" : "") + '">' +
+      '<span class="sheid">' + esc(r.p[0]) + '</span>' +
+      '<span class="shname">' + esc(r.p[1]) + '<span class="shunit">' + esc(r.p[2]) + '</span></span>' +
+      (topRank[r.i] ? '<span class="shtag">晉級 ' + topRank[r.i] + '</span>' : "") +
+      '<span class="shsc">' + (r.v === null ? "—" : r.v) + '</span>' +
+    '</div>';
+  });
+  return html;
+}
+
 function renderBracket(){
+  if (state.grp === "shoot") return renderShootPage();
   const g = GROUPS.find(x => x.id === state.grp) || GROUPS[0];
   let html = "";
   g.cols.forEach(col => {
-    html += '<div class="round">' + esc(col.title) + '<span class="n">' + col.ms.length + ' 場</span></div>';
+    html += '<div class="round">' + esc(col.title) + '<span class="n">' + col.ms.length + ' 場</span>' +
+      '<span class="note">（實際時間以現場安排為準）</span></div>';
     col.ms.forEach(m => { html += matchCardHTML(m, true); });
   });
   return html;
 }
 
-function rosterListHTML(team, cls){
+function rosterHit(r, q){
+  if (!q) return false;
+  const F = MEAL_FIELDS;
+  const hay = (r[F.NAME] + " " + (MEAL_ENG[r[F.NAME]] || "") + " " + r[F.EID] + " " + (r[F.OF] || "")).toLowerCase();
+  return hay.indexOf(q) >= 0;
+}
+
+function rosterListHTML(team, cls, q){
   const F = MEAL_FIELDS;
   const isCap = n => (CAPTAINS[team] || []).indexOf(n) >= 0;
   const capIdx = r => { const i = (CAPTAINS[team] || []).indexOf(r[F.NAME]); return i < 0 ? 99 : i; };
   const seq = r => (ROSTER_SEQ[r[F.NAME]] != null ? ROSTER_SEQ[r[F.NAME]] : 999);
-  const list = MEAL_ROWS.filter(r => r[F.TEAM] === team).sort((a, b) =>
+  const all = MEAL_ROWS.filter(r => r[F.TEAM] === team);
+  const list = (q ? all.filter(r => rosterHit(r, q)) : all).sort((a, b) =>
     (capIdx(a) - capIdx(b)) || (seq(a) - seq(b)) || String(a[F.EID]).localeCompare(String(b[F.EID])));
   if (!list.length) return "";
-  let h = '<div class="rosterbox ' + cls + '"><div class="rhead">' + esc(team) + '　<span style="font-weight:600;color:var(--sub);font-size:11.5px">共 ' + list.length + ' 人</span></div>';
+  let h = '<div class="rosterbox ' + cls + '"><div class="rhead">' + esc(team) + '　<span style="font-weight:600;color:var(--sub);font-size:11.5px">' +
+    (q ? '符合 ' + list.length + ' 人（全隊 ' + all.length + ' 人）' : '共 ' + all.length + ' 人') + '</span></div>';
   list.forEach(r => {
     const staff = r[F.ROLE] === "同仁";
     const eng = staff ? (MEAL_ENG[r[F.NAME]] || "") : "";
-    h += '<div class="rperson">' +
-      (eng ? '<span class="eng">' + esc(eng) + '</span>' : "") +
-      '<span>' + esc(displayName(r)) + '</span>' +
+    h += '<div class="rperson' + (q ? " hit" : "") + '">' +
+      '<span>' + esc(displayName(r)) +
+        (eng ? '<span class="ofname">(' + esc(eng) + ')</span>' : "") +
+        (r[F.OF] ? '<span class="ofname">(' + esc(r[F.OF]) + ')</span>' : "") + '</span>' +
       (isCap(r[F.NAME]) ? '<span class="captag">隊長</span>' : "") +
     '</div>';
   });
@@ -517,9 +743,26 @@ function renderFun(){
       (sc ? '<div class="funresult">' + (sc.r === sc.w ? "🤝 平手" : "🏆 " + (rw ? "紅隊" : "白隊") + "勝") + '</div>' : "") +
     '</div>';
   });
-  html += '<div class="sectionhd">👥 紅白隊名單<span class="masktoggle" id="revealBtnFun" style="cursor:pointer">' + (state.reveal ? "隱藏眷屬姓名" : "顯示眷屬姓名") + '</span></div>';
-  html += rosterListHTML("紅隊", "red");
-  html += rosterListHTML("白隊", "white");
+  return html;
+}
+
+function renderRoster(){
+  const F = MEAL_FIELDS;
+  const q = state.rosterQ.trim().toLowerCase();
+  let html = "";
+  if (q) {
+    const hits = MEAL_ROWS.filter(r => rosterHit(r, q));
+    if (!hits.length) return '<div class="empty">找不到「' + esc(state.rosterQ.trim()) + '」，請改用姓名／英文名／員編搜尋</div>';
+    const teams = [];
+    hits.forEach(r => { if (teams.indexOf(r[F.TEAM]) < 0) teams.push(r[F.TEAM]); });
+    html += '<div class="rhit">' + hits.slice(0, 6).map(r => {
+      const cls = r[F.TEAM] === "紅隊" ? "red" : r[F.TEAM] === "白隊" ? "white" : "";
+      const dot = r[F.TEAM] === "紅隊" ? "🔴" : r[F.TEAM] === "白隊" ? "⚪" : "🏅";
+      return esc(displayName(r)) + '　→　' + dot + '<span class="hitteam ' + cls + '">' + esc(r[F.TEAM]) + '</span>';
+    }).join("<br>") + (hits.length > 6 ? '<br><span style="font-weight:600;color:var(--sub)">…共 ' + hits.length + ' 筆</span>' : "") + '</div>';
+  }
+  html += rosterListHTML("紅隊", "red", q);
+  html += rosterListHTML("白隊", "white", q);
   return html;
 }
 
@@ -556,20 +799,19 @@ function renderMeal(){
 function render(){
   const now = new Date();
   nowMin = now.getHours()*60 + now.getMinutes();
+  computeVenueState();
 
   const main = document.getElementById("main");
   if (state.view === "schedule") main.innerHTML = renderSchedule();
   else if (state.view === "bracket") main.innerHTML = renderBracket();
   else if (state.view === "meal") main.innerHTML = renderMeal();
+  else if (state.view === "roster") main.innerHTML = renderRoster();
   else main.innerHTML = renderFun();
 
-  const revealBtn = document.getElementById("revealBtn");
-  if (revealBtn) revealBtn.textContent = state.reveal ? "隱藏眷屬姓名" : "顯示眷屬姓名";
-  const revealBtnFun = document.getElementById("revealBtnFun");
-  if (revealBtnFun) revealBtnFun.addEventListener("click", () => { state.reveal = !state.reveal; render(); });
 
   const statusText = fbStatus === "live" ? "🟢 比分即時同步中" : fbStatus === "offline" ? "🔴 比分同步離線（顯示靜態資料）" : "🟡 比分同步連線中…";
   document.getElementById("updated").textContent = "更新時間 " + fmtHM(nowMin) + "　｜　" + statusText;
+  document.getElementById("verline").textContent = "經貿 X 經采 EWC　© 2026 EWC · v" + APP_VER;
 }
 
 /* ===== 對戰表：賽事分類選單 ===== */
@@ -577,7 +819,8 @@ const grpChips = document.getElementById("grpChips");
 grpChips.innerHTML = GROUPS.map(g =>
   '<div class="chip' + (g.id === state.grp ? " active" : "") + '" data-grp="' + g.id + '" data-sport="' + g.sport + '">' +
   (g.sport === "tt" ? "🏓 " : g.sport === "bad" ? "🏸 " : "🏀 ") + esc(g.name) + '</div>'
-).join("");
+).join("") +
+  '<div class="chip' + (state.grp === "shoot" ? " active" : "") + '" data-grp="shoot" data-sport="bb">🏀 投籃大賽</div>';
 grpChips.addEventListener("click", ev => {
   const c = ev.target.closest(".chip");
   if (!c) return;
@@ -597,8 +840,11 @@ document.getElementById("nav").addEventListener("click", ev => {
   document.getElementById("scheduleControls").style.display = state.view === "schedule" ? "" : "none";
   document.getElementById("bracketControls").style.display = state.view === "bracket" ? "" : "none";
   document.getElementById("mealControls").style.display = state.view === "meal" ? "" : "none";
+  document.getElementById("rosterControls").style.display = state.view === "roster" ? "" : "none";
   render();
 });
+
+document.getElementById("rq").addEventListener("input", ev => { state.rosterQ = ev.target.value; render(); });
 
 document.getElementById("chips").addEventListener("click", ev => {
   const c = ev.target.closest(".chip");
@@ -619,10 +865,9 @@ document.getElementById("mealChips").addEventListener("click", ev => {
   render();
 });
 document.getElementById("mq").addEventListener("input", ev => { state.mealQ = ev.target.value; render(); });
-document.getElementById("revealBtn").addEventListener("click", () => { state.reveal = !state.reveal; render(); });
 
 render();
-setInterval(render, 30000);
+setInterval(render, 10000);   // 與主控版 updateLiveMarks 相同節奏
 </script>
 </body>
 </html>

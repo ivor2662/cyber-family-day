@@ -108,6 +108,10 @@
   #tabs::-webkit-scrollbar { height:6px; }
   #tabs::-webkit-scrollbar-thumb { background:var(--line); border-radius:3px; }
   #tabs .tab, #tabs .tabsep { flex:none; white-space:nowrap; }
+  /* 手機／窄螢幕瀏覽時，隱藏用不到的投影控制項（輪播、全螢幕、鎖定編輯、風格切換） */
+  @media (max-width:768px) {
+    #playBtn, #fsBtn, #lockBtn, #themeSel, #clock { display:none !important; }
+  }
   .tab { min-height:42px; font:inherit; font-size:16px; font-weight:bold; border:2px solid var(--navy); background:var(--tabbg); color:var(--ink); padding:0 14px; cursor:pointer; border-radius:var(--radS); }
   a.tab.linktab { display:inline-flex; align-items:center; text-decoration:none; white-space:nowrap; }
   .tab:hover { background:var(--hoverbg); }
@@ -239,11 +243,13 @@
   .schtable th { background:var(--navy); color:#fff; font-size:14px; padding:6px 10px; white-space:nowrap; }
   .schtable td { border:1px solid var(--line); vertical-align:top; padding:4px 8px; }
   .schtable td.slot { font-weight:bold; color:var(--time); white-space:nowrap; text-align:center; background:var(--headbg); }
-  .schtable td.slot.nowslot { background:var(--gold); color:var(--nextfg); }
+  .schtable td.slot.nowslot { background:var(--red); color:#fff; }
+  .schtable td.slot.nextslot { background:var(--gold); color:var(--nextfg); }
   .schtable td.empty { background:rgba(128,128,128,.06); }
   .schtable td.cell { cursor:pointer; min-width:180px; }
   .schtable td.cell:hover { background:var(--hoverbg); }
-  .schtable td.cell.clive { border:2px solid var(--gold); }
+  .schtable td.cell.clive { border:2px solid var(--red); background:color-mix(in srgb, var(--red) 10%, transparent); }
+  .schtable td.cell.cnext { border:2px solid var(--gold); }
   .schtable td.cell.cdone { opacity:.6; }
   .schtable .c1 { font-size:12px; color:var(--muted); }
   .schtable .c2 { font-weight:bold; line-height:1.3; }
@@ -539,7 +545,7 @@
 
 <div id="stage"></div>
 
-<footer id="foot">主辦單位：經貿 X 經采 EWC｜© 2026 EWC · v3.56.4</footer>
+<footer id="foot">主辦單位：經貿 X 經采 EWC｜© 2026 EWC · v3.57.2</footer>
 
 <div id="timeModal" class="tmodal">
   <div class="tbox">
@@ -592,14 +598,37 @@ fbAuth.onAuthStateChanged(user => {
 });
 fbAuth.signInAnonymously().catch(err => console.warn("Firebase 匿名登入失敗，比分暫不會同步到手機版：", err));
 
+/* 寫入失敗只記在 console，不在畫面上跳提示（資料庫規則目前僅開放 event2026/scores）
+   若要重新在畫面上看到失敗原因，把 FB_SHOW_ERR 改成 true */
+const FB_SHOW_ERR = false;
+function fbShowError(path, err) {
+  console.warn("Firebase 寫入失敗：", path, err);
+  if (!FB_SHOW_ERR) return;
+  let b = document.getElementById("fbErrBar");
+  if (!b) {
+    b = document.createElement("div");
+    b.id = "fbErrBar";
+    b.style.cssText = "position:fixed;left:12px;bottom:12px;z-index:9999;max-width:520px;background:#fdecea;" +
+      "border:1px solid #f2b8b5;color:#8a1f11;font-size:12px;line-height:1.5;padding:10px 12px;border-radius:8px;" +
+      "box-shadow:0 4px 14px rgba(0,0,0,.15);white-space:pre-wrap;cursor:pointer";
+    b.title = "點一下關閉";
+    b.onclick = () => b.remove();
+    document.body.appendChild(b);
+  }
+  b.textContent = "⚠ 同步寫入失敗（手機版會看不到這項資料）\n路徑：" + path + "\n原因：" + ((err && err.message) || err);
+}
 function fbWrite(path, value) {
-  const run = () => fbDb.ref(path).set(value || {}).catch(err => console.warn("Firebase 寫入失敗：", err));
+  const run = () => fbDb.ref(path).set(value || {}).catch(err => fbShowError(path, err));
   if (fbSignedIn) run(); else fbQueue.push(run);
 }
 /* 讓外層一般 script 可以呼叫這些函式 */
 window.fbPushScores = scores => fbWrite("event2026/scores", scores);
 window.fbPushTimes  = times  => fbWrite("event2026/times", times);
 window.fbPushFun    = fun    => fbWrite("event2026/fun", fun);
+window.fbPushShoot  = shoot  => fbWrite("event2026/shoot", shoot);
+/* 裁判暫不同步到手機版（資料庫規則尚未開放 event2026/refs，會一直跳 PERMISSION_DENIED）
+   規則放行後把下一行的註解拿掉即可恢復 */
+// window.fbPushRefs = refs => fbWrite("event2026/refs", refs);
 </script>
 <script>
 "use strict";
@@ -695,7 +724,7 @@ GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => {
 
 /* ===== 狀態與儲存 ===== */
 const KEY = "jc_fd2026_board_v1";
-let state = {"scores":{},"refs":{"tm2":"洪祥盛 (Joshua Hong)","tm3":"黃祥焜(Yellow)","tm4":"王聖翔(Shuan)","tm6":"張瑋恬(Amy)","tm7":"林彥成(Nick)","tm8":"吳治寰(Benson)","tmq1":"林彥成(Nick)","tmq2":"黃祥焜(Yellow)","tmq3":"張瑋恬(Amy)","tmq4":"林彥成(Nick)","tms1":"吳治寰(Benson)","tms2":"張逸鴻(Ethan)","tmb":"張瑋恬(Amy)","tmf":"王聖翔(Shuan)","twp1":"王聖翔(Shuan)","tws1":"吳治寰(Benson)","tws2":"洪祥盛 (Joshua Hong)","twf":"張逸鴻(Ethan)","twb":"黃祥焜(Yellow)","bbp1":"游凱鈞(Matrix)","bbs1":"游凱鈞(Matrix)","bbs2":"游凱鈞(Matrix)","bbf":"游凱鈞(Matrix)","bbb":"游凱鈞(Matrix)","bmp1":"陳孟君(Jun)","bms1":"楊權(Chorld)","bms2":"林苡勤(Betty)","bmf":"陳立學(Lucas)","bws1":"楊權(Chorld)","bws2":"陳立學(Lucas)","bwf":"謝東恩(Bryan)","bxq1":"謝東恩(Bryan)","bxq2":"鄧起宇(Richard)","bxq3":"陳孟君(Jun)","bxq4":"鄧起宇(Richard)","bxs1":"陳立學(Lucas)","bxs2":"陳孟君(Jun)","bxf":"林苡勤(Betty)"},"refLists":{"tt":["張逸鴻(Ethan)","洪祥盛 (Joshua Hong)","張瑋恬(Amy)","吳治寰(Benson)","王聖翔(Shuan)","林彥成(Nick)","黃祥焜(Yellow)"],"bad":["謝東恩(Bryan)","林苡勤(Betty)","楊權(Chorld)","鄧起宇(Richard)","陳立學(Lucas)","陳孟君(Jun)"],"bb":["游凱鈞(Matrix)"]},"carousel":{"sel":["tm","tw","bm","bw","bx","bb","shoot"],"secs":7,"secsBy":{"all":4,"tm":10,"tw":4,"ttall":4,"bm":4,"bw":4,"bx":6,"badall":4,"bb":4,"shoot":12,"bball":4,"meal":8,"roster":5,"fun":5,"awards":5},"scrollSpeed":150},"tab":"fun","fun":{},"shoot":{"p":{},"f":{}},"mealMode":"team","mealSticky":false,"mealLayout":"lr","mealTaken":{},"times":{},"timeHist":{},"zoom":1.1,"zooms":{"tm":1.3,"tw":1.3,"bb":1.2,"bw":1.2,"bx":1.2,"badall":1.2,"bball":1.2,"awards":1.1,"ttall":1.4,"bm":1.2,"shoot":1.3,"fun":1.3,"roster":1.2},"zoomws":{"tm":1.2,"tw":1.2,"bm":1.2,"bw":1.2,"bx":1.2},"hidden":{"meal":true,"roster":true},"dirty":false,"theme":"light"};
+let state = {"scores":{},"refs":{"tm2":"洪祥盛 (Joshua Hong)","tm3":"黃祥焜(Yellow)","tm4":"王聖翔(Shuan)","tm6":"張瑋恬(Amy)","tm7":"林彥成(Nick)","tm8":"吳治寰(Benson)","tmq1":"林彥成(Nick)","tmq2":"黃祥焜(Yellow)","tmq3":"張瑋恬(Amy)","tmq4":"林彥成(Nick)","tms1":"吳治寰(Benson)","tms2":"張逸鴻(Ethan)","tmb":"張瑋恬(Amy)","tmf":"王聖翔(Shuan)","twp1":"王聖翔(Shuan)","tws1":"吳治寰(Benson)","tws2":"洪祥盛 (Joshua Hong)","twf":"張逸鴻(Ethan)","twb":"黃祥焜(Yellow)","bbp1":"游凱鈞(Matrix)","bbs1":"游凱鈞(Matrix)","bbs2":"游凱鈞(Matrix)","bbf":"游凱鈞(Matrix)","bbb":"游凱鈞(Matrix)","bmp1":"陳孟君(Jun)","bms1":"楊權(Chorld)","bms2":"林苡勤(Betty)","bmf":"陳立學(Lucas)","bws1":"楊權(Chorld)","bws2":"陳立學(Lucas)","bwf":"謝東恩(Bryan)","bxq1":"謝東恩(Bryan)","bxq2":"鄧起宇(Richard)","bxq3":"陳孟君(Jun)","bxq4":"鄧起宇(Richard)","bxs1":"陳立學(Lucas)","bxs2":"陳孟君(Jun)","bxf":"林苡勤(Betty)"},"refLists":{"tt":["張逸鴻(Ethan)","洪祥盛 (Joshua Hong)","張瑋恬(Amy)","吳治寰(Benson)","王聖翔(Shuan)","林彥成(Nick)","黃祥焜(Yellow)"],"bad":["謝東恩(Bryan)","林苡勤(Betty)","楊權(Chorld)","鄧起宇(Richard)","陳立學(Lucas)","陳孟君(Jun)"],"bb":["游凱鈞(Matrix)"]},"carousel":{"sel":["tm","tw","bm","bw","bx","bb","shoot"],"secs":7,"secsBy":{"all":4,"tm":10,"tw":4,"ttall":4,"bm":4,"bw":4,"bx":6,"badall":4,"bb":4,"shoot":12,"bball":4,"meal":8,"roster":5,"fun":5,"awards":5},"scrollSpeed":150},"tab":"all","fun":{},"shoot":{"p":{},"f":{}},"mealMode":"team","mealSticky":false,"mealLayout":"lr","mealTaken":{},"times":{},"timeHist":{},"zoom":1.1,"zooms":{"tm":1.3,"tw":1.3,"bb":1.2,"bw":1.2,"bx":1.2,"badall":1.2,"bball":1.2,"awards":1.1,"ttall":1.4,"bm":1.2,"shoot":1.3,"fun":1.3,"roster":1.2},"zoomws":{"tm":1.2,"tw":1.2,"bm":1.2,"bw":1.2,"bx":1.2},"hidden":{"meal":true,"roster":true},"dirty":false,"theme":"light"};
 const DEF_KEY = "jc_fd2026_default_v1";
 try {
   const dof = localStorage.getItem(DEF_KEY);          // 使用者按「設為預設」存下的版本
@@ -708,7 +737,18 @@ function save() {
   if (window.fbPushScores) window.fbPushScores(state.scores);
   if (window.fbPushTimes)  window.fbPushTimes(state.times);
   if (window.fbPushFun)    window.fbPushFun(state.fun);
+  if (window.fbPushShoot)  window.fbPushShoot(state.shoot);
+  if (window.fbPushRefs)   window.fbPushRefs(state.refs);
 }
+/* 開站後自動補推一次：讓手機版拿到既有的時間異動、趣味競賽、投籃資料。
+   安全鎖：本機沒有任何比分時（例如無痕視窗、剛清空的瀏覽器）一律不推，
+   否則會用空白資料覆蓋雲端上正在比賽中的比分。 */
+setTimeout(() => {
+  try {
+    if (Object.keys(state.scores || {}).length) save();
+    else console.info("本機沒有比分資料，略過開站自動同步（避免覆蓋雲端）");
+  } catch (e) {}
+}, 2000);
 
 /* ===== 晉級運算 ===== */
 function scoreOf(id) {
@@ -878,6 +918,7 @@ function refOptions(m, current) {
     Object.keys(state.refs).forEach(k => { if (state.refs[k] === n) cnt++; });
     html += '<option value="' + esc(n) + '"' + (n === current ? " selected" : "") + '>' + esc(n) + "(" + cnt + ")" + tag + "</option>";
   });
+  html += '<option value="__other__">＋ 其他（自行輸入）…</option>';
   return html;
 }
 function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -1314,7 +1355,7 @@ function exportScheduleSVG() {
   slots.sort((a, b) => a - b);
   // 若全部場次都沒有顯示裁判 → 列高不保留裁判那一行
   const hasRef = items.some(it => schRefOf(it.m));
-  const TW = 96, HH = 40, RH = hasRef ? 78 : 60, PAD = 16, TITLE = 34;
+  const TW = 104, HH = 40, RH = hasRef ? 78 : 60, PAD = 16, TITLE = 34;
   // 依內容估算各場地欄寬（CJK 全形、拉丁半形）
   const estW = (t, fs) => { let w = 0; for (const ch of String(t)) w += ch.charCodeAt(0) > 0x2e80 ? fs : fs * 0.56; return w; };
   const colW = VENUES.map(v => {
@@ -1381,7 +1422,7 @@ function exportScheduleSVG() {
   g += '<text x="' + PAD + '" y="' + (PAD + 20) + '" font-size="20" font-weight="bold" fill="' + ink + '">2026 經貿 x 經采 運動家庭日｜賽程總表</text>';
   // 表頭
   g += '<rect x="' + x0 + '" y="' + y0 + '" width="' + GRIDW + '" height="' + HH + '" fill="' + navy + '"/>';
-  g += '<text x="' + (x0 + TW / 2) + '" y="' + (y0 + 26) + '" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">時間</text>';
+  g += '<text x="' + (x0 + TW / 2) + '" y="' + (y0 + 26) + '" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">預計時間</text>';
   g += '<text x="' + (x0 + TW + colX[0] + colW[0] / 2) + '" y="' + (y0 + 26) + '" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">📌 活動</text>';
   VENUES.forEach((v, i) => {
     g += '<text x="' + (x0 + TW + colX[i + 1] + colW[i + 1] / 2) + '" y="' + (y0 + 26) + '" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">' + xesc(VENUE_LABEL[v]) + "</text>";
@@ -1479,12 +1520,15 @@ function exportScheduleSVG() {
   // 圖內建 A−/A+ 按鈕（以瀏覽器開啟 SVG 檔時可直接縮放）
   const TITLE_TXT = "2026 經貿 x 經采 運動家庭日｜賽程總表";
   const bw = 34, bh = 24, by = PAD - 1;
-  const bx1 = Math.round(Math.min(W - PAD - bw * 2 - 6, PAD + estW(TITLE_TXT, 20) + 14)), bx2 = bx1 + bw + 6;
+  const NOTE_TXT = "（實際時間以現場安排為準）";
+  const noteX = Math.round(PAD + estW(TITLE_TXT, 20) - 12);          // 註記接在標題右邊（「（」本身留白多，故往左收）
+  const bx1 = Math.round(Math.min(W - PAD - bw * 2 - 6, noteX + estW(NOTE_TXT, 14) + 14)), bx2 = bx1 + bw + 6;
   const btn = (id, x, lb) =>
     '<g id="' + id + '" style="cursor:pointer">' +
     '<rect x="' + x + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="5" fill="#ffffff" stroke="' + navy + '" stroke-width="1.5"/>' +
     '<text x="' + (x + bw / 2) + '" y="' + (by + 17) + '" font-size="14" font-weight="bold" fill="' + navy + '" text-anchor="middle">' + lb + "</text></g>";
-  const ui = '<g id="zoomUI">' + btn("zoomOutBtn", bx1, "A−") + btn("zoomInBtn", bx2, "A＋") + "</g>";
+  const ui = '<g id="zoomUI">' + btn("zoomOutBtn", bx1, "A−") + btn("zoomInBtn", bx2, "A＋") + "</g>" +
+    '<text x="' + noteX + '" y="' + (PAD + 20) + '" font-size="14" fill="' + muted + '">' + NOTE_TXT + '</text>';
   const js = '<script type="text/javascript"><![CDATA[' +
     "(function(){var r=document.documentElement,BW=" + W + ",BH=" + H + ",z=1;" +
     "function ap(){r.setAttribute('width',Math.round(BW*z));r.setAttribute('height',Math.round(BH*z));}" +
@@ -1513,6 +1557,7 @@ function schRefOf(m) {
 function renderSchedule() {
   const now = new Date();
   const nowMin = now.getHours() * 60 + now.getMinutes();
+  const schLN = computeLiveNext(nowMin);   // 與對戰圖同一套「進行中／下一場」規則
   // 收集所有已排時間的場次
   const items = [];
   Object.keys(MATCHES).forEach(k => {
@@ -1532,8 +1577,8 @@ function renderSchedule() {
   let html = '<div class="gtitle">🗓 賽程總表　<span class="prog">已完成 ' + doneN + "/" + items.length + ' 場</span><button class="btn secondary" id="schSvgBtn" style="min-height:34px;font-size:14px;padding:0 12px;float:right;zoom:' + (1/getZoom()).toFixed(4) + '">⬇️ SVG</button>' +
     '<button class="btn secondary rightbtn" id="schRefBtn" style="min-height:34px;font-size:14px;padding:0 12px;float:right;margin-left:8px;zoom:' + (1/getZoom()).toFixed(4) + '">' +
     (state.hideLateRefs ? "顯示" : "隱藏") + "</button></div>";
-  html += '<div class="gsub">時間 × 場地一覽（含裁判）；金框＝進行中，✓＝已分出勝負，點格子可跳到該組對戰圖</div>';
-  html += '<table class="schtable"><thead><tr><th>時間</th><th>📌 活動</th>' +
+  html += '<div class="gsub">時間 × 場地一覽（含裁判）；紅框＝進行中，金框＝下一場，✓＝已分出勝負，點格子可跳到該組對戰圖</div>';
+  html += '<table class="schtable"><thead><tr><th>預計時間</th><th>📌 活動</th>' +
     VENUES.map(v => "<th>" + VENUE_LABEL[v] + "</th>").join("") + "</tr></thead><tbody>";
   slots.forEach(a => {
     const rowItems = items.filter(it => it.r.a === a);
@@ -1542,8 +1587,9 @@ function renderSchedule() {
     const endB = rowItems.length ? rowItems[0].r.b : (rowFuns.length ? rowFuns[0].r.b : rowAgs[0].r.b);
     const label = rowItems.length || rowFuns.length ? fmtHM(a) + "-" + fmtHM(endB)
                 : (rowAgs[0].e.disp || fmtHM(a) + "-" + fmtHM(endB));
-    const isNow = rowItems.some(it => nowMin >= it.r.a && !winnerOf(it.m));
-    html += '<tr><td class="slot' + (isNow ? " nowslot" : "") + '">' + esc(label) + "</td>";
+    const isNow = rowItems.some(it => schLN.liveIds[it.m.id]);
+    const isNext = !isNow && rowItems.some(it => schLN.nextIds[it.m.id]);
+    html += '<tr><td class="slot' + (isNow ? " nowslot" : (isNext ? " nextslot" : "")) + '">' + esc(label) + "</td>";
     // 活動欄（含團體趣味競賽）；標示 full 的活動（午休）佔滿整列並置中
     const fullAg = rowAgs.find(x => x.e.full);
     if (fullAg && !rowItems.length && rowFuns.length === 0) {
@@ -1576,9 +1622,10 @@ function renderSchedule() {
       const m = it.m;
       const w = winnerOf(m);
       const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
-      const live = !w && isReady(m) && nowMin >= it.r.a;
+      const live = !w && !!schLN.liveIds[m.id];
+      const next = !w && !live && !!schLN.nextIds[m.id];
       const ref = schRefOf(m);
-      html += '<td class="cell' + (w ? " cdone" : "") + (live ? " clive" : "") + '" data-go="m:' + m.id + '">' +
+      html += '<td class="cell' + (w ? " cdone" : "") + (live ? " clive" : (next ? " cnext" : "")) + '" data-go="m:' + m.id + '">' +
         '<div class="c1">' + (schStar(m) ? "★ " : "") + esc(groupNameOf(m.group)) + "　" + esc(m.lb) + "</div>" +
         '<div class="c2">' + esc(A.name || "—") + '<span class="vs"> vs </span>' + esc(B.bye ? "輪空" : (B.name || "—")) + "</div>" +
         (ref ? '<div class="c3">裁判 ' + esc(ref) + "</div>" : "") +
@@ -2013,11 +2060,8 @@ window.addEventListener("resize", () => { if (state.tab === "awards") updateAwar
 function isReady(m) {
   return (resolveEntrant(m.a).ok || (m.a && m.a.bye)) && (resolveEntrant(m.b).ok || (m.b && m.b.bye));
 }
-function updateLiveMarks() {
-  const g = GROUPS.find(x => x.id === state.tab);
-  if (!g) return;
-  const now = new Date();
-  const nowMin = now.getHours() * 60 + now.getMinutes();
+/* 計算「進行中 / 下一場」；對戰圖與賽程總表共用同一套規則 */
+function computeLiveNext(nowMin) {
   // 全賽事掃描：每個場地（桌1/桌2/桌3/A面/B面/籃球場）只讓「開賽時間最早」的一場顯示進行中
   const liveByVenue = {};
   Object.keys(MATCHES).forEach(k => {
@@ -2058,6 +2102,15 @@ function updateLiveMarks() {
     if (!venues[v] || r.a < venues[v].r.a) venues[v] = { m:m, r:r };
   });
   Object.keys(venues).forEach(v => { nextIds[venues[v].m.id] = true; });
+  return { liveIds:liveIds, nextIds:nextIds };
+}
+function updateLiveMarks() {
+  const g = GROUPS.find(x => x.id === state.tab);
+  if (!g) return;
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const ln = computeLiveNext(nowMin);
+  const liveIds = ln.liveIds, nextIds = ln.nextIds;
 
   g.cols.forEach(c => c.ms.forEach(m => {
     const el = document.getElementById("card-" + m.id);
@@ -2070,7 +2123,11 @@ function updateLiveMarks() {
     el.classList.toggle("next", !live && !!nextIds[m.id]);
   }));
 }
-setInterval(updateLiveMarks, 10000);
+setInterval(() => {
+  // 賽程總表沒有 DOM class 可切換，直接重畫才會跟著時間更新進行中／下一場
+  if (state.tab === "all") { const el = document.activeElement; if (!el || el.tagName !== "INPUT") renderSchedule(); }
+  else updateLiveMarks();
+}, 10000);
 
 /* ===== 撞場偵測 ===== */
 function findConflicts() {
@@ -2316,7 +2373,18 @@ stage.addEventListener("change", ev => {
     save(); rerenderKeepView(t);
   } else if (t.hasAttribute("data-ref")) {
     const id = t.getAttribute("data-ref");
-    const name = t.value;
+    let name = t.value;
+    if (name === "__other__") {                       // ＋ 其他（自行輸入）
+      const input = prompt("請輸入裁判姓名（例如：王小明(Ming)）", state.refs[id] || "");
+      const nm = (input || "").trim();
+      if (!nm) { t.value = state.refs[id] || ""; return; }   // 取消或空白 → 還原原本選項
+      name = nm;
+      const sp = MATCHES[id] && MATCHES[id].sport;           // 一併加進該球種的裁判名單，之後可直接選
+      if (sp) {
+        if (!state.refLists[sp]) state.refLists[sp] = [];
+        if (state.refLists[sp].indexOf(name) < 0) state.refLists[sp].push(name);
+      }
+    }
     if (name) {
       const cs = refConflictsFor(name, id);
       if (cs.length) {
