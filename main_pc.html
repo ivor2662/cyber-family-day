@@ -617,18 +617,36 @@ function fbShowError(path, err) {
   }
   b.textContent = "⚠ 同步寫入失敗（手機版會看不到這項資料）\n路徑：" + path + "\n原因：" + ((err && err.message) || err);
 }
+/* 一般寫入：用 update() 只合併有變動的鍵值，不會覆蓋掉其他裝置（例如工作人員手機）剛寫入、
+   但這台電腦本機還不知道的資料。這是為了讓「主控版」與「工作人員計分手機版」可以同時寫入同一批資料而不互相蓋掉。 */
 function fbWrite(path, value) {
+  const run = () => {
+    const v = value || {};
+    const p = Object.keys(v).length ? fbDb.ref(path).update(v) : Promise.resolve();
+    p.catch(err => fbShowError(path, err));
+  };
+  if (fbSignedIn) run(); else fbQueue.push(run);
+}
+/* 整包覆蓋／清空：僅用於「重置」這類明確要清掉遠端資料的動作，一般存檔不要用這個 */
+function fbWriteFull(path, value) {
   const run = () => fbDb.ref(path).set(value || {}).catch(err => fbShowError(path, err));
   if (fbSignedIn) run(); else fbQueue.push(run);
 }
 /* 讓外層一般 script 可以呼叫這些函式 */
 window.fbPushScores = scores => fbWrite("event2026/scores", scores);
-window.fbPushTimes  = times  => fbWrite("event2026/times", times);
+window.fbPushTimes  = times  => fbWriteFull("event2026/times", times);
 window.fbPushFun    = fun    => fbWrite("event2026/fun", fun);
 window.fbPushShoot  = shoot  => fbWrite("event2026/shoot", shoot);
+/* 「清除全部比分」按鈕會呼叫這個，明確把遠端 scores/fun/shoot 整個清空
+   （一般 save() 用的 fbWrite 是合併式，本地清成 {} 時不會主動清掉遠端，需要這個獨立呼叫） */
+window.fbResetAll = () => {
+  fbWriteFull("event2026/scores", {});
+  fbWriteFull("event2026/fun", {});
+  fbWriteFull("event2026/shoot", {});
+};
 /* 裁判暫不同步到手機版（資料庫規則尚未開放 event2026/refs，會一直跳 PERMISSION_DENIED）
    規則放行後把下一行的註解拿掉即可恢復 */
-// window.fbPushRefs = refs => fbWrite("event2026/refs", refs);
+// window.fbPushRefs = refs => fbWriteFull("event2026/refs", refs);
 </script>
 <script>
 "use strict";
@@ -2716,7 +2734,9 @@ document.getElementById("testBtn").onclick = () => {
 };
 document.getElementById("clrBtn").onclick = () => {
   if (confirm("確定清除全部比分？（裁判指派、裁判名單與輪播設定保留）")) {
-    state.scores = {}; state.fun = {}; state.shoot = { p:{}, f:{} }; state.dirty = true; save(); render();
+    state.scores = {}; state.fun = {}; state.shoot = { p:{}, f:{} }; state.dirty = true;
+    if (window.fbResetAll) window.fbResetAll();
+    save(); render();
   }
 };
 document.getElementById("setDefBtn").onclick = () => {

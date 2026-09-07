@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2026 經采家庭日｜工作人員計分</title>
+<style>
+  :root{
+    --paper:#faf8f3; --card:#ffffff; --ink:#2a2f38; --sub:#7c8390; --line:#e7e2d6;
+    --tt:#f76707; --bad:#2f9e44; --bb:#c2402a; --gold:#c8951f; --red:#c0392b; --white-team:#4a6076;
+    --ok:#2f9e44;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"PingFang TC","Microsoft JhengHei",-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased; padding-bottom:50px; user-select:none;
+  }
+
+  /* PIN 鎖定畫面 */
+  #lockScreen{
+    position:fixed; inset:0; background:var(--paper); z-index:50;
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px;
+  }
+  #lockScreen h2{margin:0; font-size:19px;}
+  #lockScreen p{margin:0; color:var(--sub); font-size:13px; text-align:center;}
+  #pinInput{
+    font-size:28px; letter-spacing:10px; text-align:center; width:200px;
+    border:2px solid var(--line); border-radius:12px; padding:12px 10px; font-family:inherit;
+  }
+  #pinInput:focus{outline:none; border-color:var(--gold);}
+  #pinBtn{
+    font-size:16px; font-weight:800; color:#fff; background:var(--ink); border:none;
+    border-radius:12px; padding:12px 32px;
+  }
+  #pinErr{color:var(--red); font-size:13px; height:16px;}
+
+  header{
+    padding:14px 16px 0; border-bottom:1px solid var(--line); background:var(--paper);
+    position:sticky; top:0; z-index:6;
+  }
+  h1{margin:0; font-size:17px; font-weight:800;}
+  .sub{color:var(--sub); font-size:12px; margin-top:3px; padding-bottom:10px;}
+
+  .nav{display:flex; gap:4px; padding:0 10px; background:var(--paper); position:sticky; top:48px; z-index:6; border-bottom:1px solid var(--line);}
+  .navtab{flex:1; text-align:center; font-size:13.5px; font-weight:700; color:var(--sub); padding:10px 2px 9px; border-bottom:3px solid transparent; cursor:pointer;}
+  .navtab.active{color:var(--ink); border-bottom-color:var(--gold);}
+
+  .searchrow{padding:10px 16px 0;}
+  #q{width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:10px; padding:10px 12px; font-size:15px; font-family:inherit;}
+  #q:focus{outline:none; border-color:var(--gold);}
+  .chips{display:flex; gap:8px; padding:10px 16px 12px; overflow-x:auto;}
+  .chip{flex:none; font-size:13.5px; font-weight:700; padding:7px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--card); color:var(--sub); white-space:nowrap;}
+  .chip.active{color:#fff; border-color:transparent;}
+  .chip[data-s="all"].active{background:#3a4250;}
+  .chip[data-s="tt"].active{background:var(--tt);}
+  .chip[data-s="bad"].active{background:var(--bad);}
+  .chip[data-s="bb"].active{background:var(--bb);}
+
+  main{padding:4px 16px 0;}
+  .empty{text-align:center; color:var(--sub); padding:40px 20px; font-size:14px;}
+  .updated{text-align:center; color:var(--sub); font-size:11.5px; padding:16px 0 4px;}
+
+  .card{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line); border-radius:12px; padding:12px 13px; margin-bottom:10px;}
+  .card.tt{border-left-color:var(--tt);}
+  .card.bad{border-left-color:var(--bad);}
+  .card.bb{border-left-color:var(--bb);}
+  .card.qual{border-left-color:var(--gold);}
+  .ctop{font-size:12px; font-weight:700; color:var(--sub); display:flex; justify-content:space-between; align-items:baseline; gap:6px;}
+  .ctop .tag{font-weight:700;}
+  .card.tt .ctop .tag{color:var(--tt);}
+  .card.bad .ctop .tag{color:var(--bad);}
+  .card.bb .ctop .tag{color:var(--bb);}
+  .cvenue{font-size:11px; color:var(--sub); margin-top:1px;}
+
+  .scorerow{display:flex; align-items:center; justify-content:space-between; padding:9px 0 2px; gap:8px;}
+  .scorerow .pname{flex:1; min-width:0; font-size:14.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .stepper{display:flex; align-items:center; gap:0; flex:none;}
+  .stepbtn{
+    width:38px; height:38px; border-radius:10px; border:1.5px solid var(--line); background:#fff;
+    font-size:20px; font-weight:800; color:var(--ink); display:flex; align-items:center; justify-content:center;
+  }
+  .stepbtn:active{background:#f0ece2;}
+  .stepval{width:44px; text-align:center; font-size:19px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .stepval.empty{color:var(--sub); font-weight:600; font-size:14px;}
+
+  .cardfoot{display:flex; justify-content:flex-end; margin-top:4px;}
+  .clearlink{font-size:11.5px; color:var(--sub); text-decoration:underline; padding:4px;}
+  .savedtag{font-size:11px; color:var(--ok); font-weight:700;}
+
+  .qualtag{font-size:10.5px; background:var(--gold); color:#fff; border-radius:6px; padding:1px 6px; margin-left:4px;}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <h2>🔒 工作人員計分</h2>
+  <p>此頁面僅供工作人員輸入比分使用<br>請輸入現場提供的通關密碼</p>
+  <input id="pinInput" inputmode="numeric" maxlength="8" placeholder="••••">
+  <div id="pinErr"></div>
+  <button id="pinBtn">確認進入</button>
+</div>
+
+<header>
+  <h1>✏️ 工作人員計分</h1>
+  <div class="sub">點數字兩側的按鈕即可，會自動同步</div>
+</header>
+
+<div class="nav" id="nav">
+  <div class="navtab active" data-v="schedule">🗓 賽程比分</div>
+  <div class="navtab" data-v="fun">🎯 趣味競賽</div>
+  <div class="navtab" data-v="shoot">🏀 投籃大賽</div>
+</div>
+
+<div id="scheduleControls">
+  <div class="searchrow"><input id="q" placeholder="搜尋姓名／賽事"></div>
+  <div class="chips" id="chips">
+    <div class="chip active" data-s="all">全部</div>
+    <div class="chip" data-s="tt">🏓 桌球</div>
+    <div class="chip" data-s="bad">🏸 羽球</div>
+    <div class="chip" data-s="bb">🏀 籃球</div>
+  </div>
+</div>
+
+<main id="main"></main>
+<div class="updated" id="updated"></div>
+<div id="debugBanner" style="display:none; margin:10px 16px; padding:10px 12px; background:#fdecea; border:1px solid #f2b8b5; color:#8a1f11; font-size:12px; border-radius:8px; word-break:break-all;"></div>
+
+<script>
+window.addEventListener("error", ev => {
+  const b = document.getElementById("debugBanner");
+  if (!b) return;
+  b.style.display = "block";
+  b.textContent = "⚠ 頁面錯誤：" + (ev.message || "未知錯誤") + (ev.filename ? "　來源：" + ev.filename + ":" + ev.lineno + ":" + ev.colno : "");
+});
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js" crossorigin="anonymous"></script>
+<script>
+"use strict";
+
+/* =====================================================================
+   通關密碼：這只是防止連結被不相干的人手滑亂改，不是真正的資安機制
+   （看得到這份原始碼的人都看得到這個密碼）。要換密碼直接改下面這行。
+   ===================================================================== */
+const STAFF_PIN = "2026";
+
+(function initLock(){
+  const lock = document.getElementById("lockScreen");
+  const input = document.getElementById("pinInput");
+  const btn = document.getElementById("pinBtn");
+  const err = document.getElementById("pinErr");
+  function tryUnlock(){
+    if (input.value === STAFF_PIN) {
+      try { localStorage.setItem("staffUnlocked", "1"); } catch(e){}
+      lock.style.display = "none";
+    } else {
+      err.textContent = "密碼不正確，請重新輸入";
+      input.value = "";
+      input.focus();
+    }
+  }
+  let already = false;
+  try { already = localStorage.getItem("staffUnlocked") === "1"; } catch(e){}
+  if (already) { lock.style.display = "none"; }
+  btn.addEventListener("click", tryUnlock);
+  input.addEventListener("keydown", ev => { if (ev.key === "Enter") tryUnlock(); });
+})();
+
+/* ===== Firebase（需要寫入權限，用匿名登入） ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBiQSxUfnV2r0mtCECMDsvGpD8W07uekF4",
+  authDomain: "cyber-family-day-2026.firebaseapp.com",
+  databaseURL: "https://cyber-family-day-2026-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cyber-family-day-2026",
+  storageBucket: "cyber-family-day-2026.firebasestorage.app",
+  messagingSenderId: "873803879189",
+  appId: "1:873803879189:web:d533e63468ea31f1eb0f1c"
+};
+firebase.initializeApp(firebaseConfig);
+const fbDb = firebase.database();
+const fbAuth = firebase.auth();
+
+let fbSignedIn = false;
+const fbQueue = [];
+function fbFlushQueue(){ while (fbQueue.length) fbQueue.shift()(); }
+fbAuth.onAuthStateChanged(user => { fbSignedIn = !!user; if (fbSignedIn) fbFlushQueue(); render(); });
+fbAuth.signInAnonymously().catch(err => { fbStatus = "offline"; render(); });
+
+let fbStatus = "connecting"; // connecting | live | offline
+
+/* 只寫「這一個欄位」的葉節點，不會動到其他場次/欄位的資料，多裝置同時操作也安全 */
+function pushLeaf(path, value){
+  const run = () => fbDb.ref(path).set(value).catch(err => { console.warn("寫入失敗", path, err); fbStatus = "offline"; render(); });
+  if (fbSignedIn) run(); else fbQueue.push(run);
+}
+
+let liveScores = {}, liveFun = {}, liveShoot = {};
+/* 記錄「這台裝置剛剛自己改過」的欄位，短時間內不要被剛好慢到的遠端回傳蓋掉，避免畫面閃爍/跳回舊值 */
+const recentEdit = {};
+function markRecent(key){ recentEdit[key] = Date.now() + 1500; }
+function isRecent(key){ return (recentEdit[key] || 0) > Date.now(); }
+
+fbDb.ref("event2026/scores").on("value", snap => {
+  const remote = snap.val() || {};
+  Object.keys(remote).forEach(id => { if (!isRecent("s:"+id)) liveScores[id] = remote[id]; });
+  Object.keys(liveScores).forEach(id => { if (!(id in remote) && !isRecent("s:"+id)) delete liveScores[id]; });
+  fbStatus = "live"; render();
+}, () => { fbStatus = "offline"; render(); });
+fbDb.ref("event2026/fun").on("value", snap => {
+  const remote = snap.val() || {};
+  Object.keys(remote).forEach(id => { if (!isRecent("f:"+id)) liveFun[id] = remote[id]; });
+  render();
+}, () => {});
+fbDb.ref("event2026/shoot").on("value", snap => {
+  const remote = snap.val() || { p:{}, f:{} };
+  ["p","f"].forEach(kind => {
+    const sub = remote[kind] || {};
+    if (!liveShoot[kind]) liveShoot[kind] = {};
+    Object.keys(sub).forEach(i => { if (!isRecent("sh:"+kind+":"+i)) liveShoot[kind][i] = sub[i]; });
+  });
+  render();
+}, () => {});
+
+/* ===== 賽程資料（取自主控版原始資料） ===== */
+const W = id => ({win:id});
+const L = id => ({lose:id});
+const P = name => ({name:name});
+const BYE = {bye:true};
+
+const GROUPS = [
+{ id:"tm", name:"桌球男單", sport:"tt", sub:"14 人｜16強單淘汰｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"16強", ms:[
+     {id:"tm1", t:"—", v:"", lb:"16強-1", a:P("張逸鴻(Ethan)"), b:BYE},
+     {id:"tm2", t:"10:30-10:40", v:"桌1", lb:"16強-2", a:P("吳治寰(Benson)"), b:P("范書維(Derek)")},
+     {id:"tm3", t:"10:30-10:40", v:"桌2", lb:"16強-3", a:P("黃禎宗(Zong)"), b:P("黃柏盛(Benson)")},
+     {id:"tm4", t:"10:30-10:40", v:"桌3", lb:"16強-4", a:P("陳立學(Lucas)"), b:P("林彥成(Nick)")},
+     {id:"tm5", t:"—", v:"", lb:"16強-5", a:P("侯志霖(Oliver)"), b:BYE},
+     {id:"tm6", t:"10:40-10:50", v:"桌1", lb:"16強-6", a:P("王聖翔(Shuan)"), b:P("党夢熊(陳麗芳Vivian)")},
+     {id:"tm7", t:"10:40-10:50", v:"桌2", lb:"16強-7", a:P("党子欣(陳麗芳Vivian)"), b:P("吳宇宸(Leo)")},
+     {id:"tm8", t:"10:40-10:50", v:"桌3", lb:"16強-8", a:P("蘇進家(Josh)"), b:P("黃祥焜(Yellow)")} ]},
+   { title:"8強", ms:[
+     {id:"tmq1", t:"10:50-11:00", v:"桌1", lb:"8強-1", a:W("tm1"), b:W("tm2")},
+     {id:"tmq2", t:"10:50-11:00", v:"桌2", lb:"8強-2", a:W("tm3"), b:W("tm4")},
+     {id:"tmq3", t:"11:00-11:10", v:"桌1", lb:"8強-3", a:W("tm5"), b:W("tm6")},
+     {id:"tmq4", t:"11:00-11:10", v:"桌2", lb:"8強-4", a:W("tm7"), b:W("tm8")} ]},
+   { title:"4強", ms:[
+     {id:"tms1", t:"11:10-11:20", v:"桌1", lb:"4強-1", a:W("tmq1"), b:W("tmq2")},
+     {id:"tms2", t:"11:10-11:20", v:"桌2", lb:"4強-2", a:W("tmq3"), b:W("tmq4")} ]},
+   { title:"決賽", ms:[
+     {id:"tmf", t:"11:20-11:30", v:"桌1", lb:"冠軍賽", a:W("tms1"), b:W("tms2"), crown:"冠軍"},
+     {id:"tmb", t:"11:20-11:30", v:"桌2", lb:"季軍賽", a:L("tms1"), b:L("tms2"), crown:"季軍"} ]} ]},
+{ id:"tw", name:"桌球女單", sport:"tt", sub:"5 人｜資格賽＋4強｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"資格賽", ms:[
+     {id:"twp1", t:"10:50-11:00", v:"桌3", lb:"資格賽-1", a:P("廖昱甄(Nova)"), b:P("林苡暄(林苡勤Betty)")} ]},
+   { title:"4強", ms:[
+     {id:"tws1", t:"11:00-11:10", v:"桌3", lb:"4強-1", a:P("林苡勤(Betty)"), b:W("twp1")},
+     {id:"tws2", t:"11:10-11:20", v:"桌3", lb:"4強-2", a:P("楊欣瑜(Tina)"), b:P("張瑋恬(Amy)")} ]},
+   { title:"決賽", ms:[
+     {id:"twf", t:"11:30-11:40", v:"桌2", lb:"冠軍賽", a:W("tws1"), b:W("tws2"), crown:"冠軍"},
+     {id:"twb", t:"11:30-11:40", v:"桌3", lb:"季軍賽", a:L("tws1"), b:L("tws2"), crown:"季軍"} ]} ]},
+{ id:"bm", name:"羽球男雙", sport:"bad", sub:"5 組｜資格賽＋4強｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"資格賽", ms:[
+     {id:"bmp1", t:"10:50-11:00", v:"A面", lb:"資格賽-1", a:P("張翔(Cliff)/孫秉家(Jack)"), b:P("林建志(Kenny)/林少睿")} ]},
+   { title:"4強", ms:[
+     {id:"bms1", t:"11:10-11:20", v:"B面", lb:"4強-1", a:P("黃祥焜(Yellow)/林彥成(Nick)"), b:W("bmp1")},
+     {id:"bms2", t:"11:30-11:40", v:"A面", lb:"4強-2", a:P("楊權(Chorld)/鄧起宇(Richard)"), b:P("陳志明(Raven)/謝東恩(Bryan)")} ]},
+   { title:"冠軍賽", ms:[
+     {id:"bmf", t:"14:40-14:50", v:"A面", lb:"冠軍賽", star:true, a:W("bms1"), b:W("bms2"), crown:"冠軍"} ]} ]},
+{ id:"bw", name:"羽球女雙", sport:"bad", sub:"4 組｜4強單淘汰｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"4強", ms:[
+     {id:"bws1", t:"11:20-11:30", v:"B面", lb:"4強-1", a:P("林苡勤(Betty)/林苡暄"), b:P("朱瑋婷(Weiting)/朱翊寧")},
+     {id:"bws2", t:"11:30-11:40", v:"B面", lb:"4強-2", a:P("陳孟君(Jun)/麥如君(Amy)"), b:P("許依慧(Wendy)/楊欣瑜(Tina)")} ]},
+   { title:"冠軍賽", ms:[
+     {id:"bwf", t:"14:40-14:50", v:"B面", lb:"冠軍賽", star:true, a:W("bws1"), b:W("bws2"), crown:"冠軍"} ]} ]},
+{ id:"bx", name:"羽球混雙", sport:"bad", sub:"8 組｜8強單淘汰｜抽籤代碼 E1276678EDAF7C8B",
+  cols:[
+   { title:"8強", ms:[
+     {id:"bxq1", t:"11:00-11:10", v:"A面", lb:"8強-1", a:P("簡任余(Jerry)/范曉君"), b:P("陳麗芳(Vivian)/党子欣")},
+     {id:"bxq2", t:"11:10-11:20", v:"A面", lb:"8強-2", a:P("蔡季澄(Joseph)/林宛樺(Lena)"), b:P("楊妤婷(Tina)/林秉賢(Adam)")},
+     {id:"bxq3", t:"11:00-11:10", v:"B面", lb:"8強-3", a:P("陳立學(Lucas)/謝安倪(Annie)"), b:P("范書維(Derek)/李雯萱(Flora)")},
+     {id:"bxq4", t:"11:20-11:30", v:"A面", lb:"8強-4", a:P("許至昊(Gershwin)/李秋賦"), b:P("洪義凱(Wilkai)/謝妤婕")} ]},
+   { title:"4強", ms:[
+     {id:"bxs1", t:"11:40-11:50", v:"A面", lb:"4強-1", a:W("bxq1"), b:W("bxq2")},
+     {id:"bxs2", t:"11:40-11:50", v:"B面", lb:"4強-2", a:W("bxq3"), b:W("bxq4")} ]},
+   { title:"冠軍賽", ms:[
+     {id:"bxf", t:"14:50-15:00", v:"A面", lb:"冠軍賽", star:true, a:W("bxs1"), b:W("bxs2"), crown:"冠軍"} ]} ]},
+{ id:"bb", name:"籃球3對3", sport:"bb", sub:"5 組｜資格賽＋4強｜抽籤代碼 A4C662BB76FF5B50",
+  cols:[
+   { title:"資格賽", ms:[
+     {id:"bbp1", t:"11:00-11:10", v:"籃球場", lb:"資格賽-1", a:P("陳志明(Raven)/洪義凱(Wilkai)/鄧起宇(Richard)"), b:P("王漢雍(Mario)/林千翔(Coco)/吳彥輝(Nick)")} ]},
+   { title:"4強", ms:[
+     {id:"bbs1", t:"11:20-11:30", v:"籃球場", lb:"4強-1", a:P("封智翔(Vito)/蘇威諺(Ziv)/林彥成(Nick)"), b:P("許世展(Ian)/康晉豪(Brian)/范書維(Derek)")},
+     {id:"bbs2", t:"11:10-11:20", v:"籃球場", lb:"4強-2", a:P("陳立學(Lucas)/王聖翔(Shuan)/吳宇宸(Leo)"), b:W("bbp1")} ]},
+   { title:"決賽", ms:[
+     {id:"bbf", t:"14:30-14:40", v:"籃球場", lb:"冠軍賽", star:true, a:W("bbs1"), b:W("bbs2"), crown:"冠軍"},
+     {id:"bbb", t:"14:20-14:30", v:"籃球場", lb:"季軍賽", a:L("bbs1"), b:L("bbs2"), crown:"季軍"} ]} ]}
+];
+
+const MATCHES = {};
+GROUPS.forEach(g => g.cols.forEach(c => c.ms.forEach(m => { m.group = g.id; m.gname = g.name; m.sport = g.sport; MATCHES[m.id] = m; })));
+
+const FUN_EVENTS = [
+  { id:"f1", name:"戰鬥陀螺PK賽", slot:"上午", t:"10:30-11:00", v:"籃球區" , ord:1},
+  { id:"f4", name:"羽球神射手", slot:"下午", t:"13:50-14:20", v:"羽球區", row:"13:20-14:20" , ord:3},
+  { id:"f3", name:"翻山越嶺",   slot:"下午", t:"13:20-13:50", v:"羽球區", row:"13:20-14:20" , ord:2},
+  { id:"f5", name:"呼拉圈+跳繩", slot:"下午", t:"13:50-14:20", v:"羽球區", row:"13:20-14:20" , ord:4},
+  { id:"f2", name:"近在咫尺",   slot:"下午", t:"13:20-13:50", v:"羽球區", row:"13:20-14:20" , ord:5}
+];
+
+const SHOOTERS = [
+  ["002","扈端華(Daniel)","CO"],["1072","吳宇宸(Leo)","CO"],["974","吳彥輝(Nick)","DIB·DMD"],["1050","呂婉慈(Vanessa)","DIB·DMD"],
+  ["021","洪崇銘","CO·FAD"],["1069","滕威愷(Andy)","CO·FAD"],["850","范書維(Derek)","FSB·FS1"],["469","陳孟君(Jun)","FSB·FS2"],
+  ["591","鄭帆軒","FSB·FS2"],["656","李雯萱(Flora)","FSB·FS2"],["649","林建志(Kenny)","FSB·FS3"],["649","林少睿","FSB·FS3"],
+  ["1049","陳立學(Lucas)","FSB·FS3"],["1062","王聖翔(Shuan)","FSB·FS3"],["1073","謝安倪(Annie)","GAO·HRD"],["816","張博凱(Kenny)","MSB·MS1"],
+  ["811","張瑋恬(Amy)","MSB·MS2"],["971","林千翔(Coco)","MSB·MS2"],["1068","王漢雍(Mario)","MSB·MS2"],["121","朱俊綱(Stanley)","PSB·PS1"],
+  ["334","黃柏盛(Benson)","PSB·PS2"],["1028","洪祥盛(Joshua)","PSB·PS3"],["1037","林宛樺(Lena)","PSB·PS3"],["1056","楊勝傑(Allen)","PSB·PS3"],
+  ["1074","廖子鑫(Jason)","PSB·PS3"],["912","陳志明(Raven)","GAO·ITS"],["966","封智翔(Vito)","GAO·ITS"],["P118","黃禎宗(Zong)","FSE·PCMA"],
+  ["P147","蘇威諺(Ziv)","FSE·FCMA"]
+];
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+function fmtHM(min){ const h = Math.floor(min/60), m = min%60; return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); }
+const SPORT_LABEL = { tt:"桌球", bad:"羽球", bb:"籃球" };
+const VENUE_LABEL = { "桌1":"🏓 桌1", "桌2":"🏓 桌2", "桌3":"🏓 桌3", "A面":"🏸 羽球A面", "B面":"🏸 羽球B面", "籃球場":"🏀 籃球場" };
+
+/* 未產生勝負前的佔位文字（例如「16強勝者1」） */
+function phWin(id){ const lb = MATCHES[id].lb; return lb.indexOf("冠軍賽") >= 0 ? "冠軍" : lb.replace(/-(\d+)$/, "勝者$1"); }
+function phLose(id){ return MATCHES[id].lb.replace(/-(\d+)$/, "敗者$1"); }
+function scoreOf(id){
+  const s = liveScores[id];
+  if (!s || s.a === "" || s.b === "" || s.a == null || s.b == null) return null;
+  return { a:Number(s.a), b:Number(s.b) };
+}
+function resolveEntrant(e){
+  if (!e) return { text:"", ok:false, bye:false };
+  if (e.bye) return { text:"輪空", ok:false, bye:true };
+  if (e.name) return { text:e.name, ok:true, bye:false };
+  if (e.win)  { const w = winnerOf(MATCHES[e.win]); return w ? { text:w, ok:true, bye:false } : { text:phWin(e.win), ok:false, bye:false }; }
+  if (e.lose) { const l = loserOf(MATCHES[e.lose]); return l ? { text:l, ok:true, bye:false } : { text:phLose(e.lose), ok:false, bye:false }; }
+  return { text:"", ok:false, bye:false };
+}
+function winnerOf(m){
+  if (!m) return null;
+  const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+  if (m.b && m.b.bye) return A.ok ? A.text : null;
+  const s = scoreOf(m.id);
+  if (!s || s.a === s.b) return null;
+  return (s.a > s.b ? A : B).ok ? (s.a > s.b ? A : B).text : null;
+}
+function loserOf(m){
+  if (!m || (m.b && m.b.bye)) return null;
+  const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+  const s = scoreOf(m.id);
+  if (!s || s.a === s.b) return null;
+  return (s.a > s.b ? B : A).ok ? (s.a > s.b ? B : A).text : null;
+}
+function funScore(id){
+  const f = liveFun[id];
+  if (!f || f.r === "" || f.w === "" || f.r == null || f.w == null) return null;
+  return { r:Number(f.r), w:Number(f.w) };
+}
+function shootVal(kind, i){
+  const o = liveShoot[kind];
+  const v = o ? o[i] : null;
+  return (v === "" || v == null) ? null : Number(v);
+}
+function shootTop4(){
+  const arr = [];
+  SHOOTERS.forEach((p, i) => { const v = shootVal("p", i); if (v !== null) arr.push({ i:i, v:v }); });
+  arr.sort((a, b) => b.v - a.v || a.i - b.i);
+  return arr.slice(0, 4);
+}
+
+let state = { view:"schedule", s:"all", q:"" };
+
+/* ===== 共用：數字加減器 ===== */
+function stepperHTML(kind, key, sub, val){
+  const shown = (val === null || val === undefined || val === "") ? '<span class="stepval empty">未輸入</span>' : '<span class="stepval">' + val + '</span>';
+  return '<div class="stepper" data-kind="' + kind + '" data-key="' + key + '" data-sub="' + sub + '">' +
+    '<button class="stepbtn" data-op="-">－</button>' + shown + '<button class="stepbtn" data-op="+">＋</button>' +
+  '</div>';
+}
+
+/* ===== 賽程比分 ===== */
+function renderSchedule(){
+  const q = state.q.trim().toLowerCase();
+  const list = Object.keys(MATCHES).map(k => MATCHES[k]).filter(m => !(m.b && m.b.bye));
+  const filtered = list.filter(m => {
+    if (state.s !== "all" && m.sport !== state.s) return false;
+    if (!q) return true;
+    const A = resolveEntrant(m.a).text, B = resolveEntrant(m.b).text;
+    return (m.gname + " " + m.lb + " " + A + " " + B).toLowerCase().indexOf(q) >= 0;
+  });
+  if (!filtered.length) return '<div class="empty">找不到符合的場次</div>';
+  let html = "";
+  filtered.forEach(m => {
+    const A = resolveEntrant(m.a), B = resolveEntrant(m.b);
+    const s = liveScores[m.id] || {};
+    const done = scoreOf(m.id) !== null;
+    html += '<div class="card ' + m.sport + (done ? " qual" : "") + '">' +
+      '<div class="ctop"><span class="tag">' + SPORT_LABEL[m.sport] + ' · ' + esc(m.gname) + ' ' + esc(m.lb) + '</span>' + (done ? '<span class="savedtag">✓ 已輸入</span>' : "") + '</div>' +
+      '<div class="cvenue">' + (m.t && m.t !== "—" ? esc(m.t) + "　" : "") + (VENUE_LABEL[m.v] || esc(m.v||"")) + '</div>' +
+      '<div class="scorerow"><span class="pname">' + esc(A.text) + '</span>' + stepperHTML("score", m.id, "a", s.a) + '</div>' +
+      '<div class="scorerow"><span class="pname">' + esc(B.text) + '</span>' + stepperHTML("score", m.id, "b", s.b) + '</div>' +
+      '<div class="cardfoot"><span class="clearlink" data-clear="score" data-key="' + m.id + '">清除這場比分</span></div>' +
+    '</div>';
+  });
+  return html;
+}
+
+/* ===== 趣味競賽 ===== */
+function renderFun(){
+  let html = "";
+  FUN_EVENTS.forEach(e => {
+    const f = liveFun[e.id] || {};
+    const done = funScore(e.id) !== null;
+    html += '<div class="card' + (done ? " qual" : "") + '">' +
+      '<div class="ctop"><span class="tag">' + esc(e.name) + '</span>' + (done ? '<span class="savedtag">✓ 已輸入</span>' : "") + '</div>' +
+      '<div class="scorerow"><span class="pname">🔴 紅隊</span>' + stepperHTML("fun", e.id, "r", f.r) + '</div>' +
+      '<div class="scorerow"><span class="pname">⚪ 白隊</span>' + stepperHTML("fun", e.id, "w", f.w) + '</div>' +
+      '<div class="cardfoot"><span class="clearlink" data-clear="fun" data-key="' + e.id + '">清除這項比分</span></div>' +
+    '</div>';
+  });
+  return html;
+}
+
+/* ===== 投籃大賽 ===== */
+function renderShoot(){
+  const top = shootTop4();
+  const topSet = {}; top.forEach((t, k) => { topSet[t.i] = k + 1; });
+  let html = '<div class="empty" style="padding:10px 4px;text-align:left;color:var(--sub);font-size:12.5px">預賽取前 4 名進總決賽；決賽分數只有晉級者需要填。</div>';
+  SHOOTERS.forEach((p, i) => {
+    const pv = shootVal("p", i);
+    const rk = topSet[i];
+    html += '<div class="card' + (rk ? " qual" : "") + '">' +
+      '<div class="ctop"><span class="tag">' + esc(p[1]) + '　<span style="color:var(--sub);font-weight:600">' + esc(p[0]) + '</span></span>' + (rk ? '<span class="qualtag">晉級 ' + rk + '</span>' : "") + '</div>' +
+      '<div class="scorerow"><span class="pname">預賽得分</span>' + stepperHTML("shootp", i, "p", pv) + '</div>' +
+      (rk ? '<div class="scorerow"><span class="pname">決賽得分</span>' + stepperHTML("shootf", i, "f", shootVal("f", i)) + '</div>' : "") +
+      '<div class="cardfoot"><span class="clearlink" data-clear="shoot" data-key="' + i + '">清除這位選手的分數</span></div>' +
+    '</div>';
+  });
+  return html;
+}
+
+function render(){
+  const main = document.getElementById("main");
+  if (state.view === "schedule") main.innerHTML = renderSchedule();
+  else if (state.view === "fun") main.innerHTML = renderFun();
+  else main.innerHTML = renderShoot();
+
+  const statusText = fbStatus === "live" ? "🟢 已連線，比分即時同步" : fbStatus === "offline" ? "🔴 連線中斷，請檢查網路" : "🟡 連線中…";
+  document.getElementById("updated").textContent = statusText;
+}
+
+/* ===== 加減按鈕與清除連結事件（用事件代理，畫面會一直重繪） ===== */
+document.getElementById("main").addEventListener("click", ev => {
+  const clearEl = ev.target.closest("[data-clear]");
+  if (clearEl) {
+    const kind = clearEl.getAttribute("data-clear"), key = clearEl.getAttribute("data-key");
+    if (!confirm("確定清除這筆分數？")) return;
+    if (kind === "score") {
+      pushLeaf("event2026/scores/" + key + "/a", "");
+      pushLeaf("event2026/scores/" + key + "/b", "");
+      liveScores[key] = { a:"", b:"" }; markRecent("s:"+key);
+    } else if (kind === "fun") {
+      pushLeaf("event2026/fun/" + key + "/r", "");
+      pushLeaf("event2026/fun/" + key + "/w", "");
+      liveFun[key] = { r:"", w:"" }; markRecent("f:"+key);
+    } else if (kind === "shoot") {
+      pushLeaf("event2026/shoot/p/" + key, "");
+      pushLeaf("event2026/shoot/f/" + key, "");
+      if (!liveShoot.p) liveShoot.p = {}; if (!liveShoot.f) liveShoot.f = {};
+      liveShoot.p[key] = ""; liveShoot.f[key] = "";
+      markRecent("sh:p:"+key); markRecent("sh:f:"+key);
+    }
+    render();
+    return;
+  }
+  const btn = ev.target.closest(".stepbtn");
+  if (!btn) return;
+  const wrap = btn.closest(".stepper");
+  const kind = wrap.getAttribute("data-kind"), key = wrap.getAttribute("data-key"), sub = wrap.getAttribute("data-sub");
+  const op = btn.getAttribute("data-op");
+
+  if (kind === "score") {
+    const cur = liveScores[key] || {};
+    let v = (cur[sub] === "" || cur[sub] == null) ? -1 : Number(cur[sub]);
+    v = op === "+" ? v + 1 : Math.max(0, v - 1);
+    liveScores[key] = Object.assign({}, cur); liveScores[key][sub] = v;
+    markRecent("s:"+key);
+    pushLeaf("event2026/scores/" + key + "/" + sub, v);
+  } else if (kind === "fun") {
+    const cur = liveFun[key] || {};
+    let v = (cur[sub] === "" || cur[sub] == null) ? -1 : Number(cur[sub]);
+    v = op === "+" ? v + 1 : Math.max(0, v - 1);
+    liveFun[key] = Object.assign({}, cur); liveFun[key][sub] = v;
+    markRecent("f:"+key);
+    pushLeaf("event2026/fun/" + key + "/" + sub, v);
+  } else if (kind === "shootp" || kind === "shootf") {
+    const k = kind === "shootp" ? "p" : "f";
+    if (!liveShoot[k]) liveShoot[k] = {};
+    let v = (liveShoot[k][key] === "" || liveShoot[k][key] == null) ? -1 : Number(liveShoot[k][key]);
+    v = op === "+" ? v + 1 : Math.max(0, v - 1);
+    liveShoot[k][key] = v;
+    markRecent("sh:"+k+":"+key);
+    pushLeaf("event2026/shoot/" + k + "/" + key, v);
+  }
+  render();
+});
+
+document.getElementById("nav").addEventListener("click", ev => {
+  const t = ev.target.closest(".navtab");
+  if (!t) return;
+  document.querySelectorAll(".navtab").forEach(x => x.classList.remove("active"));
+  t.classList.add("active");
+  state.view = t.getAttribute("data-v");
+  document.getElementById("scheduleControls").style.display = state.view === "schedule" ? "" : "none";
+  render();
+});
+document.getElementById("chips").addEventListener("click", ev => {
+  const c = ev.target.closest(".chip");
+  if (!c) return;
+  document.querySelectorAll("#chips .chip").forEach(x => x.classList.remove("active"));
+  c.classList.add("active");
+  state.s = c.getAttribute("data-s");
+  render();
+});
+document.getElementById("q").addEventListener("input", ev => { state.q = ev.target.value; render(); });
+
+render();
+</script>
+</body>
+</html>
