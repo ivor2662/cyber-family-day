@@ -887,6 +887,59 @@ function renderOverall() {
 const stage = document.getElementById("stage");
 const tabsEl = document.getElementById("tabs");
 
+/* ===== Firebase：監聽遠端資料（讓工作人員計分手機版輸入的分數，也會反映在主控版畫面上） =====
+   主控版原本只會「寫入」Firebase，不會「讀取」，所以工作人員手機輸入的分數雖然有進資料庫，
+   主控版畫面卻不會自動更新。這裡補上訂閱，把遠端資料合併進本機 state，並重繪畫面。
+   為了不打斷正在輸入分數的操作（例如你正在打字，欄位還沒 blur），如果目前焦點在比分輸入框上，
+   會先把資料合併進 state，但延後到欄位失焦後才真正重繪畫面，避免輸入到一半被打斷或跳掉。 */
+let pendingRemoteRender = false;
+let scoresInitialSynced = false, funInitialSynced = false, shootInitialSynced = false;
+function isEditingScoreField() {
+  const el = document.activeElement;
+  return !!(el && el.classList && (el.classList.contains("score") || el.classList.contains("funscore") || el.classList.contains("shootscore")));
+}
+function mergeRemoteInto(target, remote, isFirstSync) {
+  remote = remote || {};
+  Object.keys(remote).forEach(k => { target[k] = remote[k]; });
+  if (!isFirstSync) {
+    // 首次同步只「新增」不「刪除」，避免遠端剛好還沒資料時，把本機既有資料誤刪
+    Object.keys(target).forEach(k => { if (!(k in remote)) delete target[k]; });
+  }
+}
+function applyRemoteRender() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  if (isEditingScoreField()) { pendingRemoteRender = true; return; }
+  pendingRemoteRender = false;
+  render();
+}
+fbDb.ref("event2026/scores").on("value", snap => {
+  mergeRemoteInto(state.scores, snap.val(), !scoresInitialSynced);
+  scoresInitialSynced = true;
+  applyRemoteRender();
+});
+fbDb.ref("event2026/fun").on("value", snap => {
+  if (!state.fun) state.fun = {};
+  mergeRemoteInto(state.fun, snap.val(), !funInitialSynced);
+  funInitialSynced = true;
+  applyRemoteRender();
+});
+fbDb.ref("event2026/shoot").on("value", snap => {
+  const remote = snap.val() || { p:{}, f:{} };
+  if (!state.shoot) state.shoot = { p:{}, f:{} };
+  if (!state.shoot.p) state.shoot.p = {};
+  if (!state.shoot.f) state.shoot.f = {};
+  mergeRemoteInto(state.shoot.p, remote.p, !shootInitialSynced);
+  mergeRemoteInto(state.shoot.f, remote.f, !shootInitialSynced);
+  shootInitialSynced = true;
+  applyRemoteRender();
+});
+/* 比分輸入框失焦時，如果剛好有被延後的遠端更新，這時候才補畫面 */
+stage.addEventListener("focusout", ev => {
+  const t = ev.target;
+  if (!t.classList || !(t.classList.contains("score") || t.classList.contains("funscore") || t.classList.contains("shootscore"))) return;
+  if (pendingRemoteRender) { pendingRemoteRender = false; setTimeout(() => render(), 80); }
+});
+
 /* 某人在某時段的行程（出賽／任裁判），排除指定場次；只看未完賽場次 */
 function overlapR(r1, r2) { return r1.a < r2.b && r2.a < r1.b; }
 function engagementsOf(name, exceptId) {
